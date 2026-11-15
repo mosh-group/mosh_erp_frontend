@@ -1,0 +1,103 @@
+{
+  "baseline": "MOSH_R17_SHORT_PATH_3_PACKAGES.zip",
+  "baselineSha256": "8af7a66e22c617b06d7cc4f74274778f0d8b9cd7590bca19042cf47c263bccb7",
+  "backupIdentical": true,
+  "runtimeChanged": [
+    "index.html",
+    "api-map.json",
+    "js/api-boot.js",
+    "js/43-mosh-auth-v37-js.js",
+    "js/56-mosh-workdesk.js"
+  ],
+  "runtimeAdded": [
+    "css/r18-mini-workdesk.css",
+    "js/63-mosh-mini-workdesk.js"
+  ],
+  "protectedPackages": {
+    "MOSH_LARAVEL_BACKEND.zip": {
+      "sha256": "59b54151da911395f75c18534c0b7fe8a1baae03c572974bb70a362413db84f6",
+      "changed": false
+    },
+    "ZKTecoRealtimeTest.zip": {
+      "sha256": "598036513d7ea7aedd832bd62ba6676aeef500536af8ff5df5ef7456897aedc1",
+      "changed": false
+    }
+  },
+  "frontendOriginalFileCount": 212,
+  "frontendOriginalFilesUnchanged": 206,
+  "changes": [
+    {
+      "file": "index.html",
+      "oldSha256": "65d424f570774f246e3a47f39abe7d4d7015b5050522d1b28006b506bbf22a05",
+      "newSha256": "2a1587e756d234a58597f88fdac1f4480b337327d13f5dfb891f3d762c62021b"
+    },
+    {
+      "file": "api-map.json",
+      "oldSha256": "02f51f1282d0752cf23cb6056d9dde9e13aae0a0f164f6f063ef64db44078acc",
+      "newSha256": "e31a30113a1814439172668e9581eb1f50110039626cb8378369b2993fd0e9a2"
+    },
+    {
+      "file": "js/api-boot.js",
+      "oldSha256": "0f8419f99934164b34b944936b65a27be4955201cf8aa34bba182e88d9d73fa6",
+      "newSha256": "1b1d820c01f5f7e33cc6f7fe361a06b810285af09b757939118b58c3d06feb2b"
+    },
+    {
+      "file": "js/43-mosh-auth-v37-js.js",
+      "oldSha256": "39db2262e35ab8aeec0760af2a497164d56cc39de6dfd36749907e842f5183d0",
+      "newSha256": "92bdd87f57585dabad73d10a6a54a57435f8f2baf568afe0085090ad63597839"
+    },
+    {
+      "file": "js/56-mosh-workdesk.js",
+      "oldSha256": "60c64ecbc86d66e493087347846f54062c9fe21112d90fef870fba830321834b",
+      "newSha256": "12fbf0065269396ecb8ef3061c7aa56aebba9a55644b5ae7cad1f327947720c5"
+    },
+    {
+      "file": "00_READ_ME_LATEST_AR.txt",
+      "oldSha256": "f4588d1ff3cd361102a5c621fb8dfb9b8da82368ce53729c44cf0cbcd104287d",
+      "newSha256": "23eb402cb45c55580ab048728af0e3ddf7a6a9dc11a944f024aaabbdad366c44"
+    },
+    {
+      "file": "css/r18-mini-workdesk.css",
+      "oldSha256": null,
+      "newSha256": "1a60f597e2df30316acf9f7e09104216847471c174fa369c4b156c1e23cb04d6"
+    },
+    {
+      "file": "js/63-mosh-mini-workdesk.js",
+      "oldSha256": null,
+      "newSha256": "fb8f1dd364ce9d7aa263379007b8a9b64a800ebe34f115cbc6280bb9bcb119c4"
+    },
+    {
+      "file": "tests/browser/mini_workdesk_r18.py",
+      "oldSha256": null,
+      "newSha256": "10c6e2b78b537ec6444dc1357de7dc58adb4d8df095aadd7ca777279a7680e8e"
+    },
+    {
+      "file": "tests/browser/field_fixes_r18_authorized.py",
+      "oldSha256": null,
+      "newSha256": "f0c554b54f371e0e4e6c392954dbec688959e5c91411cc149711abe043edcfed"
+    }
+  ],
+  "sqlite": [
+    {
+      "file": "database/database-before-dummy-data.sqlite",
+      "sha256": "47af079a5b7682993b0f4d5905c1d49c7657354b83a955b0f572f6cc256e0d72",
+      "quickCheck": "ok"
+    },
+    {
+      "file": "database/database.sqlite",
+      "sha256": "6cb2236fd209930818438348794c0f9dc1d8b52cda19f934f09545207b86f2ee",
+      "quickCheck": "ok"
+    },
+    {
+      "file": "database/database.before-cleanup-20260922-164942.sqlite",
+      "sha256": "0959cec955bbad2062fa323306c45f4a57f201f129daa41b7ecdd40e9770cc10",
+      "quickCheck": "ok"
+    },
+    {
+      "file": "database/database.backup-20260921-120137.sqlite",
+      "sha256": "04acf737893fc3dd2470dd071016eaab3985dc23389c1927fd5f0cebb787539c",
+      "quickCheck": "ok"
+    }
+  ],
+  "configJsUnchanged": true
+}

@@ -1,0 +1,10 @@
+/* MOSH R26: keep department tabs minimal without changing existing navigation. */
+/* The department name is already present in the global sidebar. */
+.m15-dept-tabs > span{display:none!important}
+/* Pending approval count is the only attention signal; the tab itself stays neutral. */
+html:not([data-mosh-theme="light"]) .m15-dept-tabs>.mgr32e-approval-proxy.has-pending {
+ background:#191e21!important;border-color:#363d41!important;color:#d5d7d6!important;
+}
+html[data-mosh-theme="light"] .m15-dept-tabs>.mgr32e-approval-proxy.has-pending {
+ background:transparent!important;border-color:transparent!important;color:#4f4a42!important;
+}

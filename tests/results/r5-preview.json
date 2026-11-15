@@ -1,0 +1,19 @@
+{
+  "passed": 12,
+  "checks": [
+    "standalone boots",
+    "timer valid",
+    "no timing warning for valid fixture",
+    "no task refs displayed",
+    "timeline matches active state",
+    "pause persists in preview",
+    "resume starts valid timer",
+    "break uses same clock",
+    "daily log opens",
+    "mobile fits",
+    "no live HTTP requests",
+    "no runtime errors"
+  ],
+  "requests": [],
+  "errors": []
+}

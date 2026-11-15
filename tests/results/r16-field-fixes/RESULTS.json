@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "R16 runtime loaded",
+    "Enter sends task chat",
+    "paperclip opens the real task attachment input",
+    "HTTP voice opens audio picker",
+    "HTTP voice limits picker to audio",
+    "standalone HTTP voice opens audio picker",
+    "design dashboard has three primary KPIs",
+    "design dashboard KPI labels simplified",
+    "admin transfer targets selected executive",
+    "Social Hub opens for customer",
+    "Social Hub has no task workflow action",
+    "opening Social Hub does not mutate tasks",
+    "no JavaScript runtime errors"
+  ],
+  "errors": []
+}

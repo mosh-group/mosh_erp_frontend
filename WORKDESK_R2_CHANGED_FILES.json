@@ -1,0 +1,87 @@
+{
+  "source_archive": "MOSH_VANILLA_FRONTEND_TASK_INBOX_R1 (1).zip",
+  "config_unchanged": true,
+  "deployed_to_live_server": false,
+  "changes": [
+    {
+      "kind": "modified",
+      "file": "README.md"
+    },
+    {
+      "kind": "modified",
+      "file": "index.html"
+    },
+    {
+      "kind": "modified",
+      "file": "api-map.json"
+    },
+    {
+      "kind": "added",
+      "file": "WORKDESK_R2_BACKEND_CONTRACT.md"
+    },
+    {
+      "kind": "added",
+      "file": "WORKDESK_R2_QA.md"
+    },
+    {
+      "kind": "added",
+      "file": "WORKDESK_R2_README_AR.md"
+    },
+    {
+      "kind": "added",
+      "file": "js/55-mosh-workday-model.js"
+    },
+    {
+      "kind": "modified",
+      "file": "js/54-mosh-task-inbox.js"
+    },
+    {
+      "kind": "added",
+      "file": "js/56-mosh-workdesk.js"
+    },
+    {
+      "kind": "modified",
+      "file": "js/api-client.js"
+    },
+    {
+      "kind": "modified",
+      "file": "js/api-boot.js"
+    },
+    {
+      "kind": "added",
+      "file": "css/workdesk.css"
+    },
+    {
+      "kind": "added",
+      "file": "tests/workday-model.test.cjs"
+    },
+    {
+      "kind": "added",
+      "file": "backend-contract/workday-response.example.json"
+    },
+    {
+      "kind": "added",
+      "file": "tests/results/preview-results.json"
+    },
+    {
+      "kind": "added",
+      "file": "tests/results/browser-results.json"
+    },
+    {
+      "kind": "added",
+      "file": "tests/results/model-results.log"
+    },
+    {
+      "kind": "added",
+      "file": "tests/results/static-results.json"
+    },
+    {
+      "kind": "added",
+      "file": "tests/browser/regression.py"
+    },
+    {
+      "kind": "added",
+      "file": "tests/browser/browser_test.py"
+    }
+  ]
+}

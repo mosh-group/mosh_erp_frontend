@@ -1,0 +1,25 @@
+PASS appearance permission shows settings button
+PASS appearance-only settings mode
+PASS font controls visible
+PASS system identity hidden
+PASS HR policies hidden
+PASS permissions panel absent for appearance-only account
+PASS no JS errors in appearance mode
+PASS accounts-only mode opens without appearance rights
+PASS accounts panel visible
+PASS appearance controls hidden for accounts-only
+PASS clear appearance permission exists
+PASS permission description says it does not open permissions
+PASS view-only shortcut exists per section
+PASS ZKTeco permissions are grouped
+PASS real section explanation is visible
+PASS no JS errors in permissions UI
+PASS login authenticates without full page reload
+PASS login sends one login request
+PASS login needs one bootstrap after authentication
+PASS login does not repeat auth status after submit
+PASS dashboard visible after in-place login
+PASS no JS errors after in-place login
+PASS logout gives immediate visual feedback
+PASS logout sends one server request
+

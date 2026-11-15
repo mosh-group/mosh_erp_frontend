@@ -1,0 +1,24 @@
+/* R36 scoped presentation: existing permissions/actions and theme tokens remain authoritative. */
+html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-host{order:5!important;margin:0!important;border:0!important;padding:0!important;flex:1 1 0!important;min-width:150px!important}
+html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-trigger,
+html.mosh-meta #appShell .view .m15-dept-tabs .r23-manager-tools-toggle{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;height:36px!important;min-height:36px!important;box-sizing:border-box!important;font-family:inherit!important;font-size:13px!important;font-weight:700!important;line-height:normal!important;padding:4px 2px!important;border:1px solid transparent!important;border-radius:10px!important;gap:8px!important;box-shadow:none!important;background:transparent!important;color:var(--text)!important}
+html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-trigger:hover,
+html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-trigger[aria-expanded=true],
+html.mosh-meta #appShell .view .m15-dept-tabs .r23-manager-tools-toggle:hover,
+html.mosh-meta #appShell .view .m15-dept-tabs .r23-manager-tools-toggle[aria-expanded=true]{background:var(--mx-hover,#202024)!important;border-color:var(--border,#37373d)!important}
+@media(max-width:980px){html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-host{flex:1 1 calc(50% - 8px)!important}}
+#itApp.it31-mode:not(.auth38-task-only)>#m15Tabs_it{display:flex!important;visibility:visible!important}
+#itApp .pv-itbar{display:none!important}
+.r34-chat .r36-chat-icon{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;min-width:40px;padding:8px!important;flex:0 0 40px}
+.r34-message .task-chat-bubble{position:relative;overflow:visible!important}
+.r34-message .r34-message-meta{padding-inline-end:36px;min-height:24px}
+.r36-message-menu{position:absolute;inset-inline-end:5px;top:5px;z-index:2}
+.r36-message-more{width:30px;min-height:26px;padding:0!important;border:0!important;background:transparent!important;font-size:23px!important;line-height:1!important}
+.r36-message-options{position:absolute;inset-inline-end:0;top:30px;display:flex;flex-direction:column;min-width:145px;padding:5px;background:var(--mx-card,#19191d);color:var(--mx-text,#eee);border:1px solid var(--mx-border,#39393e);box-shadow:0 8px 24px #0008;border-radius:9px;z-index:30}
+.r36-message-options[hidden]{display:none!important}
+.r36-message-options .r34-btn{text-align:start;background:transparent;border:0;white-space:nowrap;padding:9px 12px}
+.r36-message-options .r34-btn:hover,.r36-message-options .r34-btn:focus-visible{background:var(--mx-hover,#2b2b30)}
+#r14UnsavedDialog [data-r36-exit-status]{font-size:13px;line-height:1.7;color:var(--mx-muted,#b8b8bd);max-width:440px}
+.r36-bilingual{display:inline-flex;align-items:baseline;gap:7px;flex-wrap:wrap}.r36-bilingual [lang=en]{direction:ltr;unicode-bidi:isolate}.r36-legacy-name{font-size:12px;opacity:.8}
+#socialApp.ig28-open>#socialAppContent{display:none!important}#socialApp:not(.ig28-open)>#marketingSocialHubContent{display:none!important}
+

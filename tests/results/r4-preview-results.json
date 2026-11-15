@@ -1,0 +1,20 @@
+{
+  "passed": 12,
+  "checks": [
+    "Standalone preview boots without runtime exceptions",
+    "Two demo unread messages appear at top",
+    "Preview has explicit acknowledgement",
+    "Preview acknowledgement updates unread counter",
+    "New-demo-notice button exercises real strip refresh",
+    "Preview attendance log opens",
+    "Existing five-minute reminder demo still works",
+    "Fresh preview context resets demo data",
+    "Preview sends no HTTP requests",
+    "Preview interaction ends with zero runtime exceptions",
+    "Preview notice fits mobile 390",
+    "Preview notice fits mobile 800"
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "scope": "Complete standalone preview loaded inline in isolated Chromium (file URL navigation is blocked by this environment); no backend connection."
+}

@@ -1,0 +1,66 @@
+{
+  "checks": [
+    {
+      "name": "popup initially fits the requested small size",
+      "ok": true
+    },
+    {
+      "name": "native window resized to real short bar",
+      "ok": true
+    },
+    {
+      "name": "no empty full-height popup remains",
+      "ok": true
+    },
+    {
+      "name": "native restore uses original window dimensions",
+      "ok": true
+    },
+    {
+      "name": "main UI syncs a sibling popup confirmed action",
+      "ok": true
+    },
+    {
+      "name": "repeated clicks do not duplicate command",
+      "ok": true
+    },
+    {
+      "name": "pause confirmed in SQLite",
+      "ok": true
+    },
+    {
+      "name": "Escape closes only task picker",
+      "ok": true
+    },
+    {
+      "name": "Escape compacts popup",
+      "ok": true
+    },
+    {
+      "name": "repeated Escape does not corrupt restore size",
+      "ok": true
+    },
+    {
+      "name": "open reuses existing Mini window",
+      "ok": true
+    },
+    {
+      "name": "other employee task rejected",
+      "ok": true
+    },
+    {
+      "name": "native UI has no uncaught JS errors",
+      "ok": true
+    },
+    {
+      "name": "logout ended real server session",
+      "ok": true
+    },
+    {
+      "name": "detached window cleared data on logout",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "browser": "Chromium headed on Xvfb Linux, native window geometry, same about:blank transport limitation as actual test."
+}

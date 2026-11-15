@@ -1,0 +1,26 @@
+{
+  "checks": 20,
+  "passed": [
+    "Dedicated creation adds one confirmed server task",
+    "Actual receipt button succeeds immediately after creation",
+    "The missing-record error is absent",
+    "Receipt does not start the timer",
+    "Receipt exposes start button",
+    "Receipt is recorded exactly once",
+    "Starting immediately after receipt works",
+    "Break still pauses execution",
+    "Refresh retains the saved receipt",
+    "Workflow has no JavaScript runtime errors",
+    "new: no intermediate app frame is visible",
+    "new: application becomes interactive only at ready",
+    "new: first paint uses final workdesk or login",
+    "new: no runtime errors",
+    "failed: no intermediate app frame is visible",
+    "Failed script leaves retry screen instead of an old interface",
+    "logged-out: no intermediate app frame is visible",
+    "logged-out: application becomes interactive only at ready",
+    "logged-out: first paint uses final workdesk or login",
+    "logged-out: no runtime errors"
+  ],
+  "environment": "Chromium with isolated real frontend and deterministic mock API; no production deployment"
+}

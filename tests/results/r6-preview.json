@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": [
+    "standalone boots",
+    "internal task labels no IDs",
+    "native detail opens",
+    "no attendance indicator",
+    "task runs without attendance",
+    "pause/resume cumulative time",
+    "no external network",
+    "no uncaught errors"
+  ],
+  "requests": [],
+  "errors": []
+}

@@ -1,0 +1,48 @@
+/* MOSH R38 — compact department screens, no behavior/data changes. */
+#appShell .r38-task-insights{border:1px solid var(--line,#34363c);border-radius:11px;margin:12px 0;background:var(--panel,#16181b);overflow:hidden}
+#appShell .r38-task-insights>summary{cursor:pointer;list-style:none;padding:12px 15px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text,#eceae5)}
+#appShell .r38-task-insights>summary::-webkit-details-marker{display:none}
+#appShell .r38-task-insights .r38-chevron{font-size:21px;color:var(--gold,#d4af37);transition:transform .2s}
+#appShell .r38-task-insights[open] .r38-chevron{transform:rotate(180deg)}
+#appShell .r38-insights-body{padding:0 12px 12px}
+#appShell .r38-insights-body .design-report-grid{margin:8px 0 10px}
+#appShell .design-board-head{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+#appShell .design-board-head h2{margin-bottom:4px}
+#appShell .r38-help{display:inline-block;margin:4px 0;color:var(--muted,#a9a9af);font-size:12px}
+#appShell .r38-help>summary{cursor:pointer;display:inline-flex;align-items:center;gap:5px;list-style:none;color:var(--gold,#d4af37)}
+#appShell .r38-help>summary::-webkit-details-marker{display:none}
+#appShell .r38-help>.muted,#appShell .r38-help>.db9-note{max-width:650px;font-size:12px;line-height:1.6;margin:7px 0;padding:6px 0}
+#appShell .r38-refresh{width:38px;min-width:38px;min-height:35px!important;padding:4px!important;font-size:24px!important;line-height:1!important}
+#appShell .db9-panel:not(.db9-follow) .db9-note{font-size:12px}
+#standaloneTaskModal .modalbox{width:min(920px,calc(100vw - 24px))!important}
+#standaloneTaskModal .r25-task-scroll-area{padding:16px 20px 18px}
+#standaloneTaskModal .r38-task-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;align-items:start}
+#standaloneTaskModal .r38-task-grid>.field{min-width:0;margin:0}
+#standaloneTaskModal .r38-task-primary{grid-column:1/-1}
+#standaloneTaskModal .r38-task-primary input{font-weight:650;font-size:16px}
+#standaloneTaskModal .r38-creator-field{grid-column:1/-1;display:flex;align-items:center;gap:9px;min-height:30px;order:10}
+#standaloneTaskModal .r38-creator-field label{margin:0;font-size:12px;white-space:nowrap;color:var(--muted,#a9a9af)}
+#standaloneTaskModal #standaloneTaskCreator{border:0!important;background:transparent!important;height:auto!important;min-height:0!important;padding:0!important;pointer-events:none;width:auto!important;max-width:75%;font-weight:650}
+#standaloneTaskModal .r38-deadline-field{grid-column:1/-1}
+#standaloneTaskModal .r38-deadline-field input[type=date]{width:min(260px,100%)}
+#standaloneTaskModal .r38-deadline-field .r34-deadline{margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#standaloneTaskModal .r38-deadline-field .r34-deadline small{font-size:11px;opacity:.9;flex-basis:100%}
+#standaloneTaskModal .r38-task-description{margin-top:12px}
+#standaloneTaskModal .r38-task-description textarea{min-height:100px}
+#standaloneTaskModal .r38-optional-notes{border:1px solid var(--line,#34363c);border-radius:10px;margin:12px 0;overflow:hidden}
+#standaloneTaskModal .r38-optional-notes>summary{cursor:pointer;list-style:none;padding:12px 13px;font-weight:650;color:var(--text,#edeae3)}
+#standaloneTaskModal .r38-optional-notes>summary::-webkit-details-marker{display:none}
+#standaloneTaskModal .r38-optional-notes .field{padding:0 12px 12px}
+#standaloneTaskModal .r38-optional-notes textarea{min-height:72px}
+#standaloneTaskModal .task-attachments-box{padding:10px 13px!important;min-height:0!important;margin:12px 0!important}
+#standaloneTaskModal .task-attachments-title{margin-bottom:6px}
+#standaloneTaskModal .task-attachment-list{max-height:170px;overflow-y:auto}
+#standaloneTaskModal .task-attachment-list>.muted{font-size:12px}
+#r38AdminBack{margin:10px 12px 4px;position:relative;z-index:3}
+@media(max-width:680px){#standaloneTaskModal .r38-task-grid{grid-template-columns:minmax(0,1fr);gap:11px}#standaloneTaskModal .r38-task-primary,#standaloneTaskModal .r38-deadline-field,#standaloneTaskModal .r38-creator-field{grid-column:1}#appShell .r38-insights-body .design-report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* The existing KPI buttons retain click/filters after moving into the collapsed panel. */
+#appShell .r38-db9-insights .db9-kpis{margin-top:8px}
+#appShell .r38-db9-insights .db9-strip{margin-bottom:10px}
+#appShell .r38-db9-insights .db9-panel{margin-bottom:2px}
+#appShell .db9-heading .r38-help{margin-top:6px}

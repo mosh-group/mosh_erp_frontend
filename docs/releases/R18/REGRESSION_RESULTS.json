@@ -1,0 +1,50 @@
+[
+  {
+    "test": "auth_permissions_r17.py",
+    "passed": true,
+    "seconds": 7.75,
+    "returncode": 0
+  },
+  {
+    "test": "sidebar_navigation_r13.py",
+    "passed": true,
+    "seconds": 4.73,
+    "returncode": 0
+  },
+  {
+    "test": "task_attachments_r12.py",
+    "passed": true,
+    "seconds": 2.59,
+    "returncode": 0
+  },
+  {
+    "test": "field_fixes_r16.py",
+    "passed": false,
+    "seconds": 3.61,
+    "returncode": 1
+  },
+  {
+    "test": "profile_photo_r16.py",
+    "passed": true,
+    "seconds": 3.89,
+    "returncode": 0
+  },
+  {
+    "test": "system_polish_r14.py",
+    "passed": true,
+    "seconds": 3.79,
+    "returncode": 0
+  },
+  {
+    "test": "receipt_boot_r9.py",
+    "passed": true,
+    "seconds": 9.05,
+    "returncode": 0
+  },
+  {
+    "test": "preload_loader_r10.py",
+    "passed": true,
+    "seconds": 10.47,
+    "returncode": 0
+  }
+]

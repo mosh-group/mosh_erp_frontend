@@ -1,0 +1,11 @@
+PASS boot uses one bootstrap
+PASS design sidebar opens
+PASS design sidebar does not bootstrap
+PASS dashboard sidebar opens
+PASS second sidebar click still does not bootstrap
+PASS dashboard shortcut remains direct
+PASS explicit refresh still bootstraps
+PASS refresh control replays exactly once
+PASS no JavaScript runtime errors
+PASS: R13 sidebar navigation is direct; explicit refresh remains server-backed.
+

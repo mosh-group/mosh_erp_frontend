@@ -1,0 +1,46 @@
+PASS 1 Full R3 application boot has no runtime errors
+PASS 2 Compact home has four correctly placed blocks
+PASS 3 Four day buttons exist once outside old header
+PASS 4 No reminder shortly after fingerprint-in
+PASS 5 No reminder at 4m59s
+PASS 6 Reminder appears at five minutes despite mouse/keyboard activity
+PASS 7 Reminder is nonmodal; no fullscreen blocker
+PASS 8 Exactly one reminder panel
+PASS 9 Opening reminder never writes business data
+PASS 10 Shown event in own session log
+PASS 11 Dismiss does not save a task or presence state
+PASS 12 Snooze lasts the full five minutes
+PASS 13 Second reminder appears after snooze
+PASS 14 Choice remains pending until server confirmation
+PASS 15 Double clicking cannot submit two states
+PASS 16 Confirmed break closes reminder
+PASS 17 Break begins at response time, not first unrecorded minute
+PASS 18 Eleven previous minutes remain unrecorded
+PASS 19 No reminder during recorded break
+PASS 20 No-work can be selected without broad module-edit permission
+PASS 21 No reminder during no-work
+PASS 22 Starting assigned task ends no-work
+PASS 23 No reminder while task runs, even no mouse movement
+PASS 24 Pause task alone leaves unrecorded period
+PASS 25 New gap does not add previous waste periods
+PASS 26 Pause gap reaches five minutes
+PASS 27 Task choice opens searchable picker and does not start anything
+PASS 28 Picker keeps focus while timers render
+PASS 29 Selecting a task still does not start it
+PASS 30 Merely selecting a task does not permanently dismiss reminder
+PASS 31 Start from workdesk records confirmed response
+PASS 32 Daily log labels reminder journal as browser-session only
+PASS 33 Home attendance and report use same authoritative total
+PASS 34 Reminder returns for later gap
+PASS 35 Rejected save never changes presence or old timings
+PASS 36 Failed save offers verification rather than blame or repeated writes
+PASS 37 Verified retry re-enables choices
+PASS 38 Retry records no-work and closes reminder
+PASS 39 Missing backend history suppresses reminder
+PASS 40 Known outage does not trigger unrecorded-time accusation
+PASS 41 Outside fingerprint attendance no reminder
+PASS 42 Main lifecycle has no runtime errors
+PASS 43 Compact inbox search keeps focus and filters list
+PASS 44 New tab still shows unreceived task
+PASS 45 Task title opens existing native details
+TOTAL 45

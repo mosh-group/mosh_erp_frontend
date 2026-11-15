@@ -1,0 +1,21 @@
+{
+  "passed": 15,
+  "checks": [
+    "Standalone preview boots without runtime errors",
+    "Preview makes no outside network requests",
+    "Initial active task never shows reminder",
+    "Current task has start/finish controls appropriate to running",
+    "Both time displays use same computed attendance total",
+    "Preview accounting history is complete, not a fallback",
+    "Demo shortcut reaches the actual reminder condition",
+    "Five-minute reminder appears once",
+    "Preview reminder choice saves break and closes",
+    "Earlier uncovered time remains recorded as waste",
+    "Resume restores task from same workdesk",
+    "Compact cards and viewport fit 1600px",
+    "Compact cards and viewport fit 1000px",
+    "Compact cards and viewport fit 390px",
+    "Final interactive preview no exceptions"
+  ],
+  "scope": "Standalone HTML file, in-memory fixture, zero external requests"
+}

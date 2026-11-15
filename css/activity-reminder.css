@@ -1,0 +1,20 @@
+/* A single nonblocking reminder, never a full-screen lock or a mouse-idle alarm. */
+#wd51Reminder{position:fixed;inset-inline-end:22px;bottom:22px;z-index:2147483500;width:440px;max-width:calc(100vw - 28px);max-height:calc(100dvh - 28px);overflow:auto;box-sizing:border-box;direction:rtl;padding:20px;border:1px solid #a78e50;border-radius:16px;background:#141c20;box-shadow:0 18px 70px #000a;color:#f0eadf;font:14px/1.8 Arial,Tahoma,sans-serif;text-align:right}
+#wd51Reminder[hidden]{display:none!important}#wd51Reminder *{box-sizing:border-box}
+.wd51-reminder-head{display:flex;align-items:center;gap:10px}.wd51-reminder-head>div{flex:1}.wd51-reminder-head small{font-size:11px;color:#cbb77c}.wd51-reminder-head h3{margin:0;font:700 20px/1.65 Arial,Tahoma,sans-serif!important;color:#f0eadf}
+.wd51-reminder-symbol{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:11px;background:#2f2a1b;color:#e2c06a;font-size:29px}
+#wd51Reminder button{font:700 13px/1.7 Arial,Tahoma,sans-serif;cursor:pointer;color:inherit}
+#wd51Reminder .wd51-reminder-head button{border:0;background:transparent;color:#b9bdba;font-size:26px;padding:3px 7px}
+#wd51ReminderMessage{margin:14px 0 12px;font:13px/1.95 Arial,Tahoma,sans-serif!important;color:#cbd0d0}
+.wd51-reminder-elapsed{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px 12px;border:1px solid #4b4431;background:#221f17;border-radius:9px;font-size:12px;color:#d6caad;margin-bottom:14px}
+#wd51ReminderElapsed{font:700 22px/1.4 Arial,sans-serif;color:#e2c574;font-variant-numeric:tabular-nums}
+.wd51-reminder-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#wd51Reminder .wd51-reminder-actions button{min-height:45px;padding:9px 7px;border:1px solid #8b7847;border-radius:9px;background:#302a1b;color:#eee1bd}
+#wd51Reminder .wd51-reminder-actions button:hover{background:#443a23}#wd51Reminder .wd51-reminder-actions .wd51-reminder-task{grid-column:1/-1;background:#10191d;border-color:#44535b;color:#e4e7e2;font-weight:400}
+#wd51Reminder button:disabled{opacity:.5;cursor:not-allowed}#wd51Reminder button:focus-visible{outline:2px solid #e0c67f;outline-offset:3px}
+#wd51Reminder footer{margin-top:14px;padding-top:12px;border-top:1px solid #303b40;display:flex;flex-direction:column;gap:8px;align-items:center}#wd51Reminder footer span{font-size:10px;color:#99a5ac}#wd51Reminder footer button{border:0;background:transparent;padding:2px 6px;color:#b3bdc1;font-weight:400;font-size:12px;text-decoration:underline;text-underline-offset:4px}
+#wd51ReminderError{padding:9px 10px;background:#30251b;border:1px solid #756044;border-radius:8px;color:#e6ccad;font-size:12px;margin-bottom:12px}
+#wd51ReminderVerify{display:block;width:100%;margin-top:10px;padding:9px;border:1px solid #8c794a;background:#2d2719;border-radius:8px}#wd51ReminderVerify[hidden],#wd51ReminderError[hidden]{display:none!important}
+#wd51ReminderLog{border-top:1px solid #3a454b;margin-top:20px}.wd51-reminder-log-note{font-size:11px;color:#cbb886;line-height:1.8}.wd51-reminder-log-row{display:flex;justify-content:space-between;align-items:start;gap:12px;padding:8px 2px;border-bottom:1px solid #303b42;font-size:12px}.wd51-reminder-log-row bdi{font:12px/1.7 Arial,sans-serif;flex-shrink:0;color:#c7b581}
+@media(max-width:560px){#wd51Reminder{inset-inline-end:14px;bottom:14px;padding:16px}.wd51-reminder-head h3{font-size:18px!important}.wd51-reminder-head small{font-size:10px}}
+@media(prefers-reduced-motion:reduce){#wd51Reminder *{scroll-behavior:auto!important;transition:none!important}}

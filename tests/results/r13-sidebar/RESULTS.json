@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "boot uses one bootstrap",
+    "design sidebar opens",
+    "design sidebar does not bootstrap",
+    "dashboard sidebar opens",
+    "second sidebar click still does not bootstrap",
+    "dashboard shortcut remains direct",
+    "explicit refresh still bootstraps",
+    "refresh control replays exactly once",
+    "no JavaScript runtime errors"
+  ],
+  "bootstrapCount": 2,
+  "errors": [],
+  "environment": "real frontend + deterministic mock API; no production server"
+}

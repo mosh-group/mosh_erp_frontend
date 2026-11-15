@@ -1,0 +1,490 @@
+{
+  "checks": [
+    {
+      "name": "production shortcut next to logout",
+      "ok": true
+    },
+    {
+      "name": "Mini hidden by default",
+      "ok": true
+    },
+    {
+      "name": "shortcut opens overlay",
+      "ok": true
+    },
+    {
+      "name": "actual user scoped tasks only",
+      "ok": true
+    },
+    {
+      "name": "starts original Laravel workdesk task",
+      "ok": true
+    },
+    {
+      "name": "server time valid",
+      "ok": true
+    },
+    {
+      "name": "overlay becomes compact bar",
+      "ok": true
+    },
+    {
+      "name": "expand and compact make no writes",
+      "ok": true
+    },
+    {
+      "name": "pause persists measured time",
+      "ok": true
+    },
+    {
+      "name": "pause does not add idle time",
+      "ok": true
+    },
+    {
+      "name": "switch pauses old and starts new atomically",
+      "ok": true
+    },
+    {
+      "name": "break separate from work",
+      "ok": true
+    },
+    {
+      "name": "no work separate state",
+      "ok": true
+    },
+    {
+      "name": "receive alone does not start execution",
+      "ok": true
+    },
+    {
+      "name": "uncertain state blocks new actions",
+      "ok": true
+    },
+    {
+      "name": "automatic retry reused idempotency key",
+      "ok": true
+    },
+    {
+      "name": "resolve confirms existing transaction without duplicate",
+      "ok": true
+    },
+    {
+      "name": "original daily log opens",
+      "ok": true
+    },
+    {
+      "name": "daily contains real break work and no-work",
+      "ok": true
+    },
+    {
+      "name": "end work stores off and no running tasks",
+      "ok": true
+    },
+    {
+      "name": "same deployment popup URL is requested",
+      "ok": true
+    },
+    {
+      "name": "independent popup mode",
+      "ok": true
+    },
+    {
+      "name": "main application shell hidden only in popup",
+      "ok": true
+    },
+    {
+      "name": "popup gets existing server task totals",
+      "ok": true
+    },
+    {
+      "name": "popup compact state enabled",
+      "ok": true
+    },
+    {
+      "name": "popup display toggles make no writes",
+      "ok": true
+    },
+    {
+      "name": "popup works after closing main window",
+      "ok": true
+    },
+    {
+      "name": "offline disables mutations",
+      "ok": true
+    },
+    {
+      "name": "new UI recovers stored time",
+      "ok": true
+    },
+    {
+      "name": "unsaved full-page form not overwritten by mini command",
+      "ok": true
+    },
+    {
+      "name": "narrow screen fits Mini",
+      "ok": true
+    },
+    {
+      "name": "no uncaught JavaScript errors",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "calls": [
+    {
+      "method": "GET",
+      "path": "/api/auth/status",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/announcements?scope=mine&page=1&perPage=100",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "20eed0a9646aefb5affff092a8039b90"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "ee947921805d36a54909be41e4ac27ec"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "e35685ff06a68516fffe189d470be6f1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "8a430f584471a287e9ec662ac1ff44dd"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "5dc61f3bfdc81763449e1ff4e33a2259"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "f0d0953f2f7d0c76d686b669f0f0ca21"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "5854df9680f55f797e5bec2e6516da63"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "26e4a8085b0b76a668c927bd0c81b3cd"
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "26e4a8085b0b76a668c927bd0c81b3cd"
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "26e4a8085b0b76a668c927bd0c81b3cd"
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "8e05aa9f0a49725384bb90ac8d67510e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/status",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/announcements?scope=mine&page=1&perPage=100",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "93c4bde02b2cd01a7e3b3a6e42fd3f73"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 200,
+      "key": "15c576876232bc22fdebe97be841f124"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/status",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/workday",
+      "status": 200,
+      "key": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/announcements?scope=mine&page=1&perPage=100",
+      "status": 200,
+      "key": null
+    }
+  ],
+  "environment": "Actual R17 Laravel HTTP + SQLite FFI adapter in isolated PHP8.4 lab. Browser about:blank documents; URLs rerouted only for QA; not native Windows/CORS."
+}

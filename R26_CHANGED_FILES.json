@@ -1,0 +1,41 @@
+{
+  "base": "MOSH R25 current user-uploaded mosh.rar",
+  "release": "MOSH R26 code update",
+  "changed": {
+    "MOSH_LARAVEL_BACKEND/app/Http/Controllers/R24AdminController.php": "586c3797f01576bbfc4ab876480965679fdd6e52dfbe0cfc42f1910d6a6c7321",
+    "MOSH_LARAVEL_BACKEND/app/Http/Controllers/R24PurchasingController.php": "472f1088a3df2127bb65649b1dfeba1d9562f16407c9e780fc636978bee9b4f7",
+    "MOSH_LARAVEL_BACKEND/app/Http/Controllers/R24StationeryController.php": "869d0b5876f7989042b11be5860d0deba2b45eb0d59a97b430d3d9441e7a424e",
+    "MOSH_LARAVEL_BACKEND/app/Models/User.php": "9f6629117b6aea2c6b314ffb56374739a11a40b41e4d370578b56221e6d9b7a4",
+    "MOSH_LARAVEL_BACKEND/app/Support/BusinessRules.php": "4f143fdb43fd621d10f3891185689d1288fca493bf1f9df3b40753e1d867a636",
+    "MOSH_LARAVEL_BACKEND/app/Support/R19Notifications.php": "1dd61e0df9ffcc6abad54f42babfc260a2697b46c349fe3a89d75eddc0ed9d62",
+    "MOSH_LARAVEL_BACKEND/app/Support/R24PurchaseRules.php": "e239381a8071bf26001a275cc72abf1f451d5f39898dc37fbbe874cb25d2d91b",
+    "MOSH_LARAVEL_BACKEND/app/Support/RecordAccess.php": "15cfc3720155685f6237c7a22571f9c94b8837f7f6bea7adcb924040b0d09dc0",
+    "MOSH_LARAVEL_BACKEND/app/Support/StockRules.php": "f7566cc0ccf5cc8731ea2560effe121d549df685d26a71609e0d014679e0aed0",
+    "MOSH_LARAVEL_BACKEND/routes/r24_admin.php": "a5218bf6edf7b90aac419e7904dd43650e18f1656f4bed4990ac0660e5d4c3d7",
+    "MOSH_LARAVEL_BACKEND/routes/web.php": "ff70a8a1bb95e6cb5cda0ba15220990d0817427ff8c3a42dd6a598af8487f65c",
+    "MOSH_VANILLA_FRONTEND/api-map.json": "a2c95e51024fcd500ea7a98dbcdc0e6ae9d9b2d80b511b58f490973f96d2f861",
+    "MOSH_VANILLA_FRONTEND/css/r24-admin.css": "fd857dc588245c671eaedd46eee56c3e04ed20cdbd68d08b3751046d4b6cc21a",
+    "MOSH_VANILLA_FRONTEND/css/r24-purchase-portal.css": "5b5b78567d5db0ddf799108e9f1fcd525172d7f71e177961ed82455e5ce06e2d",
+    "MOSH_VANILLA_FRONTEND/css/r26-admin-tidy.css": "24d653b8d1cfaa0f656890af118f340e778e749b3077f8cc4a5fdc97e10d9894",
+    "MOSH_VANILLA_FRONTEND/index.html": "30d719ac069de37fe5e34ef269d5dfec678b5698a0be4aed6dbb176552c40bcb",
+    "MOSH_VANILLA_FRONTEND/js/22-mosh-ops18-js.js": "e4a2ddb71cbdcbcb05bbcf4d62e12851d894ebe2e66fc9eb948e2e2e8e7e0045",
+    "MOSH_VANILLA_FRONTEND/js/43-mosh-auth-v37-js.js": "bbbc7876081ebf4a571618526a25f219519e0e760ecaae3f2f293ef7196a900f",
+    "MOSH_VANILLA_FRONTEND/js/r19-notifications.js": "82156e9edd2e227e59c0d81f3527928582f8bc865132587a8c112d15431f8bd8",
+    "MOSH_VANILLA_FRONTEND/js/r24-admin.js": "7e1869ad51c6d6247b8f1074752fdd7c84761815c9531ce628a4e57e3b5103e7",
+    "MOSH_VANILLA_FRONTEND/js/r24-purchase-portal.js": "66cf6411819a3ffa64d695203a2a20d29d1de9d984db7e5e96a76d20afcd9a08"
+  },
+  "safe_constraints": {
+    "database_in_zip": false,
+    ".env_in_zip": false,
+    "storage_in_zip": false,
+    "config.js_in_zip": false
+  },
+  "checks": [
+    "PHP php -l (134 files): passed",
+    "Node --check JS (83 files): passed",
+    "PHP route:list in isolated compatibility harness: 34 R24 routes",
+    "R24 purchasing pure rule tests passed",
+    "R24 admin UI and purchasing portal isolated Chromium tests passed",
+    "No end-to-end PHP 8.5/pdo_sqlite staging server validation; requires staging acceptance"
+  ]
+}

@@ -1,0 +1,16 @@
+/* Fold only the time-summary content; its original counters remain in the DOM. */
+.mosh-review19-1 #employeeSpaceV11 #wd51TimeSummary.r19-time-disclosure{display:block;padding:0;overflow:hidden}
+.mosh-review19-1 #wd51TimeSummary>.r19-time-toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;min-height:46px;margin:0;padding:10px 16px;border:0;border-radius:0;background:transparent;color:#eee8d8;text-align:start;cursor:pointer;font:700 15px/1.6 Arial,Tahoma,sans-serif}
+.mosh-review19-1 #wd51TimeSummary>.r19-time-toggle b{font:inherit;color:inherit}
+.mosh-review19-1 #wd51TimeSummary>.r19-time-toggle:hover{background:#ffffff05}
+.mosh-review19-1 #wd51TimeSummary>.r19-time-toggle:focus-visible{outline:2px solid #d9be78;outline-offset:-3px}
+.mosh-review19-1 #wd51TimeSummary>.r19-time-toggle>svg{width:18px;height:18px;flex:0 0 18px;color:#d1b46a;transition:transform .16s ease}
+.mosh-review19-1 #wd51TimeSummary>.r19-time-toggle[aria-expanded=true]>svg{transform:rotate(180deg)}
+.mosh-review19-1 #wd51TimeSummary>.r19-time-details{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 14px;margin:0;padding:2px 16px 14px;border-top:1px solid #ffffff0a}
+.mosh-review19-1 #wd51TimeSummary>.r19-time-details[hidden]{display:none!important}
+.mosh-review19-1 #wd51TimeSummary .wd50-summary-title{padding-top:8px;margin:0}
+.mosh-review19-1 #wd51TimeSummary .wd50-summary-title small{font-size:12px!important}
+.mosh-review19-1 #wd51TimeSummary .wd50-review{margin:0}
+@media(max-width:1000px){.mosh-review19-1 #wd51TimeSummary>.r19-time-details{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.mosh-review19-1 #wd51TimeSummary>.r19-time-toggle{padding:10px 12px;font-size:14px}.mosh-review19-1 #wd51TimeSummary>.r19-time-details{padding:0 12px 12px}}
+@media(prefers-reduced-motion:reduce){.mosh-review19-1 #wd51TimeSummary>.r19-time-toggle>svg{transition:none}}

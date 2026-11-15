@@ -1,0 +1,54 @@
+/* R3: compact two-column employee home only. Existing sections/data bindings retained. */
+#employeeSpaceV11 .wd51-grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr)!important;grid-template-areas:"attendance attendance" "work tasks" "summary summary";gap:16px!important;align-items:start!important}
+#employeeSpaceV11 .wd51-grid>*{min-width:0!important}
+#employeeSpaceV11 .wd51-grid .wd50-card{grid-area:work;grid-row:auto!important;grid-column:auto!important;align-self:stretch;padding:20px!important}
+#employeeSpaceV11 .wd51-grid .es11-task{grid-area:tasks;grid-row:auto!important;grid-column:auto!important;padding:20px!important;align-self:stretch}
+#employeeSpaceV11 .wd51-grid .wd51-attendance{grid-area:attendance;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,.7fr) minmax(0,1fr) auto;align-items:center!important;gap:20px;min-height:0!important;padding:16px 22px!important;margin:0!important}
+.wd51-attendance-state{display:flex;align-items:center;gap:10px}.wd51-attendance-state b{font:700 17px/1.6 Arial,Tahoma,sans-serif!important;color:#ede9dc}.wd51-attendance-state small{display:block;font:11px/1.8 Arial,Tahoma,sans-serif!important;color:#a4adb0}
+.wd51-punch-dot{width:11px;height:11px;background:#7f888c;border-radius:50%;flex:0 0 11px}.wd51-attendance[data-live="true"] .wd51-punch-dot{background:#d9b962;box-shadow:0 0 0 4px #d9b96212}
+.wd51-punch{display:flex;flex-direction:column;border-inline-start:1px solid #2e383d;padding-inline-start:22px;gap:3px}.wd51-punch bdi{font:700 21px/1.4 Arial,sans-serif!important;color:#f4efe4;font-variant-numeric:tabular-nums}.wd51-punch span{font:11px/1.6 Arial,Tahoma,sans-serif!important;color:#a9b2b6}
+#employeeSpaceV11 .wd51-attendance-link{border:1px solid #3d4a50;border-radius:9px;background:#11191d;color:#e8e2d5;padding:10px 13px;font:700 12px/1.6 Arial,Tahoma,sans-serif;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer}
+.wd51-attendance-link svg{height:18px;width:18px;color:#d4b763}
+#wd50Panel .wd50-head{margin-bottom:16px}#wd50Panel .wd50-head h3{font-size:21px!important}#wd50Panel .wd50-head small{font-size:11px!important;font-weight:400!important;line-height:1.6}
+#employeeSpaceV11 .wd51-grid .wd50-day-controls{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px}
+#wd50Panel .wd50-day-controls button{min-height:44px!important;font-size:13px!important;border-radius:9px!important;padding:10px 6px!important}
+#wd50Panel .wd50-status{min-height:60px;padding:12px 0;flex-wrap:nowrap;border-bottom:1px solid #2d383e;margin-bottom:12px}#wd50Panel .wd50-status>div{flex-basis:auto}#wd50Panel .wd50-status strong{font-size:13px!important}#wd50Panel .wd50-status small{display:none}#wd50Panel .wd50-status bdi{font-size:24px!important;color:#d9c58c}
+#wd50Panel .wd50-picker{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;position:relative}
+#wd50Panel .wd50-picker>label{font-size:11px!important;color:#afa891;margin:0}
+#wd50Panel #wd50PickerToggle{width:auto;max-width:65%;font-size:12px!important;background:transparent;min-height:34px;padding:5px 8px;border-color:#39464c;border-radius:8px}
+#wd50Panel .wd50-task{padding:14px;border-radius:11px;min-height:140px}
+#wd50Panel .wd50-task-head b{font-size:17px!important;font-weight:700!important;line-height:1.7!important}
+#wd50Panel .wd50-task-head small,#wd50Panel .wd50-task-state{font-size:12px!important;font-weight:400!important;line-height:1.7!important}
+#wd50Panel .wd50-task-btn{font-size:13px!important;min-height:43px!important}
+#wd50Panel .wd50-rule{display:none}
+#wd50Panel .wd50-notice,#wd50Panel .wd50-error{font-size:12px!important;font-weight:400!important;line-height:1.7!important}
+#wd50Panel .wd50-details{font-size:12px!important}
+/* Summary is one full-width row, outside work controls. No duplicated counters. */
+#employeeSpaceV11 #wd51TimeSummary{grid-area:summary;margin:0;padding:16px 20px;border:1px solid #354148;border-radius:14px;background:#151d22;color:#ece8dc;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:center;font:13px/1.6 Arial,Tahoma,sans-serif}
+#wd51TimeSummary .wd50-summary-title{grid-column:1/-1;margin:0}#wd51TimeSummary .wd50-summary-title b{font-size:14px!important;font-weight:700!important}#wd51TimeSummary .wd50-summary-title small{font-size:11px!important;font-weight:400!important}
+#wd51TimeSummary .wd50-metrics{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px}
+#wd51TimeSummary .wd50-metric{padding:10px 12px;display:flex;align-items:flex-start;flex-direction:column;gap:4px}
+#wd51TimeSummary .wd50-metric span{font-size:11px!important;font-weight:400!important;line-height:1.5!important}#wd51TimeSummary .wd50-metric bdi{font:700 19px/1.3 Arial,sans-serif!important;letter-spacing:.25px}
+#wd51TimeSummary .wd50-log-btn{display:flex;align-items:center;justify-content:center;gap:7px;min-height:43px;border:1px solid #4a585e;border-radius:9px;background:#10191d;color:#eae3d2;cursor:pointer;font:700 12px/1.6 Arial,Tahoma,sans-serif;padding:9px 12px;max-width:210px}
+#wd51TimeSummary svg{width:18px;height:18px;flex:0 0 18px}#wd51TimeSummary .wd50-rule{display:none}#wd51TimeSummary .wd50-review{grid-column:1/-1;order:3;margin:0;font-size:11px!important;font-weight:400!important;line-height:1.65!important}
+.wd51-sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#employeeSpaceV11 .wd51-inbox{background:#171f24;color:#eee9df;font:13px/1.6 Arial,Tahoma,sans-serif}
+#employeeSpaceV11 .wd51-inbox .es11-card-head{margin-bottom:16px!important}#employeeSpaceV11 .wd51-inbox h3{font-size:21px!important}
+.wd51-home-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#mr49Inbox .wd51-home-tabs button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border:1px solid #3a4850;border-radius:9px;background:#10191e;color:#b9c1c4;cursor:pointer;font:700 12px/1.5 Arial,Tahoma,sans-serif!important;padding:8px 5px}
+#mr49Inbox .wd51-home-tabs button b{font:700 16px/1.2 Arial,sans-serif!important}
+#mr49Inbox .wd51-home-tabs button.active{background:#302a19;border-color:#9c8447;color:#ead6a2}#mr49Inbox .wd51-home-tabs button.has-new::before{content:"";height:6px;width:6px;border-radius:50%;background:#dab45d;flex-shrink:0}
+.wd51-home-search{display:block;margin:12px 0 0}#mr49Inbox #wd51HomeSearch{width:100%;min-width:0;height:39px;background:#10191d;border:1px solid #39474e;border-radius:8px;padding:9px 11px;color:#eee7d9;font:12px/1.5 Arial,Tahoma,sans-serif!important}
+.wd51-home-rows{min-height:185px;margin-top:3px}
+.wd51-home-task{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #303b42;padding:12px 0}
+.wd51-home-task:last-of-type{border-bottom:0}.wd51-home-task>div{min-width:0}
+#mr49Inbox .wd51-task-title{display:block;max-width:100%;border:0;background:none;color:#ede9df;padding:0;margin:0;font:700 14px/1.6 Arial,Tahoma,sans-serif!important;text-align:right;cursor:pointer;overflow-wrap:anywhere}
+.wd51-home-task small{display:block;font:11px/1.7 Arial,Tahoma,sans-serif!important;color:#a3b0b8;overflow-wrap:anywhere}
+.wd51-task-tag{display:inline-block;margin-top:3px;color:#c0b491;font:10px/1.6 Arial,Tahoma,sans-serif!important}.wd51-task-tag.returned{color:#e4c577}
+#mr49Inbox .wd51-task-pick{border:1px solid #927d46;border-radius:8px;background:#30291b;color:#eee0bd;padding:7px 11px;min-height:36px;font:700 12px/1.5 Arial,Tahoma,sans-serif!important;cursor:pointer;flex-shrink:0}
+#mr49Inbox button:disabled{opacity:.5;cursor:not-allowed}.wd51-home-empty{padding:42px 12px;text-align:center;font:13px/1.8 Arial,Tahoma,sans-serif;color:#a9b3b8}
+#mr49Inbox .mr49-home-footer{margin-top:12px}#mr49Inbox .mr49-all{min-height:40px!important;font-size:12px!important}
+#wd51HomeError[hidden]{display:none!important}
+#wd51TimeSummary button:focus-visible,.wd51-inbox button:focus-visible,.wd51-attendance-link:focus-visible{outline:2px solid #d9be78;outline-offset:3px}
+@media(max-width:1000px){#employeeSpaceV11 .wd51-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}#employeeSpaceV11 .wd51-grid .wd51-attendance{gap:12px;padding:14px!important;grid-template-columns:minmax(0,1fr) auto auto}.wd51-attendance-link{grid-column:1/-1}.wd51-punch{padding-inline-start:14px}#employeeSpaceV11 #wd51TimeSummary{grid-template-columns:minmax(0,1fr)}#wd51TimeSummary .wd50-log-btn{max-width:none}}
+@media(max-width:730px){#employeeSpaceV11 .wd51-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"attendance" "work" "tasks" "summary"!important;gap:12px!important}#employeeSpaceV11 .wd51-grid .wd51-attendance{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.wd51-attendance-state{grid-column:1/-1}.wd51-attendance .wd51-punch{border:0;padding:0}.wd51-attendance .wd51-attendance-link{grid-column:1/-1}#employeeSpaceV11 .wd51-grid .wd50-card,#employeeSpaceV11 .wd51-grid .es11-task{padding:16px!important}#wd51TimeSummary .wd50-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}#wd51TimeSummary .wd50-summary-title{flex-direction:column;align-items:start}#wd50Panel .wd50-status bdi{font-size:20px!important}.wd51-home-rows{min-height:0}}

@@ -1,0 +1,204 @@
+/* MOSH ERP R14 — global readability, spacing and action hierarchy */
+:root{
+  --r14-font-body:15px;
+  --r14-font-small:12.5px;
+  --r14-font-label:13.5px;
+  --r14-font-table:14px;
+  --r14-control-h:42px;
+  --r14-gap:10px;
+}
+html,body{font-size:var(--r14-font-body)!important;line-height:1.55}
+body,.app,.view,.modal,.panel,.card,.db9,.hr-pro-shell,.o18,.hb17{font-family:Tahoma,Arial,Helvetica,sans-serif!important}
+
+/* Global form readability: label belongs to its field, not floating away from it */
+.field{grid-template-columns:1fr!important;align-items:stretch!important;gap:6px!important}
+.field>label,.filter-field>label,.dashboard-field>.label,.support-inbox-filters label,
+.hr-pro-form-field>label,.o18 label,.db9 label,.m15-grid label,.m16-form-section label{
+  display:block!important;margin:0 0 2px!important;font-size:var(--r14-font-label)!important;
+  line-height:1.45!important;color:#cbc7bb!important;font-weight:750!important
+}
+.field input,.field select,.field textarea,.filter-field input,.filter-field select,
+.hr-pro-form-field input,.hr-pro-form-field select,.hr-pro-form-field textarea,
+.support-form-grid input,.support-form-grid select,.support-form-grid textarea,
+.support-manage-grid input,.support-manage-grid select,.support-manage-grid textarea,
+.search,input.search{
+  min-height:var(--r14-control-h)!important;border-radius:9px!important;padding:9px 12px!important;
+  font-size:14px!important;line-height:1.45!important
+}
+textarea{line-height:1.7!important}
+.field-grid{gap:14px 16px!important}
+
+/* General copy */
+.muted,.employee-sub,.meta,.sub,.hr-notice-sub,.task-support-card .muted,
+.support-request-source,.support-detail-item .label,.support-detail-item .value,
+.hr-staff-head .muted,.hr-documents-head .muted,.hr-profile-hero-main .meta,
+.hr-profile-section-title,.hr-sensitive-note,.hr-data-table,.hr-timeline-item span,
+.hr-check,.hr-leave-accrual-note,.hr-v170-kpi .k,.hr-v170-kpi .s,
+.hr-alert-main span,.hr-approval-meta,.db9 p,.db9 small,.app-page-info,
+.performance-note,.task-chat-side-meta,.task-chat-file-name{
+  font-size:max(var(--r14-font-small),1em)!important;line-height:1.55!important
+}
+
+/* Tables and compact lists */
+.list-table,.hr-pro-table,.db9-table,.hr-data-table{font-size:var(--r14-font-table)!important}
+.list-table th,.hr-pro-table th,.db9-table th,.hr-data-table th{
+  font-size:13px!important;line-height:1.45!important;padding:11px 12px!important;color:#b9b6ad!important
+}
+.list-table td,.hr-pro-table td,.db9-table td,.hr-data-table td{font-size:14px!important;line-height:1.55!important;padding:12px!important}
+.workflow-status,.status,.task-badge,.support-type-badge,.support-status,.hr-pro-stage,.hr-record-status{
+  font-size:12px!important;min-height:26px!important;padding:4px 9px!important
+}
+
+/* Buttons: consistent and separated */
+.btn,.es11-button,.mk33-btn,.hb17-tool,.mini-btn{
+  min-height:39px!important;padding:8px 13px!important;font-size:13.5px!important;line-height:1.2!important;border-radius:9px!important
+}
+.toolbar,.toolbar-left,.toolbar-right,.modal-actions,.hr-pro-modal-foot,.o18-dialog footer{
+  gap:10px!important;row-gap:10px!important
+}
+.toolbar{padding:4px 0 8px!important}
+.toolbar-left>h1,.toolbar-left>h2,.toolbar-left>h3{margin-inline-start:8px!important}
+.delete-task-btn,.hr-staff-delete{margin-inline-start:16px!important}
+
+/* Prevent forms/panels from touching the walls on wide screens */
+.view>.content,.view .app-content,.sales-task-card,.panel,.db9,.hr-pro-shell,.hb17,.o18-dialog-body{
+  scroll-margin-top:90px
+}
+.panel,.sales-task-card,.db9-panel,.hr-pro-card,.support-inbox-head,.support-summary-grid{
+  --r14-inner-pad:14px
+}
+.content{padding-inline:18px!important}
+.modalbox{padding:18px!important}
+.modalbox>.toolbar:first-child{margin-bottom:14px!important}
+
+/* Task details copy */
+.sales-task-card .field>label{font-size:13.5px!important}
+.sales-task-card .field input,.sales-task-card .field select,.sales-task-card .field textarea{font-size:14px!important}
+.task-activities>summary,.task-activities-count{font-size:12px!important}
+.message .meta{font-size:12px!important}
+
+/* Chat: readable, work-focused, WhatsApp-like timestamp */
+.task-running-chat{border-radius:14px!important;overflow:hidden!important}
+.task-running-thread{padding:14px!important;gap:9px!important}
+.task-chat-row{margin:4px 0!important}
+.task-chat-line{align-items:flex-end!important;gap:8px!important}
+.task-chat-bubble{max-width:min(76%,780px)!important;padding:10px 12px 7px!important;border-radius:14px!important;font-size:14px!important;line-height:1.65!important}
+.task-chat-side-meta{display:flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;min-width:0!important;opacity:.78!important;white-space:nowrap!important}
+.task-chat-side-meta .who{font-size:11px!important;font-weight:800!important}
+.task-chat-side-meta .clock,.task-chat-side-meta .date{font-size:11.5px!important;color:#b9b9b9!important;font-weight:600!important}
+.task-chat-composer{gap:9px!important;padding:11px!important;align-items:flex-end!important}
+.task-chat-input{min-height:46px!important;max-height:150px!important;font-size:14px!important;line-height:1.55!important;padding:11px 12px!important}
+.task-chat-send{min-width:74px!important}
+.task-chat-media-actions .attachment-icon-btn{width:40px!important;height:40px!important}
+
+/* Employee / HR avatars */
+.r14-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+.r14-avatar{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;overflow:hidden;background:#252a31;border:1px solid #454b53;vertical-align:middle;flex:0 0 34px}
+.hr-pro-person{gap:9px!important}.hr-pro-avatar,.hr-profile-avatar,.hr-employee-avatar-sm,.es11-avatar,#topUserAvatar{overflow:hidden!important}
+
+/* Wisdom brand should follow MOSH gold, never blue */
+#wisdomCard .brand,.wisdom-brand,.v26-wisdom-brand,.daily-wisdom-brand,[data-wisdom-brand]{color:var(--gold)!important}
+
+/* Customer/dashboard KPI readability */
+.metric .label,.support-summary-card .label,.db9-kpi .label,.db9-card .label,.customer-kpi .label{font-size:12.5px!important}
+.metric .n,.support-summary-card .value,.db9-kpi strong,.customer-kpi .value{font-size:24px!important}
+
+/* Admin board balance */
+#adminProductiveWorkspace .db9{max-width:1500px;margin-inline:auto!important}
+#adminProductiveWorkspace .db9-heading{align-items:flex-start!important;gap:20px!important;margin-bottom:16px!important}
+#adminProductiveWorkspace .db9-heading h2{font-size:25px!important}
+#adminProductiveWorkspace .db9-heading p{font-size:13px!important;max-width:800px}
+#adminProductiveWorkspace .db9-head-actions{gap:8px!important;align-items:flex-end!important}
+#adminProductiveWorkspace .db9-controls{gap:12px!important;padding:13px!important}
+#adminProductiveWorkspace .db9-kpis{gap:10px!important}
+#adminProductiveWorkspace .db9-panel{margin-top:12px!important}
+
+/* Sales/settings pages: keep content away from edges */
+#salesApp .panel,#salesDynamic>.panel,#salesAppContent .panel,#salesDynamic .panel{padding:16px!important}
+#salesApp .field-grid,#salesDynamic .field-grid{gap:14px!important}
+
+/* Shared communications: visually separate circulars and alerts */
+.hr-pro-stage.approved,.employee-announcement-item.announcement{border-inline-start:3px solid var(--gold)!important}
+.employee-announcement-item.alert{border-inline-start:3px solid #d96565!important}
+
+/* Shared official stationery for browser print / print previews */
+.r14-stationery{position:relative;background:#fff;color:#111;min-height:297mm;padding:25mm 16mm 22mm}
+.r14-stationery:before{content:"MOSH GROUP";position:absolute;inset:45% auto auto 50%;transform:translate(-50%,-50%) rotate(-25deg);font-size:52px;font-weight:900;letter-spacing:4px;color:rgba(190,150,45,.075);pointer-events:none;white-space:nowrap}
+.r14-stationery-header{position:absolute;top:8mm;left:16mm;right:16mm;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #c5a44e;padding-bottom:5mm;color:#151515}
+.r14-stationery-header b{font-size:19px}.r14-stationery-header span{font-size:11px;color:#666}
+.r14-stationery-footer{position:absolute;bottom:7mm;left:16mm;right:16mm;border-top:1px solid #c5a44e;padding-top:3mm;font-size:10px;color:#666;display:flex;justify-content:space-between;gap:10px}
+@media print{
+  .r14-stationery{box-shadow:none!important;border:0!important}
+  .r14-stationery:before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* Generic dirty-save confirm */
+#r14UnsavedDialog{border:1px solid #4a4332;border-radius:16px;background:#12161b;color:#f4f1e8;padding:0;width:min(470px,calc(100% - 28px));box-shadow:0 26px 90px rgba(0,0,0,.5)}
+#r14UnsavedDialog::backdrop{background:rgba(0,0,0,.62)}
+#r14UnsavedDialog .r14-confirm-body{padding:20px}
+#r14UnsavedDialog h3{margin:0 0 8px;font-size:19px}
+#r14UnsavedDialog p{margin:0;color:#b7b2a7;line-height:1.7;font-size:13px}
+#r14UnsavedDialog footer{display:flex;gap:8px;justify-content:flex-start;padding:0 20px 18px;flex-wrap:wrap}
+#r14UnsavedDialog [data-r14="save"]{background:var(--gold);color:#15120b;border-color:var(--gold)}
+#r14UnsavedDialog [data-r14="discard"]{border-color:#6b4141;color:#ffb3b3}
+
+@media(max-width:900px){
+ .content{padding-inline:10px!important}
+ .field-grid{grid-template-columns:1fr!important}
+ .toolbar-left,.toolbar-right{width:100%}
+ .task-chat-bubble{max-width:90%!important}
+}
+
+/* R14 readability scale — minimum readable text without inflating primary headings */
+.view p,.modal p,.panel p,.card p,.hr-pro-shell p,.o18 p,.hb17 p{font-size:13.5px!important;line-height:1.65!important}
+.view small,.modal small,.panel small,.card small,.hr-pro-shell small,.o18 small,.hb17 small{font-size:12px!important;line-height:1.5!important}
+.view label,.modal label,.panel label,.hr-pro-shell label,.o18 label{font-size:13px!important;line-height:1.45!important}
+.view input,.view select,.view textarea,.modal input,.modal select,.modal textarea,.hr-pro-shell input,.hr-pro-shell select,.hr-pro-shell textarea,.o18 input,.o18 select,.o18 textarea{font-size:14px!important}
+.view h1{font-size:26px!important}.view h2{font-size:22px!important}.view h3,.modal h3{font-size:18px!important}
+
+/* Forms should read as label + control, never label floating far away */
+.field-grid,.hr-pro-form-grid,.o18-grid,.support-form-grid,.support-manage-grid{column-gap:16px!important;row-gap:14px!important}
+.field,.hr-pro-form-field,.support-form-grid>.field,.support-manage-grid>.field{gap:6px!important}
+.field>label,.hr-pro-form-field>label{position:static!important;transform:none!important;min-width:0!important;width:auto!important}
+.modalbox,.hr-pro-modal,.o18-dialog{padding-inline:20px!important}
+
+/* Actions: visual hierarchy and breathing room */
+.toolbar,.modal-actions,.hr-pro-modal-foot,.o18-actions,.admin-pure-actions{display:flex;gap:10px!important;flex-wrap:wrap!important;align-items:center!important}
+.btn.primary,.btn.gold,.admin-pure-button.primary{font-weight:800!important}
+.btn.danger,.delete-task-btn,.hr-staff-delete{margin-inline-start:14px!important}
+
+/* HR staff photo */
+.r14-photo-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-inline-start:auto}
+.r14-photo-preview{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--gold,#d4af37)}
+.r14-chat-avatar{width:24px!important;height:24px!important;flex-basis:24px!important;font-size:10px!important}
+
+/* Friendly farewell after confirmed logout */
+.r14-farewell{position:fixed;inset:0;z-index:999999;background:rgba(5,7,9,.88);display:grid;place-items:center;backdrop-filter:blur(5px)}
+.r14-farewell>div{min-width:min(440px,calc(100vw - 36px));padding:28px;border:1px solid #554621;border-radius:18px;background:#11151a;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.6)}
+.r14-farewell b{display:block;font-size:24px;color:#f0cf7a;margin-bottom:8px}.r14-farewell span{font-size:13px;color:#aaa}
+
+/* Workday date navigation */
+.wd50-log-filter{gap:8px!important;align-items:end!important;flex-wrap:wrap!important}.wd50-log-filter .btn{min-height:38px!important}
+
+/* Administration is senior-management workspace, not a normal department manager card */
+#adminApp .workflow-manager-strip .task-manager-chip:first-child{display:none!important}
+
+/* Customer/task linking in purchase/logistics editors */
+#o18ReqTask:disabled{opacity:.55;cursor:not-allowed;background:#0c1014!important}
+
+/* Official stationery: preserve color when requested, remain clean in grayscale */
+.r14-stationery-content{padding-top:20mm;position:relative;z-index:1}
+@media print{
+  .r14-stationery-header,.r14-stationery-footer{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @supports not (print-color-adjust:exact){.r14-stationery-header,.r14-stationery-footer{color:#111!important}}
+}
+
+.dashboard-mood-panel .eyebrow{color:var(--gold,#d4af37)!important}
+
+/* Last readability guard: legacy inline micro-copy must remain readable. */
+.view [style*="font-size:8px"],.view [style*="font-size: 8px"],
+.view [style*="font-size:9px"],.view [style*="font-size: 9px"],
+.view [style*="font-size:10px"],.view [style*="font-size: 10px"],
+.modal [style*="font-size:8px"],.modal [style*="font-size: 8px"],
+.modal [style*="font-size:9px"],.modal [style*="font-size: 9px"],
+.modal [style*="font-size:10px"],.modal [style*="font-size: 10px"]{font-size:12px!important;line-height:1.5!important}

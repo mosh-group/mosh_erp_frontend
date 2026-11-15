@@ -1,0 +1,498 @@
+/* MOSH R35 — accepted V2 interface. Production presentation; no glass theme. */
+/* Local presentation overlay on actual MOSH R34. No data/permission mutations. */
+:root{--pv-bg:#101316;--pv-panel:#171b20;--pv-border:#32383f;--pv-text:#f1efe9;--pv-muted:#a6adb3;--pv-gold:#d4af37}
+html[data-mosh-theme="light"]{--pv-bg:#f7f6f2;--pv-panel:#fff;--pv-border:#d2cfc6;--pv-text:#25251f;--pv-muted:#62645e;--pv-gold:#8e6b14}
+
+
+
+#appShell{min-height:calc(100vh - 48px)}#appSidebar{top:48px;height:calc(100vh - 48px)}
+
+
+/* Hide only the old internal rails; keep their native controls mounted for navigation. */
+.pv-grouped #hrProNav,.pv-grouped #m15SalesRail,.pv-grouped .mk33-rail,.pv-grouped #f21Rail,.pv-grouped .o18-rail,.pv-grouped #it31Tabs{display:none!important}
+.pv-grouped .h13-layout,.pv-grouped .m15-sales-layout,.pv-grouped .mk33-shell,.pv-grouped .mk33-layout,.pv-grouped .f21-layout,.pv-grouped .o18-layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}
+.pv-grouped .h13-main,.pv-grouped .m15-sales-main,.pv-grouped .mk33-main,.pv-grouped .f21-main,.pv-grouped .o18-main{width:100%;min-width:0!important}
+.pv-grouped .m15-dept-tabs{display:flex!important;align-items:center;gap:8px;padding:10px!important;flex-wrap:wrap;overflow:visible!important}
+.pv-grouped .m15-dept-tabs>.menu,.pv-grouped .m15-dept-tabs>.r23-manager-primary-item{flex:1 1 auto!important;min-width:120px!important}
+.pv-grouped .m15-dept-tabs .pv-menu-host{flex:0 0 auto!important;position:relative}
+.pv-menu-trigger{display:inline-flex;gap:10px;align-items:center;justify-content:space-between;min-height:40px;padding:8px 16px!important;background:#242218!important;border:1px solid #7f692f!important;border-radius:8px!important;color:#ead697!important;font:600 14px/1.4 Tahoma,Arial,sans-serif!important;cursor:pointer;white-space:nowrap}
+html[data-mosh-theme="light"] .pv-menu-trigger{background:#faf2d7!important;color:#5d4712!important}
+.pv-menu-trigger[aria-expanded="true"]{border-color:#d4af37!important;background:#39301c!important;color:#ffe4a3!important}
+.pv-menu-floating{position:fixed;z-index:2147483000;border:1px solid var(--pv-border);background:var(--pv-panel);border-radius:10px;box-shadow:0 16px 45px #0009;padding:7px;width:258px;max-width:calc(100vw - 20px);max-height:85vh;overflow:auto;direction:rtl;box-sizing:border-box;color:var(--pv-text);font:14px/1.5 Tahoma,Arial,sans-serif}
+.pv-menu-floating[hidden]{display:none!important}
+.pv-menu-caption{padding:7px 10px 9px;font-size:11px;color:var(--pv-muted);border-bottom:1px solid var(--pv-border);margin-bottom:5px}
+.pv-menu-row{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:right;width:100%;min-height:42px;padding:9px 11px!important;font:inherit!important;border:0!important;border-radius:6px!important;background:transparent!important;color:var(--pv-text)!important;cursor:pointer;white-space:normal}
+.pv-menu-row:focus-visible{outline:2px solid var(--pv-gold);outline-offset:-2px}
+.pv-menu-row:hover,.pv-menu-row[aria-expanded="true"]{background:#3b3322!important;color:#f4d98f!important}
+html[data-mosh-theme="light"] .pv-menu-row:hover,html[data-mosh-theme="light"] .pv-menu-row[aria-expanded="true"]{background:#f5eacd!important;color:#624b14!important}
+.pv-menu-icon{display:inline-grid;place-items:center;font-size:17px;min-width:20px;color:var(--pv-gold)}
+.pv-menu-itemlabel{flex:1;white-space:normal}.pv-menu-leaf{min-height:40px}
+#itApp>.pv-itbar{display:flex;gap:10px;align-items:center;justify-content:flex-start;margin-bottom:12px}
+/* Compact only local preview surfaces, not global hidden dialogs. */
+.pv-grouped input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),.pv-grouped select{min-height:40px}
+.pv-grouped table th,.pv-grouped table td{padding:10px 12px!important;height:44px;box-sizing:border-box;line-height:1.6}
+.pv-grouped table{font-size:14px!important}.pv-grouped table td .muted{font-size:12px!important}
+.pv-grouped .db9-header{margin-bottom:14px!important}.pv-grouped .db9-kpi{min-height:70px!important}
+/* Task: actual existing controls moved into a disclosure. */
+.pv-task-info{border:1px solid #66582f;border-radius:10px;overflow:hidden;margin:0 0 12px;background:#12181b}
+.pv-task-info>summary{display:flex!important;justify-content:flex-start!important;align-items:center!important;gap:10px!important;padding:12px 15px!important;min-height:46px;list-style:none!important;background:#242219;color:#f1e7c6;cursor:pointer;direction:rtl;outline-offset:-3px}
+.pv-task-info>summary::-webkit-details-marker{display:none}.pv-task-info>summary::marker{content:""}.pv-task-info>summary::after{display:none!important}
+.pv-task-title{font-size:17px;font-weight:700;line-height:1.6}.pv-task-chevron{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;flex:none;border:0;color:#dfbd63}.pv-task-chevron svg{width:19px;height:19px;transition:transform .16s ease;transform:rotate(0)}
+.pv-task-info[open] .pv-task-chevron svg{transform:rotate(-90deg)}
+.pv-task-inner{padding:12px}.pv-task-inner .field-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important;align-items:start!important}
+.pv-task-inner .field{display:flex!important;flex-direction:column;min-width:0;gap:5px!important;margin:0!important}.pv-task-inner .field[hidden]{display:none!important}
+.pv-task-inner .field label{font-size:12px;color:#bfc3c3;font-weight:600;margin:0!important}
+.pv-task-inner .field input:not([hidden]):not(.m14-native-date),.pv-task-inner .field select{height:40px!important;min-height:40px!important;padding:7px 10px!important;width:100%!important;box-sizing:border-box;font:14px Tahoma,Arial,sans-serif!important;border-radius:7px!important}
+.pv-task-inner .r34-deadline{display:flex!important;align-items:center!important;gap:6px!important;flex-wrap:wrap;width:100%;margin:0!important}
+.pv-task-inner .r34-deadline small{font-size:10px;line-height:1.5;flex-basis:100%;color:#adb1ae}
+.pv-task-inner .m14-date{display:block;position:relative;min-width:0;width:100%}.pv-task-inner .m14-date .m14-date-text{padding-left:35px!important}
+.pv-task-inner .r19-task-status-panel{margin:0 0 10px!important;padding:7px 10px!important;min-height:34px!important}.pv-task-inner .r19-task-status-panel button{min-height:30px!important}
+.pv-task-notes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.pv-task-notes textarea{min-height:76px!important;height:76px!important;max-height:240px;resize:vertical;line-height:1.65;padding:10px!important;font-size:14px!important}
+.pv-task-info .mk29-task-guide:has(.mk29-task-guide-body:empty){display:none}
+.pv-task-card>.panel:has(.task-running-chat){padding:10px!important;margin-top:0!important}
+.pv-task-card .task-running-chat{display:flex;flex-direction:column;min-height:410px;height:66vh;max-height:770px}
+.pv-task-card .task-running-thread{flex:1;min-height:150px!important;max-height:none!important;overflow:auto}.pv-task-card .task-chat-composer{flex-shrink:0}
+.pv-task-card .task-chat-input{font-size:14px!important}.pv-task-card .task-running-chat .r34-chat-toolbar{padding:9px!important}
+.pv-task-card .task-activities{margin-top:10px!important}
+html[data-mosh-theme="light"] .pv-task-info{background:#fff;border-color:#d8c79f}html[data-mosh-theme="light"] .pv-task-info>summary{background:#f4ecd8;color:#3c321e}html[data-mosh-theme="light"] .pv-task-inner label{color:#555!important}
+@media(max-width:1050px){.pv-task-inner .field-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:700px){.pv-menu-floating{width:calc(100vw - 24px);max-height:70vh}.pv-task-inner .field-grid,.pv-task-notes{grid-template-columns:1fr!important}.pv-task-title{font-size:15px}.pv-task-card .task-running-chat{height:65vh;min-height:380px}#appSidebar{top:68px;height:calc(100vh - 68px)}.pv-grouped .m15-dept-tabs>*{min-width:100px!important}.pv-grouped table{min-width:650px!important}.h13-main,.mk33-main,.f21-main{overflow-x:auto}}
+@media(prefers-reduced-motion:reduce){.pv-task-chevron svg{transition:none}}
+/* Match specificity of legacy rules to prevent rails from reappearing. */
+#appShell #hrApp.pv-grouped #hrProNav,#appShell #salesApp.pv-grouped #m15SalesRail,#appShell #marketingApp.pv-grouped .mk33-rail,#appShell #accountingApp.pv-grouped #f21Rail,#appShell #purchasesApp.pv-grouped #o18Rail_purchases,#appShell #logisticsApp.pv-grouped #o18Rail_logistics,#appShell #itApp.pv-grouped #it31Tabs{display:none!important}
+#appShell #hrApp.pv-grouped .h13-layout,#appShell #salesApp.pv-grouped .m15-sales-layout,#appShell #marketingApp.pv-grouped .mk33-shell,#appShell #marketingApp.pv-grouped .mk33-layout,#appShell #accountingApp.pv-grouped .f21-layout,#appShell #purchasesApp.pv-grouped .o18-layout,#appShell #logisticsApp.pv-grouped .o18-layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}
+#appShell .pv-task-card>.r19-task-status-panel{display:none!important}
+#appShell .main>.topbar{display:flex!important;flex-direction:row!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important;padding:10px 16px!important;min-height:0!important}
+#appShell .top-actions{gap:7px!important;flex-wrap:wrap!important;justify-content:flex-start!important;margin:0!important}
+#appShell .top-actions .btn{min-height:34px!important;padding:7px 10px!important}
+#appShell .top-actions .search{max-width:210px!important;min-width:130px!important}
+#appShell .topbar .breadcrumb{font-size:13px!important}
+#appShell .pv-task-card{padding:12px!important}
+#appShell .pv-task-info>.pv-task-inner{padding:10px!important}
+#appShell .pv-task-inner .field-grid{row-gap:8px!important}
+#appShell .pv-task-inner .r19-task-status-panel{padding:6px 10px!important;min-height:36px!important;margin-bottom:8px!important}
+#appShell #itApp.it31-mode.pv-grouped > .pv-itbar{display:flex!important;visibility:visible!important}
+
+/* MOSH actual UI: visual-density preview. No business logic or data changes. */
+html.mosh-meta {
+ --mx-bg:#08080a; --mx-card:#121214; --mx-input:#0d0d10; --mx-border:#242428;
+ --mx-hover:#1c1c21; --mx-text:#f5f5f5; --mx-muted:#9a9aa0; --mx-gold:#d4af37;
+ --mx-shadow:0 10px 40px rgba(0,0,0,.8); --mx-side:232px; --mx-banner:0px;
+ --bg:var(--mx-bg); --card:var(--mx-card); --text:var(--mx-text);
+ --pv-bg:var(--mx-bg);--pv-panel:var(--mx-card);--pv-border:var(--mx-border);--pv-text:var(--mx-text);--pv-muted:var(--mx-muted);
+ color-scheme:dark;
+}
+html.mosh-meta[data-mosh-theme="light"]{
+ --mx-bg:#f3f4f6;--mx-card:#ffffff;--mx-input:#f9fafb;--mx-border:#d6d9df;
+ --mx-hover:#e9ecf0;--mx-text:#1c2028;--mx-muted:#59616e;--mx-shadow:0 8px 24px rgba(10,20,30,.07);
+ color-scheme:light;
+}
+html.mosh-meta body{background:var(--mx-bg)!important;color:var(--mx-text)!important;font-family:Cairo,Tajawal,Arial,sans-serif!important;font-size:15px;line-height:1.6}
+html.mosh-meta *,html.mosh-meta *::before,html.mosh-meta *::after{box-sizing:border-box}
+/* Preview controls, not a production toolbar. Before/after uses the same DOM. */
+
+
+
+
+
+
+
+/* Shell retains the original actual application nodes. */
+html.mosh-meta #appShell{grid-template-columns:var(--mx-side) minmax(0,1fr)!important;min-height:calc(100vh - var(--mx-banner));background:var(--mx-bg)!important}
+html.mosh-meta #appShell>.main{min-width:0!important;background:var(--mx-bg)!important}
+html.mosh-meta #appSidebar{width:var(--mx-side)!important;background:var(--mx-card)!important;border-inline-end:1px solid var(--mx-border)!important;padding:0!important;top:var(--mx-banner)!important;height:calc(100dvh - var(--mx-banner))!important;overflow-y:auto;overscroll-behavior:contain}
+html.mosh-meta #appSidebar .sidebar-head{min-height:65px!important;height:65px!important;padding:10px 14px!important;margin:0!important;border-bottom:1px solid var(--mx-border)!important;gap:6px!important}
+html.mosh-meta #appLogo{font-size:23px!important;gap:5px!important;line-height:1.2!important;color:var(--mx-text)!important;white-space:nowrap!important}
+html.mosh-meta #appLogo .app-version{font-size:10px!important;font-weight:400!important;color:var(--mx-muted)!important}
+html.mosh-meta #appLogo>span{background:var(--mx-gold)!important;color:#15120a!important;border-radius:4px!important;padding:2px 4px!important}
+html.mosh-meta #appSidebar .sidebar-toggle{width:28px!important;min-width:28px!important;height:30px!important;border:1px solid var(--mx-border)!important;background:transparent!important;border-radius:7px!important}
+html.mosh-meta #appSidebar .nav{padding:10px 9px!important;gap:3px!important}
+html.mosh-meta #appSidebar .app-name{padding:3px 9px 9px!important;margin:0!important;color:var(--mx-muted)!important;font-size:11px!important}
+html.mosh-meta #appSidebar .nav a{min-height:44px!important;height:44px!important;margin:0!important;padding:7px 10px!important;border:1px solid transparent!important;background:transparent!important;border-radius:8px!important;box-shadow:none!important;gap:10px!important;color:var(--mx-muted)!important;position:relative}
+html.mosh-meta #appSidebar .nav a:hover{background:var(--mx-hover)!important;color:var(--mx-text)!important}
+html.mosh-meta #appSidebar .nav a.active{background:var(--mx-hover)!important;color:var(--mx-text)!important;border-color:var(--mx-border)!important}
+html.mosh-meta #appSidebar .nav a.active::before{content:"";position:absolute;inset-inline-start:0;top:10px;bottom:10px;width:2px;background:var(--mx-text);border-radius:2px}
+html.mosh-meta #appSidebar .nav-icon{min-width:22px!important;width:22px!important;height:24px!important;max-height:24px!important;border:none!important;box-shadow:none!important;background:transparent!important;border-radius:0!important;color:inherit!important;transform:none!important}
+html.mosh-meta #appSidebar .nav-icon svg{width:20px!important;height:20px!important}
+html.mosh-meta #appSidebar .nav-label{font-size:14px!important;font-weight:600!important;color:inherit!important;white-space:nowrap}
+html.mosh-meta #appShell.mv-sidebar-collapsed{--mx-side:76px}
+html.mosh-meta #appShell.mv-sidebar-collapsed #appSidebar .nav-label,html.mosh-meta #appShell.mv-sidebar-collapsed #appLogo{display:none!important}
+html.mosh-meta #appShell.mv-sidebar-collapsed #appSidebar .nav a{justify-content:center!important}
+html.mosh-meta #appShell.mv-sidebar-collapsed #appSidebar .sidebar-head{justify-content:center!important}
+/* Compact main toolbar: same actions, consistent heights. */
+html.mosh-meta #appShell .main>.topbar{padding:10px 16px!important;min-height:65px!important;gap:12px!important;align-items:center!important;flex-wrap:nowrap!important;background:var(--mx-bg)!important;border-bottom:1px solid var(--mx-border)!important}
+html.mosh-meta #appShell .topbar>div:first-child{flex:0 1 auto;min-width:0;gap:8px!important}
+html.mosh-meta #appShell .topbar #backBtn{font-size:0!important;min-width:34px!important;width:34px!important;padding:0!important;height:34px!important}
+html.mosh-meta #appShell .topbar #backBtn::after{content:"⌂";font-size:20px}
+html.mosh-meta #appShell .topbar .breadcrumb{font-size:12px!important;line-height:1.6;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mx-muted)!important}
+html.mosh-meta #appShell .topbar .breadcrumb b{color:var(--mx-text)!important}
+html.mosh-meta #appShell .top-actions{display:flex!important;flex:1;gap:6px!important;flex-wrap:nowrap!important;min-width:0;justify-content:flex-end!important}
+html.mosh-meta #appShell .top-actions .search{width:145px!important;min-width:100px!important;max-width:170px!important;height:38px!important;min-height:38px!important;padding:6px 10px!important;background:var(--mx-input)!important}
+html.mosh-meta #appShell .top-actions :is(.btn,.o18-btn){min-height:34px!important;height:34px!important;padding:5px 9px!important;white-space:nowrap!important;font-size:12px!important;border-radius:7px!important}
+html.mosh-meta #appShell .top-actions #o18QuickNew{display:flex!important;gap:4px!important}
+html.mosh-meta #appShell .top-actions #o18QuickNew button{font-size:0!important;width:34px!important;padding:7px!important}
+html.mosh-meta #appShell .top-actions #o18QuickNew svg{width:18px;height:18px;margin:0!important}
+html.mosh-meta #appShell .auth37-userbar{gap:6px!important;min-width:0!important}
+html.mosh-meta #appShell .auth37-userbar .who{max-width:105px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.mosh-meta #appShell .auth37-userbar .who b{font-size:12px!important}
+html.mosh-meta #appShell .auth37-userbar .who small{display:none!important}
+html.mosh-meta #appShell .top-actions .avatar{min-width:30px!important;width:30px!important;height:30px!important;background:var(--mx-hover)!important;color:var(--mx-text)!important;border:1px solid var(--mx-border)!important;font-size:13px!important}
+html.mosh-meta #appShell .content{padding:14px 18px!important;max-width:none!important;background:var(--mx-bg)!important}
+/* Consistent, low-profile department navigation. No full-width gold tiles. */
+html.mosh-meta #appShell .view .m15-dept-tabs{min-height:50px!important;padding:5px 8px!important;margin:0 0 14px!important;background:var(--mx-card)!important;border:1px solid var(--mx-border)!important;border-radius:12px!important;gap:6px!important;display:flex!important;align-items:center!important;flex-wrap:wrap!important;box-shadow:none!important;overflow:visible!important}
+html.mosh-meta #appShell .view .m15-dept-tabs>:is(.menu,.r23-manager-primary-item){flex:0 1 auto!important;min-width:0!important;width:auto!important;min-height:36px!important;height:36px!important;padding:0 14px!important;border:0!important;border-radius:7px!important;color:var(--mx-muted)!important;background:transparent!important;font-size:13px!important;box-shadow:none!important}
+html.mosh-meta #appShell .view .m15-dept-tabs>:is(button,.menu).active{background:var(--mx-hover)!important;color:var(--mx-text)!important;box-shadow:inset 0 -2px var(--mx-text)!important}
+html.mosh-meta #appShell .view .m15-dept-tabs .r23-manager-tools-toggle{min-height:36px!important;height:36px!important;padding:4px 2px!important;font-size:13px!important}
+html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-host{order:0!important;margin-inline-end:8px!important;border-inline-end:1px solid var(--mx-border);padding-inline-end:10px!important;flex:0 0 auto!important}
+html.mosh-meta .pv-menu-trigger{min-height:36px!important;height:36px!important;font-size:13px!important;background:var(--mx-hover)!important;border:1px solid var(--mx-border)!important;color:var(--mx-text)!important;padding:6px 12px!important;border-radius:7px!important;font-family:inherit!important}
+html.mosh-meta .pv-menu-trigger[aria-expanded="true"]{background:var(--mx-hover)!important;border-color:#77777f!important;color:var(--mx-text)!important}
+html.mosh-meta .pv-menu-floating{background:var(--mx-card)!important;border:1px solid var(--mx-border)!important;border-radius:12px;box-shadow:var(--mx-shadow);max-height:90dvh;padding:6px;width:255px;font-family:inherit}
+html.mosh-meta .pv-menu-row{min-height:42px!important;font-size:14px!important;padding:7px 10px!important}
+html.mosh-meta .pv-menu-row:hover,html.mosh-meta .pv-menu-row[aria-expanded="true"]{background:var(--mx-hover)!important;color:var(--mx-text)!important}
+html.mosh-meta .pv-menu-icon{color:var(--mx-muted)!important}
+/* Layout and controls */
+html.mosh-meta #appShell :is(.panel,.h13-main,.mk33-main,.f21-main,.o18-main,.r24-card,.it31-card){background:var(--mx-card)!important;border-color:var(--mx-border)!important;border-radius:16px!important;color:var(--mx-text)!important}
+html.mosh-meta #appShell .h13-main{padding:16px!important;box-shadow:var(--mx-shadow)!important}
+html.mosh-meta #appShell :is(.h13-page-head,.mk33-head,.f21-head,.o18-head,.it31-head){min-height:0!important;height:auto!important;padding:0 0 12px!important;margin:0!important;gap:12px!important;align-items:center!important}
+html.mosh-meta #appShell :is(.h13-page-head,.mk33-head,.f21-head,.o18-head,.it31-head) h2{font-size:22px!important;font-weight:600!important;margin:0!important;line-height:1.4!important}
+html.mosh-meta #appShell :is(.h13-page-head,.mk33-head,.f21-head,.o18-head,.it31-head) p{font-size:13px!important;color:var(--mx-muted)!important;margin:4px 0 0!important;line-height:1.5!important}
+html.mosh-meta #appShell :is(.btn,.h13-btn,.mk33-btn,.f21-btn,.o18-btn,.it31-btn,.r34-btn){border:1px solid var(--mx-border)!important;background:var(--mx-input)!important;color:var(--mx-text)!important;box-shadow:none!important;border-radius:8px!important;font-family:inherit!important;font-size:14px!important;min-height:36px!important;padding:6px 12px!important;line-height:1.4!important}
+html.mosh-meta #appShell :is(.btn,.h13-btn,.mk33-btn,.f21-btn,.o18-btn,.it31-btn,.r34-btn).primary{background:var(--mx-gold)!important;border-color:var(--mx-gold)!important;color:#15120a!important;font-weight:600!important}
+html.mosh-meta #appShell :is(.btn,.h13-btn,.mk33-btn,.f21-btn,.o18-btn,.it31-btn,.r34-btn):hover{filter:brightness(1.1)}
+html.mosh-meta #appShell :is(.m14-danger,.danger){color:#efa3a8!important;background:transparent!important}
+html.mosh-meta #appShell :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),select){min-height:42px!important;height:42px!important;border:1px solid var(--mx-border)!important;border-radius:8px!important;padding:8px 11px!important;background:var(--mx-input)!important;color:var(--mx-text)!important;font-family:inherit!important;font-size:14px!important;line-height:1.5!important;max-width:100%;box-shadow:none!important}
+html.mosh-meta #appShell :is(textarea){border:1px solid var(--mx-border)!important;background:var(--mx-input)!important;color:var(--mx-text)!important;border-radius:8px!important;font:14px/1.7 Cairo,Tajawal,Arial,sans-serif!important;padding:10px 12px!important;resize:vertical}
+html.mosh-meta #appShell :is(input,select,textarea):focus-visible,html.mosh-meta button:focus-visible{outline:2px solid var(--mx-gold)!important;outline-offset:2px}
+html.mosh-meta #appShell :is(.field-grid,.h13-form-grid,.r34-grid){gap:10px 12px!important}
+/* Real HR list: align tabs / filters; remove empty head space, not content. */
+html.mosh-meta #appShell #hrApp #hrProContent{padding:0!important}
+html.mosh-meta #appShell #hrApp .h13-tabs{padding:0!important;min-height:40px!important;margin:0 0 12px!important;border-bottom:1px solid var(--mx-border)!important;gap:20px!important;display:flex!important;align-items:center!important}
+html.mosh-meta #appShell #hrApp .h13-tabs button{min-height:38px!important;padding:7px 1px!important;border:0!important;border-radius:0!important;background:transparent!important;color:var(--mx-muted)!important;font-size:14px!important;box-shadow:none!important}
+html.mosh-meta #appShell #hrApp .h13-tabs button.active{color:var(--mx-text)!important;border-bottom:2px solid var(--mx-text)!important}
+html.mosh-meta #appShell .mv-page-actions{display:flex;align-items:center;gap:8px;flex:none}
+html.mosh-meta #appShell .mv-page-actions button{height:40px!important}
+html.mosh-meta #appShell #h13EmployeesBody>.c19-filters{border:0!important;background:transparent!important;margin:0 0 14px!important;border-radius:0!important;padding:0!important}
+html.mosh-meta #appShell #h13EmployeesBody>.c19-filters>summary{display:none!important}
+html.mosh-meta #appShell #h13EmployeesBody>.c19-filters>.c19-body{padding:0!important;display:block!important;border:0!important}
+html.mosh-meta #appShell #h13EmployeesBody .h13-filters{display:grid!important;grid-template-columns:minmax(180px,1.5fr) minmax(140px,1fr) minmax(115px,.8fr) auto!important;align-items:end!important;gap:10px!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important}
+html.mosh-meta #appShell #h13EmployeesBody .h13-filters>label{min-width:0;display:flex;flex-direction:column;gap:5px!important;margin:0!important;font-size:12px!important;color:var(--mx-muted)!important;font-weight:400!important}
+html.mosh-meta #appShell #h13EmployeesBody .h13-filters :is(input,select){width:100%!important}
+html.mosh-meta #appShell .mv-list-count{display:flex;align-items:center;justify-content:center;gap:6px;min-width:110px;height:42px;color:var(--mx-muted);font-size:13px;white-space:nowrap}
+html.mosh-meta #appShell .mv-list-count strong{font-size:17px;font-variant-numeric:tabular-nums;color:var(--mx-text)}
+/* Tables: 44px per ordinary row, long values may grow safely. */
+html.mosh-meta #appShell :is(.h13-table-wrap,.mk33-table-wrap,.f21-table-wrap,.o18-table-wrap,.it31-table-wrap){border:1px solid var(--mx-border)!important;border-radius:10px!important;overflow:auto!important;background:var(--mx-card)!important}
+html.mosh-meta #appShell :is(.h13-table,.mk33-table,.f21-table,.o18-table,.it31-table){width:100%!important;border-collapse:collapse!important;font-size:14px!important;color:var(--mx-text)!important;background:var(--mx-card)!important;table-layout:auto!important}
+html.mosh-meta #appShell .view table :is(th,td){height:44px!important;padding:5px 12px!important;font-size:14px!important;line-height:1.35!important;border-bottom:1px solid var(--mx-border)!important;background:var(--mx-card)!important;color:var(--mx-text)!important;vertical-align:middle!important}
+html.mosh-meta #appShell .view table th{position:sticky!important;top:0;z-index:2;font-size:12px!important;font-weight:600!important;letter-spacing:0;background:var(--mx-hover)!important;color:var(--mx-muted)!important;height:40px!important}
+html.mosh-meta #appShell .view table tbody tr:hover td{background:var(--mx-hover)!important}
+html.mosh-meta #appShell .view table td :is(button,.btn,.h13-btn){height:30px!important;min-height:30px!important;padding:3px 9px!important;font-size:12px!important}
+html.mosh-meta #appShell .view table td .h13-tag{font-size:12px!important;padding:3px 9px!important;border-radius:6px!important;line-height:1.3!important;display:inline-block}
+html.mosh-meta #appShell .mv-serial{width:46px!important;text-align:center!important;color:var(--mx-muted)!important;font-size:12px!important;font-variant-numeric:tabular-nums}
+html.mosh-meta #appShell .mv-person{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:200px}
+html.mosh-meta #appShell .mv-person b{font-size:14px;font-weight:600;white-space:nowrap}
+html.mosh-meta #appShell .mv-person small{font-size:11px!important;line-height:1.4!important;margin:0!important;color:var(--mx-muted)!important;white-space:nowrap}
+/* Tasks: title + adjacent arrow. Actual controls remain in details. */
+html.mosh-meta #appShell .pv-task-card{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important}
+html.mosh-meta #appShell .pv-task-info{border:1px solid var(--mx-border)!important;background:var(--mx-card)!important;border-radius:12px!important;margin:0 0 12px!important}
+html.mosh-meta #appShell .pv-task-info>summary{background:var(--mx-card)!important;padding:11px 14px!important;min-height:52px!important;color:var(--mx-text)!important;gap:8px!important}
+html.mosh-meta #appShell .pv-task-title{font-size:18px!important;font-weight:600!important;line-height:1.6!important}
+html.mosh-meta #appShell .pv-task-chevron{color:var(--mx-muted)!important;width:24px!important;height:24px!important}
+html.mosh-meta #appShell .pv-task-inner{padding:12px 14px 14px!important;border-top:1px solid var(--mx-border)!important;background:var(--mx-card)!important}
+html.mosh-meta #appShell .pv-task-inner .field-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;align-items:start!important}
+html.mosh-meta #appShell .pv-task-inner .field{min-width:0!important;gap:5px!important}
+html.mosh-meta #appShell .pv-task-inner .field label{color:var(--mx-muted)!important;font-size:12px!important;font-weight:400!important}
+html.mosh-meta #appShell .pv-task-inner .field :is(input,select){height:42px!important;font-size:14px!important}
+html.mosh-meta #appShell .pv-task-inner .r19-task-status-panel{background:var(--mx-input)!important;border:1px solid var(--mx-border)!important;border-radius:8px!important;margin-bottom:12px!important;padding:6px 10px!important}
+html.mosh-meta #appShell .pv-task-inner .r34-deadline small{font-size:11px!important;line-height:1.4!important}
+html.mosh-meta #appShell .pv-task-notes{gap:12px!important;margin-top:12px!important}
+html.mosh-meta #appShell .pv-task-notes textarea{height:70px!important;min-height:70px!important}
+html.mosh-meta #appShell .pv-task-card .task-running-chat{height:75vh!important;height:75dvh!important;min-height:320px!important;max-height:none!important;background:var(--mx-card)!important;border:1px solid var(--mx-border)!important;border-radius:12px!important;overflow:hidden!important}
+html.mosh-meta #appShell .pv-task-card>.panel:has(.task-running-chat){padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
+html.mosh-meta #appShell .pv-task-card .task-running-thread{background:var(--mx-bg)!important;min-height:100px!important;padding:12px!important;flex:1!important;overflow:auto!important}
+html.mosh-meta #appShell .pv-task-card .r34-chat-toolbar{padding:8px 12px!important;min-height:46px!important;background:var(--mx-card)!important;border-bottom:1px solid var(--mx-border)!important}
+html.mosh-meta #appShell .pv-task-card .task-chat-composer{padding:10px!important;border-top:1px solid var(--mx-border)!important;gap:8px!important;background:var(--mx-card)!important}
+html.mosh-meta #appShell .pv-task-card .task-chat-input{min-height:44px!important;max-height:140px!important}
+html.mosh-meta #appShell .view .toolbar{padding:0 0 12px!important;margin:0!important;min-height:42px!important;gap:10px!important}
+html.mosh-meta #appShell .view .toolbar h2{font-size:20px!important;margin:0!important}
+/* Existing dialogs: local visual tuning only; no changes to submit handlers. */
+html.mosh-meta :is(.modal-card,.modal-content,.h13-modal-card,.r34-dialog){width:min(640px,calc(100vw - 32px))!important;max-height:calc(100dvh - 40px)!important;background:var(--mx-card)!important;border:1px solid var(--mx-border)!important;border-radius:16px!important;box-shadow:var(--mx-shadow)!important;overflow:auto!important;color:var(--mx-text)!important}
+html.mosh-meta :is(#standaloneTaskModal,#salesTaskModal,#employeeModal,#h13EmployeeModal) :is(.modal-card,.modal-content){width:min(900px,calc(100vw - 32px))!important}
+html.mosh-meta :is(.modal-actions,.modal-footer,.h13-modal-foot){position:sticky!important;bottom:0;background:var(--mx-card)!important;border-top:1px solid var(--mx-border)!important;padding:12px 16px!important;z-index:3}
+html.mosh-meta #appShell :is(.mk33-kpi,.db9-kpi,.r24-kpi,.it31-kpi){min-height:76px!important;padding:12px!important;border:1px solid var(--mx-border)!important;background:var(--mx-card)!important;border-radius:12px!important;box-shadow:none!important}
+html.mosh-meta #appShell :is(.mk33-kpis,.db9-kpis){gap:10px!important;margin-bottom:12px!important}
+html.mosh-meta #appShell .mk33-main{padding:14px!important}
+html.mosh-meta #appShell .mk33-table td b{font-size:14px!important}
+html.mosh-meta #appShell .mk33-head button{height:36px!important}
+html.mosh-meta #moshAiLauncher{bottom:12px!important;left:12px!important;transform:scale(.85);transform-origin:bottom left;box-shadow:none!important}
+@media(max-width:1250px){
+ html.mosh-meta{--mx-side:212px}
+ html.mosh-meta #appShell .main>.topbar{flex-wrap:wrap!important;gap:6px!important}
+ html.mosh-meta #appShell .topbar>div:first-child{flex-basis:100%;justify-content:flex-start}
+ html.mosh-meta #appShell .top-actions{justify-content:flex-start!important}
+ html.mosh-meta #appShell .topbar .breadcrumb{max-width:none}
+ html.mosh-meta #appShell .auth37-userbar .who{max-width:90px!important}
+ 
+}
+@media(max-width:900px){
+ html.mosh-meta{--mx-side:76px}
+ html.mosh-meta #appSidebar .nav-label,html.mosh-meta #appLogo{display:none!important}
+ html.mosh-meta #appSidebar .nav a,html.mosh-meta #appSidebar .sidebar-head{justify-content:center!important}
+ html.mosh-meta #appShell .content{padding:12px!important}
+ html.mosh-meta #appShell .pv-task-inner .field-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html.mosh-meta #appShell .view table{min-width:700px!important}
+ html.mosh-meta #appShell #h13EmployeesBody .h13-filters{grid-template-columns:1fr 1fr!important}
+ html.mosh-meta #appShell .top-actions{flex-wrap:wrap!important}
+}
+@media(max-width:600px){
+ html.mosh-meta{--mx-side:0px;--mx-banner:76px}
+ html.mosh-meta #appSidebar{display:none!important}
+ html.mosh-meta #appShell{grid-template-columns:minmax(0,1fr)!important}
+ html.mosh-meta #appShell .content{padding:8px!important}
+ html.mosh-meta #appShell .main>.topbar{padding:8px!important}
+ html.mosh-meta #appShell .top-actions{gap:5px!important}
+ html.mosh-meta #appShell .auth37-userbar .who{display:none!important}
+ html.mosh-meta #appShell .top-actions .search{width:130px!important}
+ html.mosh-meta #appShell .h13-main{padding:12px!important}
+ html.mosh-meta #appShell .h13-page-head{align-items:flex-start!important;flex-wrap:wrap!important}
+ html.mosh-meta #appShell .pv-task-inner .field-grid,html.mosh-meta #appShell .pv-task-notes{grid-template-columns:1fr!important}
+ html.mosh-meta #appShell .view .m15-dept-tabs{gap:3px!important}
+ html.mosh-meta #appShell .view .m15-dept-tabs>:is(.menu,.r23-manager-primary-item){font-size:12px!important;padding:0 8px!important}
+ html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-host{flex-basis:100%!important;border-inline-end:0;margin-inline-end:0!important;padding-inline-end:0!important}
+ html.mosh-meta #appShell .pv-menu-host .pv-menu-trigger{width:100%!important}
+ 
+ 
+ 
+ html.mosh-meta #appShell .h13-tabs{gap:12px!important;overflow:auto!important}
+ html.mosh-meta #appShell .h13-tabs button{white-space:nowrap!important;font-size:13px!important}
+ html.mosh-meta .pv-menu-floating{width:calc(100vw - 24px);max-height:80dvh}
+}
+
+/* Exact specificity for late legacy light-theme rules. */
+
+
+html.mosh-meta #appShell #appSidebar .nav a{background:transparent!important;color:var(--mx-muted)!important;border-color:transparent!important;box-shadow:none!important}
+html.mosh-meta #appShell #appSidebar .nav a.active{background:var(--mx-hover)!important;color:var(--mx-text)!important;border-color:var(--mx-border)!important}
+html.mosh-meta #appShell #appSidebar .nav a .nav-icon{background:transparent!important;color:inherit!important;box-shadow:none!important;border:0!important}
+html.mosh-meta #appShell #appSidebar .nav a .nav-icon svg{color:inherit!important}
+html.mosh-meta #appShell #appSidebar .sidebar-toggle{color:var(--mx-text)!important}
+html.mosh-meta #appShell .auth37-userbar .who b{color:var(--mx-text)!important}
+html.mosh-meta[data-mosh-theme="light"] #appShell :is(.m14-danger,.danger){color:#9b243c!important}
+html.mosh-meta[data-mosh-theme="light"] #moshAiLauncher{color:#3b3420!important}
+html.mosh-meta #appShell .mv-task-priority .r19-task-status-panel{height:42px!important;min-height:42px!important;margin:0!important;padding:4px 8px!important;gap:8px!important;align-items:center!important}
+html.mosh-meta #appShell .mv-task-priority .r19-task-status-label{display:none!important}
+html.mosh-meta #appShell .mv-task-priority .r19-task-status-panel>div{gap:4px!important}
+html.mosh-meta #appShell .mv-task-priority .r19-task-status-panel button{min-height:30px!important;height:30px!important;font-size:12px!important;padding:4px 8px!important;background:var(--mx-hover)!important;color:var(--mx-text)!important;border-color:var(--mx-border)!important}
+html.mosh-meta #appShell .mv-task-priority .r19-task-normal{color:var(--mx-text)!important}
+
+#appShell .mv-mobile-nav{display:none!important}
+@media(max-width:600px){
+ html.mosh-meta #appShell .mv-mobile-nav{display:inline-flex!important;align-items:center;gap:5px;order:-1}
+ html.mosh-meta.mv-mobile-sidebar #appShell #appSidebar{display:block!important;position:fixed!important;inset-inline-start:0!important;top:var(--mx-banner)!important;width:244px!important;z-index:1500!important;height:calc(100dvh - var(--mx-banner))!important;box-shadow:-20px 0 50px rgba(0,0,0,.65)!important}
+ html.mosh-meta.mv-mobile-sidebar #appShell #appSidebar .nav-label,html.mosh-meta.mv-mobile-sidebar #appShell #appLogo{display:inline!important}
+ html.mosh-meta.mv-mobile-sidebar #appShell #appSidebar .nav a{justify-content:flex-start!important}
+}
+
+/* MOSH presentation preview V2. Scoped to the existing R34 DOM. */
+html.mosh-plus{--mx-side:216px;--mp-row:44px;--mp-soft:#19191d;--mp-muted:#a9a9b3;--mp-line:#2a2a30;--mp-accent:#d4af37;--mp-good:#91cbb0}
+html.mosh-plus[data-mosh-theme="light"]{--mp-soft:#f1f2f5;--mp-muted:#59616e;--mp-line:#d9dde4;--mp-good:#166c48}
+html.mosh-plus[data-mp-density="comfortable"]{--mp-row:54px}
+html.mosh-plus .mp-only[hidden],html.mosh-plus [data-mp-hidden="true"]{display:none!important}
+html:not(.mosh-plus) .mp-only{display:none!important}
+html.mosh-plus body{font-size:15px!important}
+html.mosh-plus #appShell .content{padding:16px 18px!important}
+html.mosh-plus #appShell .h13-main{padding:18px!important;box-shadow:none!important;border:1px solid var(--mp-line)!important;border-radius:16px!important;overflow:visible!important}
+html.mosh-plus #appShell .h13-page-head{padding:0 0 14px!important}
+html.mosh-plus #appShell .h13-page-head h2{font-size:25px!important;letter-spacing:-.3px}
+html.mosh-plus #appShell .h13-page-head p{font-size:13px!important;line-height:1.6!important}
+html.mosh-plus #appShell #hrApp .h13-tabs{margin-bottom:0!important;gap:26px!important;min-height:38px!important}
+html.mosh-plus #appShell #hrApp .h13-tabs button.active{border-bottom-color:var(--mx-text)!important}
+html.mosh-plus #appShell .mp-statusbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;flex-wrap:wrap}
+html.mosh-plus #appShell .mp-statuslist{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+html.mosh-plus #appShell .mp-status{display:flex;align-items:center;gap:8px;min-height:34px!important;padding:5px 10px!important;border:1px solid transparent!important;background:transparent!important;color:var(--mp-muted)!important;font:500 13px/1.3 inherit;border-radius:8px;cursor:pointer}
+html.mosh-plus #appShell .mp-status[aria-pressed="true"]{background:var(--mp-soft)!important;color:var(--mx-text)!important;border-color:var(--mp-line)!important}
+html.mosh-plus #appShell .mp-status b{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;background:var(--mx-bg);padding:2px 6px;border-radius:5px;min-width:24px;text-align:center}
+html.mosh-plus #appShell .mp-status .mp-dot{width:6px;height:6px;border-radius:100%;background:var(--mp-good)}
+html.mosh-plus #appShell .mp-density{display:flex;gap:4px;align-items:center;color:var(--mp-muted);font-size:12px}
+html.mosh-plus #appShell .mp-density>span{margin-inline-end:3px}
+html.mosh-plus #appShell .mp-density button{border:1px solid var(--mp-line);background:transparent;color:var(--mp-muted);height:30px;min-height:30px;border-radius:6px;padding:4px 9px;font:inherit;cursor:pointer}
+html.mosh-plus #appShell .mp-density button[aria-pressed="true"]{color:var(--mx-text);background:var(--mp-soft)}
+html.mosh-plus #appShell #h13EmployeesBody .h13-filters{grid-template-columns:minmax(220px,1.6fr) minmax(170px,.9fr) auto!important;padding:12px!important;background:var(--mx-input)!important;border:1px solid var(--mp-line)!important;border-radius:10px!important;gap:12px!important;align-items:end!important}
+html.mosh-plus #appShell #h13EmployeesBody .h13-filters>label{font-size:12px!important}
+html.mosh-plus #appShell #h13EmployeesBody .h13-filters>label:has(#h13EmployeeStatus){display:none!important}
+html.mosh-plus #appShell #h13EmployeesBody .h13-filters :is(input,select){background:var(--mx-card)!important;border-color:var(--mp-line)!important}
+html.mosh-plus #appShell .mv-list-count{min-width:96px!important;display:flex!important;flex-direction:column;gap:0!important;line-height:1.3!important}
+html.mosh-plus #appShell .mv-list-count strong{font-size:20px!important}
+html.mosh-plus #appShell .mv-list-count span{font-size:11px!important}
+html.mosh-plus #appShell #h13EmployeesBody>.c19-filters{margin-bottom:9px!important}
+html.mosh-plus #appShell .mp-active-filters{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-height:24px;margin:0 0 8px}
+html.mosh-plus #appShell .mp-filter-chip{display:flex;align-items:center;gap:8px;border:1px solid var(--mp-line);border-radius:6px;padding:3px 8px;font:12px/1.4 inherit;color:var(--mp-muted);background:transparent;cursor:pointer}
+html.mosh-plus #appShell .mp-filter-chip:hover{background:var(--mp-soft);color:var(--mx-text)}
+html.mosh-plus #appShell .mp-filter-hint{font-size:12px;color:var(--mp-muted)}
+html.mosh-plus #appShell .mp-workspace{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start;min-width:0}
+html.mosh-plus #appShell .mp-workspace.mp-has-preview{grid-template-columns:minmax(0,1fr) 286px}
+html.mosh-plus #appShell #h13EmployeeRows{min-width:0}
+html.mosh-plus #appShell #h13EmployeeRows .h13-table-wrap{max-height:calc(100dvh - 384px);min-height:168px;overflow:auto!important;border:1px solid var(--mp-line)!important;scrollbar-width:thin;scrollbar-color:#49494f transparent;border-radius:10px!important}
+html.mosh-plus #appShell #h13EmployeeRows table{min-width:680px!important;table-layout:auto!important}
+html.mosh-plus #appShell #h13EmployeeRows table :is(th,td){padding:5px 10px!important}
+html.mosh-plus #appShell #h13EmployeeRows table th{background:var(--mp-soft)!important;height:38px!important;z-index:4!important;white-space:nowrap}
+html.mosh-plus #appShell #h13EmployeeRows table td{height:var(--mp-row)!important;font-size:14px!important;line-height:1.4!important;transition:background .12s ease}
+html.mosh-plus #appShell #h13EmployeeRows td:last-child{white-space:nowrap}
+html.mosh-plus #appShell #h13EmployeeRows .mv-person{gap:10px!important;justify-content:flex-start!important;min-width:186px!important;flex-wrap:nowrap}
+html.mosh-plus #appShell #h13EmployeeRows .mp-person-text{display:flex;flex-direction:column;gap:1px;min-width:0}
+html.mosh-plus #appShell #h13EmployeeRows .mv-person b{font-size:14px!important;line-height:1.35!important}
+html.mosh-plus #appShell #h13EmployeeRows .mv-person small{font-size:10px!important;line-height:1.25!important}
+html.mosh-plus #appShell .mp-avatar{display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:8px;background:var(--mp-soft);color:var(--mx-text);border:1px solid var(--mp-line);font-size:12px!important;font-weight:600;user-select:none}
+html.mosh-plus #appShell .mp-selected td{background:var(--mp-soft)!important}
+html.mosh-plus #appShell .mp-selected td:first-child{box-shadow:inset -2px 0 var(--mp-accent)}
+html.mosh-plus #appShell #h13EmployeeRows button.mp-peek{display:inline-flex!important;align-items:center;justify-content:center;gap:5px;background:transparent!important;border:1px solid var(--mp-line)!important;border-radius:7px!important;font-size:12px!important;min-height:30px!important;padding:3px 9px!important}
+html.mosh-plus #appShell #h13EmployeeRows button.mp-more{width:28px!important;min-width:28px!important;padding:0!important;margin-inline-start:3px!important;font-size:20px!important;color:var(--mp-muted)!important;display:inline-flex;justify-content:center;align-items:center}
+html.mosh-plus #appShell #h13EmployeeRows .mp-original-actions{display:none!important}
+html:not(.mosh-plus) #h13EmployeeRows .mp-original-actions{display:inline}
+html:not(.mosh-plus) .mp-workspace{display:block}
+html.mosh-plus #appShell .mp-sort{padding:0!important;background:transparent!important;border:0!important;color:inherit!important;font:inherit;min-height:26px!important;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+html.mosh-plus .mp-sort svg{opacity:.55}
+html.mosh-plus .mp-preview{border:1px solid var(--mp-line);border-radius:12px;background:var(--mx-input);min-width:0;overflow:hidden;position:sticky;top:12px;color:var(--mx-text)}
+html.mosh-plus .mp-preview-head{padding:12px 14px;border-bottom:1px solid var(--mp-line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+html.mosh-plus .mp-preview-head span{font-size:13px;font-weight:600}
+html.mosh-plus .mp-x{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--mp-line);border-radius:6px;background:var(--mx-card);color:var(--mp-muted);font-size:20px;cursor:pointer;line-height:1}
+html.mosh-plus .mp-identity{padding:18px 16px 14px;text-align:center}
+html.mosh-plus #appShell .mp-identity .mp-avatar{width:46px;height:46px;border-radius:12px;margin:0 auto 10px;font-size:17px!important;background:var(--mx-card)}
+html.mosh-plus .mp-identity h3{font-size:17px;line-height:1.6;margin:0 0 2px;color:var(--mx-text)}
+html.mosh-plus .mp-identity p{margin:0 0 10px;font-size:12px;color:var(--mp-muted)}
+html.mosh-plus .mp-badge{display:inline-flex;align-items:center;gap:6px;background:var(--mp-soft);border:1px solid var(--mp-line);font-size:11px;padding:3px 9px;border-radius:20px}
+html.mosh-plus .mp-badge i{width:6px;height:6px;background:var(--mp-good);border-radius:100%}
+html.mosh-plus .mp-fields{padding:0 16px;margin:0}
+html.mosh-plus .mp-field{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid var(--mp-line);padding:9px 0;font-size:12px}
+html.mosh-plus .mp-field dt{color:var(--mp-muted);flex:none}
+html.mosh-plus .mp-field dd{margin:0;color:var(--mx-text);text-align:end;overflow-wrap:anywhere;font-weight:500}
+html.mosh-plus .mp-preview-foot{padding:10px 16px 14px;font-size:11px;color:var(--mp-muted);line-height:1.7}
+html.mosh-plus #appShell .mp-preview-foot button{width:100%;margin:9px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px!important;height:36px!important}
+html.mosh-plus .mp-table-foot{display:flex;gap:8px;justify-content:space-between;padding:10px 3px 0;font-size:11px;color:var(--mp-muted)}
+html.mosh-plus .mp-action-menu{position:fixed;z-index:2147480000;min-width:168px;max-width:calc(100vw - 24px);background:var(--mx-card);border:1px solid var(--mp-line);padding:5px;border-radius:10px;box-shadow:0 12px 34px #0006;font:14px/1.6 Cairo,Arial,sans-serif;direction:rtl}
+html.mosh-plus .mp-action-menu button{display:block;width:100%;border:0;border-radius:5px;text-align:right;background:transparent;color:var(--mx-text);padding:8px 12px;font:inherit;cursor:pointer}
+html.mosh-plus .mp-action-menu button:hover{background:var(--mp-soft)}
+html.mosh-plus .mp-action-menu button.mp-danger{color:#e69da2}
+html.mosh-plus .mp-sidebar-search{margin:12px 12px 0;position:relative}
+html.mosh-plus #appShell #appSidebar .mp-sidebar-search input{width:100%;height:34px!important;min-height:34px!important;padding:5px 10px!important;font-size:12px!important;background:var(--mx-bg)!important}
+html.mosh-plus #appShell #appSidebar .nav{padding-top:7px!important}
+html.mosh-plus #appShell #appSidebar .nav a{height:40px!important;min-height:40px!important}
+html.mosh-plus #appShell #appSidebar .nav-label{font-size:13px!important}
+html.mosh-plus #appShell #appSidebar .nav a.active{box-shadow:inset -2px 0 var(--mp-accent)!important}
+html.mosh-plus #appShell #appSidebar .nav a.active::before{display:none!important}
+html.mosh-plus #appShell.mv-sidebar-collapsed .mp-sidebar-search{display:none!important}
+html.mosh-plus .mp-sidebar-empty{font-size:12px;color:var(--mp-muted);padding:14px}
+
+
+
+
+
+html.mosh-plus #appShell .pv-task-info>summary{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;min-height:54px!important;padding:12px 16px!important}
+html.mosh-plus #appShell .pv-task-inner .field-grid{gap:10px 14px!important}
+html.mosh-plus #appShell .pv-task-inner .field input[readonly]{background:transparent!important;border-color:transparent!important;padding-inline-start:0!important;min-height:30px!important;height:30px!important}
+html.mosh-plus #appShell .pv-task-notes textarea{min-height:76px!important}
+html.mosh-plus #appShell .pv-task-info>summary .pv-task-chevron{border:1px solid var(--mp-line);border-radius:7px;width:28px!important;height:28px!important;padding:2px;display:flex;align-items:center;justify-content:center;color:var(--mp-accent)!important}
+html.mosh-plus #appShell .task-chat-composer{position:relative!important;background:var(--mx-card)!important;padding:14px!important}
+html.mosh-plus #appShell .r34-chat-toolbar{background:var(--mx-input)!important;min-height:42px!important}
+html.mosh-plus #appShell .task-running-thread{scrollbar-width:thin}
+html.mosh-plus #appShell .pv-task-card .task-running-chat{height:75dvh!important;display:flex!important;flex-direction:column!important}
+html.mosh-plus .mp-stage-label{color:var(--mp-muted);font-size:11px;margin:0}
+html.mosh-plus .pv-menu-floating{box-shadow:0 16px 48px #0008!important;border-color:var(--mp-line)!important}
+html.mosh-plus .pv-menu-row{border-radius:6px;min-height:40px!important}
+html.mosh-plus #appShell #marketingApp .mk33-kpis{gap:8px!important}
+html.mosh-plus #appShell .mk33-kpi{box-shadow:none!important;background:var(--mx-input)!important;min-height:70px!important;padding:10px 14px!important}
+html.mosh-plus button:focus-visible,html.mosh-plus a:focus-visible,html.mosh-plus input:focus-visible{outline:2px solid var(--mp-accent)!important;outline-offset:2px}
+@media(min-width:1450px){html.mosh-plus{--mx-side:222px}}
+@media(max-width:1150px){html.mosh-plus #appShell .mp-workspace.mp-has-preview{grid-template-columns:minmax(0,1fr)}html.mosh-plus .mp-preview{position:fixed;z-index:1700;top:110px;bottom:16px;left:16px;width:320px;max-width:calc(100vw - 32px);overflow:auto;box-shadow:0 20px 80px #000b}html.mosh-plus .mp-shade{position:fixed;inset:0;z-index:1699;background:#0008}html.mosh-plus #appShell .mp-statusbar{gap:8px}html.mosh-plus #appShell .mp-status{padding:5px 7px!important}}
+@media(max-width:900px){html.mosh-plus{--mx-side:76px}html.mosh-plus .mp-sidebar-search{display:none!important}html.mosh-plus #appShell #h13EmployeesBody .h13-filters{grid-template-columns:1fr 1fr!important}html.mosh-plus #appShell .mv-list-count{grid-column:1/-1;flex-direction:row;justify-content:flex-start;min-height:26px;height:26px!important}html.mosh-plus #appShell .mp-workspace .h13-table-wrap{max-height:65vh}html.mosh-plus #appShell .h13-main{padding:12px!important}}
+@media(max-width:600px){html.mosh-plus{--mx-side:0px}html.mosh-plus{--mx-banner:104px}html.mosh-plus #appShell .content{padding:8px!important}html.mosh-plus #appShell .mp-statusbar{display:block}html.mosh-plus #appShell .mp-statuslist{display:flex;gap:4px;flex-wrap:nowrap;overflow:auto;padding:3px 0 8px}html.mosh-plus #appShell .mp-status{white-space:nowrap;font-size:12px!important}html.mosh-plus #appShell .mp-density{justify-content:flex-end;margin-top:3px}html.mosh-plus #appShell #h13EmployeesBody .h13-filters{grid-template-columns:1fr!important}html.mosh-plus #appShell .mp-active-filters{margin-block:8px}html.mosh-plus #appShell .mp-table-foot{flex-wrap:wrap}html.mosh-plus .mp-preview{top:116px;bottom:10px;left:10px;right:10px;width:auto;max-width:none}html.mosh-plus.mv-mobile-sidebar .mp-sidebar-search{display:block!important}html.mosh-plus #appShell .pv-task-inner .field-grid{grid-template-columns:1fr!important}}
+@media(prefers-reduced-motion:reduce){html.mosh-plus *,html.mosh-plus *::before,html.mosh-plus *::after{transition:none!important;scroll-behavior:auto!important}}
+/* Keep more usable rows: one-line title, one filter row, no duplicate status chips. */
+html.mosh-plus #appShell .h13-page-head>div:first-child{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+html.mosh-plus #appShell .h13-page-head p{margin:0!important;max-width:420px}
+html.mosh-plus #appShell .mp-statusbar{padding:8px 0!important}
+html.mosh-plus #appShell #h13EmployeesBody .h13-filters{padding:9px 10px!important;align-items:center!important}
+html.mosh-plus #appShell #h13EmployeesBody .h13-filters>label{font-size:0!important;line-height:0!important;gap:0!important}
+html.mosh-plus #appShell #h13EmployeesBody .h13-filters>label :is(input,select){font-size:14px!important;line-height:1.4!important}
+html.mosh-plus #appShell .mp-active-filters:empty{display:none!important}
+html.mosh-plus #appShell .mp-active-filters[hidden]{display:none!important}
+html.mosh-plus #appShell #h13EmployeeRows .h13-table-wrap{max-height:calc(100dvh - 322px)}
+html.mosh-plus #appShell #h13EmployeeRows .mv-person small{font-size:11px!important}
+html.mosh-plus #appShell .mp-preview-foot>span{font-size:11px}
+@media(max-width:1200px){html.mosh-plus #appShell .h13-page-head p{max-width:240px}}
+@media(max-width:600px){html.mosh-plus #appShell .h13-page-head>div:first-child{gap:3px;align-items:flex-start;flex-direction:column}html.mosh-plus #appShell #h13EmployeeRows .h13-table-wrap{max-height:60dvh}}
+/* Date and method are separate existing controls, consistently grouped even after async decoration. */
+html.mosh-plus #appShell .pv-task-inner .mp-deadline-field{display:flex!important;flex-direction:column!important}
+html.mosh-plus #appShell .pv-task-inner .mp-no-priority .mp-deadline-field{grid-column:span 2!important}
+html.mosh-plus #appShell .pv-task-inner .r34-deadline{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:5px 8px!important;align-items:start!important;padding:0!important;margin:0!important;width:100%!important;max-width:none!important;background:transparent!important;border:0!important}
+html.mosh-plus #appShell .pv-task-inner .r34-deadline>select{width:100%!important;max-width:none!important;height:42px!important;min-height:42px!important}
+html.mosh-plus #appShell .pv-task-inner .r34-deadline>select:has(+input[hidden]){grid-column:1/-1}
+html.mosh-plus #appShell .pv-task-inner .r34-deadline>small{grid-column:1/-1;font-size:11px!important;font-weight:400!important;color:var(--mp-muted)!important;margin:0!important;line-height:1.5!important}
+html.mosh-plus #appShell .pv-task-inner .m14-date{display:block!important;width:100%!important;min-height:42px!important}
+html.mosh-plus #appShell .pv-task-inner .m14-date input.m14-date-text{width:100%!important;max-width:none!important}
+html.mosh-plus #appShell .pv-task-inner .mv-task-priority{display:flex!important;flex-direction:column!important;gap:5px!important}
+html.mosh-plus #appShell .pv-task-inner .mv-task-priority .r19-task-status-panel{display:flex!important;justify-content:space-between!important;margin:0!important;min-height:42px!important}
+html.mosh-plus #appShell .pv-task-inner .field input[readonly]{height:42px!important;min-height:42px!important;background:var(--mx-input)!important;border-color:var(--mp-line)!important;padding:8px 11px!important}
+@media(max-width:600px){html.mosh-plus #appShell .pv-task-inner .mp-no-priority .mp-deadline-field{grid-column:span 1!important}}
+@media(max-width:600px){
+ html.mosh-plus #appShell{display:block!important;width:100%!important;min-width:0!important}
+ html.mosh-plus #appShell>.main{grid-column:1!important;width:100%!important;min-width:0!important;margin:0!important}
+ html.mosh-plus #appShell .main>.topbar{width:100%!important;min-height:0!important}
+ html.mosh-plus #appShell .mp-preview{z-index:3000!important}
+ html.mosh-plus .mp-shade{z-index:2999!important}
+}
+@media(max-width:600px){
+ html.mosh-plus #appShell>.main>.topbar{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;gap:6px!important;padding:8px!important;position:relative!important}
+ html.mosh-plus #appShell>.main>.topbar>div:not(.top-actions){flex:1 1 180px!important;min-width:0!important}
+ html.mosh-plus #appShell>.main>.topbar .top-actions{display:flex!important;flex-flow:row wrap!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important;flex:1 1 100%!important;width:100%!important;min-width:0!important;padding:0!important}
+ html.mosh-plus #appShell>.main>.topbar .top-actions>*{flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:100%!important;margin:0!important}
+ html.mosh-plus #appShell>.main>.topbar .top-actions>#homeTopSearch{display:none!important}
+ html.mosh-plus #appShell>.main>.topbar .top-actions>#topUserAvatar{width:28px!important;min-width:28px!important;height:28px!important}
+ html.mosh-plus #appShell>.main>.topbar .auth37-userbar{display:flex!important;flex-direction:row!important;gap:5px!important;align-items:center!important}
+ html.mosh-plus #appShell>.main>.topbar .auth37-userbar .who{display:none!important}
+ html.mosh-plus #appShell>.main>.topbar .top-actions button{width:auto!important;min-width:28px!important}
+ html.mosh-plus #appShell>.main>.topbar #o18QuickNew button{width:32px!important}
+}
+
+/* Integration fixes: no preview strip, no programmatic permission overrides. */
+html.mosh-meta{--mx-banner:0px!important}
+html.mosh-meta body{padding-top:0!important}
+html.mosh-meta #appSidebar{top:0!important;height:100dvh!important}
+html.mosh-meta #appShell{min-height:100dvh!important}
+html.mosh-meta .mosh-auth-hidden,[data-r35-hidden="true"]{display:none!important}
+html.mosh-meta .pv-menu-floating,html.mosh-meta .mp-preview{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.pv-menu-floating[hidden],.mp-action-menu[hidden],.mp-preview[hidden],.mp-shade[hidden]{display:none!important}
+.r35-menu-count{margin-inline-start:auto;font-size:12px;padding:1px 6px;border-radius:10px;background:var(--mx-hover);color:var(--mx-text)}
+.pv-menu-floating .pv-menu-row:focus-visible{outline:2px solid var(--mx-gold);outline-offset:-2px}
+.r35-task-name-input{display:none!important}
+.pv-task-info[open] .r35-task-name-input{display:flex!important}
+.pv-task-inner .field-grid .r35-task-name-input{grid-column:1/-1}
+.pv-task-info>summary{justify-content:flex-start!important;gap:8px!important;direction:rtl}
+.pv-task-info .pv-task-title{flex:0 1 auto!important}
+.pv-task-chevron{flex:none;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px}
+html.mosh-meta #appShell .pv-task-inner .field-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+html.mosh-meta #appShell .pv-task-card .task-running-chat{height:75vh;height:75dvh;max-height:none;min-height:320px}
+html.mosh-meta .r19-dialog.r35-brand-dialog{width:min(900px,calc(100vw - 24px));max-height:90dvh}
+.r35-brand-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.r35-brand-grid label{display:flex;flex-direction:column;gap:7px;min-width:0}
+.r35-brand-preview{min-height:110px;display:flex;align-items:center;justify-content:center;border:1px solid var(--mx-border);background:var(--mx-card);border-radius:12px;grid-column:1/-1;padding:18px}
+.r35-brand-preview img{max-width:260px;max-height:100px;object-fit:contain}
+.r35-brand-actions{display:flex;gap:9px;justify-content:flex-start;margin-top:16px;position:sticky;bottom:0;background:var(--mx-card);padding:12px 0}
+.r35-brand-error{color:#e88f94;white-space:pre-wrap;grid-column:1/-1}
+.r35-brand-note{font-size:13px;color:var(--mx-muted);grid-column:1/-1;line-height:1.7}
+html.mosh-meta #appShell #appLogo.r35-image-logo{display:flex!important;align-items:center;gap:7px;background:none!important;max-width:100%;min-width:0}
+html.mosh-meta #appShell #appLogo.r35-image-logo img{width:146px;max-width:calc(100% - 28px);height:42px;object-fit:contain;display:block}
+html.mosh-meta #appShell.sidebar-collapsed #appLogo.r35-image-logo{display:flex!important}
+html.mosh-meta #appShell.sidebar-collapsed #appLogo.r35-image-logo img{max-width:40px;width:40px;height:32px}
+html.mosh-meta #appShell.sidebar-collapsed #appLogo.r35-image-logo .app-version{display:none}
+html.mosh-meta #appShell.sidebar-collapsed .sidebar-head:has(.r35-image-logo){height:auto!important;min-height:70px!important;flex-direction:column;gap:4px!important;padding:8px 3px!important}
+html.mosh-meta .modal .modal-box:not(.system-settings-box){width:min(900px,calc(100vw - 24px));max-height:92dvh}
+html.mosh-meta .r19-dialog:not(.wide):not(.r35-brand-dialog){max-width:min(640px,calc(100vw - 24px))}
+html.mosh-meta .r19-dialog.wide{max-width:min(900px,calc(100vw - 24px))}
+html.mosh-meta #appShell .mp-original-actions{display:none!important}
+@media(max-width:900px){html.mosh-meta #appShell .pv-task-inner .field-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:600px){html.mosh-meta #appShell .pv-task-inner .field-grid,.r35-brand-grid{grid-template-columns:1fr!important}.r35-brand-preview,.r35-brand-error,.r35-brand-note{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.pv-task-chevron svg{transition:none!important}}
+
+html.mosh-meta #appShell #appLogo .app-version{display:inline-block!important;position:static!important;flex:none!important;min-width:22px;font-size:10px!important;color:var(--mx-muted)!important;transform:none!important;opacity:1!important;visibility:visible!important;margin:0!important}
+html.mosh-meta #appShell #appLogo{display:flex;flex-wrap:nowrap;overflow:visible;font-size:21px!important}
+html.mosh-meta #appShell.sidebar-collapsed #appLogo.r35-image-logo .app-version{display:none!important}

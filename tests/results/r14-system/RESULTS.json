@@ -1,0 +1,24 @@
+{
+  "checks": [
+    "R14 runtime loaded",
+    "global handbook nav hidden",
+    "HR handbook button exists",
+    "handbook removed from administration rail",
+    "full task details label",
+    "mandatory-read notes label",
+    "creator is automatic",
+    "administration assignment mode hidden",
+    "administration direct assignee visible",
+    "administration list contains executive",
+    "Escape opens unsaved dialog",
+    "discard closes task modal",
+    "task link initially disabled",
+    "task link enabled after customer",
+    "Rolana tasks present",
+    "other customer task filtered out",
+    "task option includes distinguishing metadata",
+    "no JavaScript runtime errors"
+  ],
+  "errors": [],
+  "environment": "real frontend + deterministic mock API; no production server"
+}

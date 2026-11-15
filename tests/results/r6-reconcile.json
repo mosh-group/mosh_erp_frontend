@@ -1,0 +1,18 @@
+{
+  "passed": 12,
+  "checks": [
+    "Detail fetched once after incomplete committed timer True",
+    "No repeated state-change write True",
+    "Detail start repairs real timer from server",
+    "Committed start equals detail value",
+    "No attendance writes True",
+    "No runtime errors True",
+    "Detail fetched once after incomplete committed timer False",
+    "No repeated state-change write False",
+    "Missing detail start is not fabricated",
+    "Missing response says state saved but timing absent",
+    "No attendance writes False",
+    "No runtime errors False"
+  ],
+  "scope": "Mocked API serializers; production backend untested"
+}

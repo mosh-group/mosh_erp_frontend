@@ -1,0 +1,1365 @@
+<!-- MOSH v32E: Manager Approval inline with Dashboard and Running Tasks + prior v32D QA fixes -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="mosh-booting mosh-compact01">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MOSH ERP — R40</title>
+<script id="moshThemeEarly21">(function(){try{var m=localStorage.getItem('mosh_theme_r21')==='light'?'light':'dark';document.documentElement.dataset.moshTheme=m;document.documentElement.style.colorScheme=m}catch(e){document.documentElement.dataset.moshTheme='dark'}})();</script>
+
+<!-- R9 first-paint guard: present before any stylesheet/runtime/authentication. -->
+<style id="moshBootCritical9">
+html.mosh-booting,html.mosh-booting body{background:#0b0e10!important}
+html.mosh-booting body>:not(#moshBootScreen9):not(#moshEntry36):not(noscript){opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+#moshBootScreen9{display:none}
+html.mosh-booting #moshBootScreen9{display:grid!important;position:fixed;inset:0;z-index:2147483647;place-items:center;background:#0b0e10;color:#edece6;text-align:center;font:16px/1.8 Arial,Tahoma,sans-serif;opacity:1!important;visibility:visible!important;padding:24px;box-sizing:border-box}
+#moshBootScreen9 .mosh-boot-box{max-width:480px}
+#moshBootScreen9 strong{display:block;font-size:26px;letter-spacing:1px;color:#d5ae48}
+#moshBootScreen9 p{margin:12px 0}
+#moshBootScreen9 a{color:#d5ae48;text-decoration:underline}
+#moshBootRetry9[hidden]{display:none!important}
+html[data-mosh-theme="light"].mosh-booting,html[data-mosh-theme="light"].mosh-booting body{background:#f4f2ed!important}
+html[data-mosh-theme="light"].mosh-booting #moshBootScreen9{background:#f4f2ed!important;color:#2d2a25!important}
+html[data-mosh-theme="light"].mosh-booting #moshBootScreen9 strong,html[data-mosh-theme="light"].mosh-booting #moshBootScreen9 a{color:#8c6f22!important}
+</style>
+<script id="moshBootGuard9">
+(function(){'use strict';
+ let finished=false,failed=false,timeout;
+ const el=id=>document.getElementById(id);
+ function paintFailure(){
+  const message=el('moshBootMessage9');if(message)message.textContent='تعذر إكمال فتح التطبيق. أعد المحاولة؛ لم تُحذف بياناتك.';
+  const retry=el('moshBootRetry9');if(retry)retry.hidden=false;
+  el('moshBootScreen9')?.setAttribute('role','alert');
+ }
+ window.MoshBoot9={
+  version:'r36-entry-1',
+  waitForLogin(){clearTimeout(timeout);},
+  loading(){clearTimeout(timeout);timeout=setTimeout(()=>this.fail(new Error('تأخر تحميل ملفات التطبيق.')),90000);},
+  finish(){
+   if(failed||finished)return;finished=true;clearTimeout(timeout);el('moshEntry36')?.remove();
+   document.documentElement.classList.remove('mosh-booting');
+   const app=el('appShell');if(app){app.removeAttribute('inert');app.removeAttribute('aria-busy');}
+   el('moshBootScreen9')?.setAttribute('aria-hidden','true');
+   document.dispatchEvent(new CustomEvent('mosh:ui-ready',{detail:{version:'r21-system-1'}}));
+  },
+  fail(error){
+   if(finished||failed)return;failed=true;clearTimeout(timeout);paintFailure();
+   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',paintFailure,{once:true});
+   console.error('MOSH startup:',error?.message||'startup failed');
+  }
+ };
+ // A failed entry script/stylesheet must not leave an endless blank screen.
+ window.addEventListener('error',event=>{
+  if(finished||failed)return;
+  const tag=event.target?.tagName;
+  if(tag==='SCRIPT'||(tag==='LINK'&&event.target.rel==='stylesheet'))window.MoshBoot9.fail(new Error('تعذر تحميل ملف من ملفات الواجهة.'));
+ },true);
+ // R36 entry/auth requests own their timeouts; waiting for the user is not a boot failure.
+
+})();
+</script>
+
+<link rel="stylesheet" href="css/styles.css?v=c45718c5e72f" media="print" data-r36-deferred-style>
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="css/task-inbox.css?v=92105bffad68" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/workdesk.css?v=07f38e5af077" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/workdesk-compact.css?v=55704a1a9eb8" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/activity-reminder.css?v=5b1b62d7f326" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/home-notices.css?v=c161170395f9" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/task-labels-r5.css?v=69083f148b2f" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/task-labels-r6.css?v=ac4e1acd0a9a" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r14-system-polish.css?v=22380b0bd2b5" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r17-permissions.css?v=ff5d6ed95614" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r16-field-fixes.css?v=8c40847fd03b" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r18-mini-workdesk.css?v=1a60f597e2df" media="print" data-r36-deferred-style>
+<script>
+window.MOSH_UI_RELEASE='R40';
+if(new URLSearchParams(location.search).get("moshMini")==="1")document.documentElement.classList.add("mosh-mini-window18");</script>
+<link rel="stylesheet" href="css/r19-common.css?v=c47bd2e2836a" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-home.css?v=5ff9e9b29b36" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-hr.css?v=c437397d0c9d" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-notifications.css?v=96232a8b90cd" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-mini.css?v=4ebd0c49acd2" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-review-header.css?v=4881b5a26a22" data-mosh-review="r19-review-header" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-review-ui.css?v=ec122bef3702" data-mosh-review="r19-review-ui" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-review-overdue.css?v=78b9db88733f" data-mosh-review="r19-review-overdue" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-review-dashboard.css?v=be7aee119a31" data-mosh-review="r19-review-dashboard" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r19-review-nav.css?v=c2bc1ebc8c84" data-mosh-review="r19-review-nav" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r20-attendance-header.css?v=5c2fe4ddc574" data-mosh-review="r20-attendance-header" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r20-employee-portal.css?v=b7713ca4e3af" data-mosh-review="r20-employee-portal" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r21-theme.css?v=cede419de324" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r24-admin.css?v=fd857dc58824" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r24-purchase-portal.css?v=5b5b78567d5d" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r25-workflow-fixes.css?v=224e183ac3f1" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r26-admin-tidy.css?v=24d653b8d1cf" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r28-instagram.css?v=5b1bb1fbe282" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r29-workflows.css?v=c665b0057ad2" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r30-shell-fixes.css?v=a455fae0bb9c" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r31-it.css?v=e3c522aa3cb3" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r32-navigation.css?v=d8b8a193fd21" media="print" data-r36-deferred-style><link rel="stylesheet" href="css/r33-navigation.css?v=0572e8b4573e" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r34-workflows.css?v=e3f0fa4eb93f" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r35-v2.css?v=858661216ebd" media="print" data-r36-deferred-style>
+<style id="moshEntry36Critical">
+#moshEntry36{display:none}html.mosh-booting #moshEntry36{display:grid!important;position:fixed;inset:0;z-index:2147483647;place-items:center;background:#08080a;color:#f5f5f5;opacity:1!important;visibility:visible!important;pointer-events:auto!important;padding:20px;box-sizing:border-box;font:16px/1.7 Tahoma,Arial,sans-serif}
+html.mosh-booting:has(#moshEntry36) #moshBootScreen9{display:none!important}
+#moshEntry36 .entry36-card{width:min(100%,390px);padding:28px;border:1px solid #303034;border-radius:16px;background:#121214;box-shadow:0 12px 45px #0005}
+#moshEntry36 h1{margin:0;text-align:center;font:700 29px/1.4 Arial,sans-serif;color:#d4af37}#moshEntry36 h2{font-size:19px;margin:12px 0 20px;text-align:center}
+#moshEntry36 label{display:block;margin-top:14px;font-size:14px}#moshEntry36 input{display:block;width:100%;min-width:0;box-sizing:border-box;height:44px;padding:8px 12px;margin-top:5px;border:1px solid #414147;border-radius:8px;background:#08080a;color:#fff;font:inherit;direction:ltr;text-align:left}
+#moshEntry36 button{font:inherit;border:1px solid #48484e;border-radius:8px;padding:8px 14px;background:#222226;color:#f5f5f5;cursor:pointer}#moshEntry36 [type=submit]{width:100%;margin-top:20px;background:#d4af37;color:#16120a;border:0;font-weight:bold}#moshEntry36 button:disabled{opacity:.6;cursor:wait}
+#moshEntry36 [hidden]{display:none!important}#entry36Status{font-size:13px;margin:14px 0 0;white-space:pre-wrap;min-height:22px}#entry36Version{display:block;text-align:center;color:#9a9aa0;margin-top:18px;font-size:12px}
+html[data-mosh-theme=light] #moshEntry36{background:#f4f3ef;color:#242329}html[data-mosh-theme=light] #moshEntry36 .entry36-card{background:#fff;border-color:#d8d8dd}html[data-mosh-theme=light] #moshEntry36 input{background:#fafafa;color:#222;border-color:#ccc}
+</style>
+<link rel="stylesheet" href="css/r36-fixes.css?v=52f4e2ee986a" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r37-rebuild.css?v=ba1bcec8e76b" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r38.css?v=2ec7c208d30e" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r39.css?v=117314e1036b" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/sidebar-readability.css?v=47801bedbf71" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/compact-reference-01.css?v=a5c0e74e571e" data-mosh-review="r19-review-compact01" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/task-dialog-04.css?v=7143aa10c1b5" data-mosh-review="r19-review-task04" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/unsaved-dialog-05.css?v=570139d7c8c2" data-mosh-review="r19-review-exit05" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/workday-tasks-06.css?v=30bf3cf978ee" data-mosh-review="r19-review-panels06" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/merged-workspace-07.css?v=6124e5283415" data-mosh-review="r19-review-merged07" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/task-workspace-08.css?v=1d4c9d09aaf4" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/ui09.css?v=12415107b2e5">
+<link rel="stylesheet" href="css/ui09-communication.css?v=161f722b2163">
+</head>
+<body>
+<section id="moshEntry36" aria-label="تسجيل الدخول إلى موش" dir="rtl">
+ <div class="entry36-card"><h1 dir="ltr">MOSH ERP</h1><h2>تسجيل الدخول</h2>
+ <form id="entry36Form"><label for="entry36Username">اسم المستخدم</label><input id="entry36Username" name="username" autocomplete="username" maxlength="80" required>
+ <label for="entry36Password">كلمة المرور</label><input id="entry36Password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+ <button id="entry36Submit" type="submit" disabled>دخول</button></form>
+ <p id="entry36Status" role="status" aria-live="polite">جارٍ التحقق من الجلسة…</p><button id="entry36Retry" type="button" hidden>إعادة المحاولة</button><small id="entry36Version">R40 · مبنية على R39</small></div>
+</section>
+<div id="moshBootScreen9" role="status" aria-live="polite" dir="rtl"><div class="mosh-boot-box"><strong>MOSH ERP</strong><p id="moshBootMessage9">جاري فتح مساحة العمل…</p><a id="moshBootRetry9" href="" hidden>إعادة المحاولة</a></div></div>
+<noscript><div style="position:fixed;inset:0;z-index:2147483647;background:#0b0e10;color:#edece6;padding:40px;text-align:center">يلزم تفعيل JavaScript لفتح التطبيق.</div></noscript>
+<div class="app" id="appShell" inert aria-busy="true">
+<aside class="sidebar" id="appSidebar">
+<div class="sidebar-head">
+<div class="logo" id="appLogo">MOSH <span>ERP</span><small class="app-version">R34</small></div>
+<button type="button" class="sidebar-toggle" id="sidebarToggleBtn" onclick="toggleSidebar()" title="طي القائمة الجانبية" aria-label="طي القائمة الجانبية">‹</button>
+</div>
+<div class="nav">
+<div class="app-name">التطبيقات</div>
+
+<a href="#" title="اللوحة الرئيسية" onclick="goApp('dashboard',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 9.5V20h11V9.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nav-label">اللوحة الرئيسية</span></a>
+<a href="#" title="المهمات" onclick="goApp('tasks',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M9 8h6M9 12h6M9 16h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><span class="nav-label">المهمات</span></a>
+<a href="#" title="قسم الإدارة" onclick="goApp('admin',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 20v-5h6v5M8 11h.01M12 11h.01M16 11h.01" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><span class="nav-label">قسم الإدارة</span></a>
+<a href="#" title="قسم الموارد البشرية" onclick="goApp('hr',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="16.5" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 19a4.5 4.5 0 0 1 9 0M13.5 19a3.5 3.5 0 0 1 7 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><span class="nav-label">قسم الموارد البشرية</span></a>
+<a href="#" title="قسم المبيعات" onclick="goApp('sales',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="6" width="14" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M8 9.5h8M9 14.5h2.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><span class="nav-label">قسم المبيعات</span></a>
+<a href="#" title="قسم التسويق" onclick="goApp('marketing',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13V8.5A1.5 1.5 0 0 1 5.5 7H8l7-3v13l-7-3H5.5A1.5 1.5 0 0 1 4 13Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M8 14.5 9.5 19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><span class="nav-label">قسم التسويق</span></a>
+<a href="#" onclick="goApp('social',this)" title="قسم السوشال ميديا"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v12H9l-5 4V4Z"/><path d="M8 8h8M8 12h5"/></svg></span><span class="nav-label">قسم السوشال ميديا</span></a>
+<a href="#" title="قسم التصميم" onclick="goApp('design',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5A7.5 7.5 0 1 0 19.5 12a2.5 2.5 0 0 1-2.5 2.5H15.5a2 2 0 0 0 0 4h.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/><circle cx="11" cy="8" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="8.5" cy="15" r="1" fill="currentColor"/></svg></span><span class="nav-label">قسم التصميم</span></a>
+<a href="#" title="قسم التصوير" onclick="goApp('photo',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M9 7l1.2-2h3.6L15 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="12" cy="12.5" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></span><span class="nav-label">قسم التصوير</span></a>
+<a href="#" title="قسم المونتاج" onclick="goApp('editing',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M9 8 7 10v4l2 2M15 8l2 2v4l-2 2M10.5 8v8M13.5 8v8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nav-label">قسم المونتاج</span></a>
+<a href="#" title="قسم الترويج" onclick="goApp('promotion',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="m15 9 4-4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="m19 5-1 4-4-1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nav-label">قسم الترويج</span></a>
+<a href="#" id="it31Nav" title="قسم الـ IT" onclick="goApp('it',this);return false"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8m-4-5v5M6 7h4M6 10h8"/></svg></span><span class="nav-label">قسم الـ <bdi dir="ltr">IT</bdi></span></a>
+<a href="#" title="قسم الخدمات الإدارية" onclick="goApp('logistics',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9v8H4zM13 10h3l2 2v3h-5z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="8" cy="17" r="1.8" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17" cy="17" r="1.8" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></span><span class="nav-label">قسم الخدمات الإدارية</span></a>
+<a href="#" title="قسم المشتريات" onclick="goApp('purchases',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="18" r="1.6" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17" cy="18" r="1.6" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4 6h2l2 8h9l2-6H7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nav-label">قسم المشتريات</span></a>
+<a href="#" title="قسم المحاسبة" onclick="goApp('accounting',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6.5" rx="5.5" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M6.5 6.5v4c0 1.4 2.5 2.5 5.5 2.5s5.5-1.1 5.5-2.5v-4M6.5 10.5v4c0 1.4 2.5 2.5 5.5 2.5s5.5-1.1 5.5-2.5v-4" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></span><span class="nav-label">قسم المحاسبة</span></a>
+<a href="#" title="منصة موش" onclick="goApp('platform',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4 12h16M12 4a13 13 0 0 1 0 16M12 4a13 13 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></span><span class="nav-label">منصة موش</span></a>
+<a href="#" id="archiveNavLink" title="الأرشيف العام" onclick="goApp('archive',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="4" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M6 9h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Z" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M10 13h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><span class="nav-label">الأرشيف العام</span></a>
+<a href="#" id="instructionsNavLink" style="display:none" title="دليل الموارد البشرية" onclick="goApp('instructions',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5.5A2.5 2.5 0 0 1 8.5 3H19v15.5A2.5 2.5 0 0 0 16.5 16H6z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M6 5.5V19a2 2 0 0 0 2 2h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 7.5h6M9 11h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><span class="nav-label">تعليمات إدارية عامة</span></a>
+</div>
+</aside>
+<main class="main">
+<div class="topbar">
+<div style="display:flex;align-items:center;gap:10px">
+<button class="btn" id="backBtn" onclick="goMainMenu()">⌂ القائمة الرئيسية</button>
+<div class="breadcrumb" id="crumb"><b>قسم المبيعات</b> / عروض الأسعار</div>
+</div>
+<div class="top-actions">
+<input id="homeTopSearch" class="search" placeholder="بحث، فلترة، تجميع..." hidden>
+<button class="btn ghost" onmousedown="event.preventDefault()" onclick="undoLastEdit()" title="تراجع عن آخر خطوة">↶</button>
+<button class="btn primary" onclick="openStandaloneTaskModal()">+ إنشاء مهمة جديدة</button>
+<button class="btn ghost" id="systemSettingsBtn" style="display:none" onclick="openSystemSettings()" title="إعدادات النظام">⚙️</button>
+<button class="btn ghost" type="button" onclick="openEmployeeAnnouncements()" title="التعاميم والتنبيهات" aria-label="التعاميم والتنبيهات">🔔</button>
+<div class="avatar" id="topUserAvatar">م</div>
+</div>
+</div>
+<div class="content">
+<section id="itApp" class="view it31-mode"><div class="it31-head"><div><h2>قسم تكنولوجيا المعلومات</h2><p>المعدات والعهد · حسابات الشركة · الاشتراكات</p></div><button type="button" class="btn" onclick="MoshIT31.load()">تحديث القسم</button></div><div id="it31Tabs" class="it31-tabs"></div><div id="it31Body"></div><div id="itAppContent" style="display:none"><div id="itTaskList"></div></div></section>
+<section id="dashboardApp" class="view active">
+<div class="toolbar">
+<div class="toolbar-left"><h2 style="margin:0">اللوحة الرئيسية</h2></div>
+</div> <div id="employeeSpaceV11" class="es11" dir="rtl"> <header class="es11-header"> <div class="es11-profile"> <div class="es11-avatar"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7.5" r="3.8" fill="currentColor" stroke="none"/><path d="M4 21v-2.2c0-4.8 16-4.8 16 0V21Z" fill="currentColor" stroke="none"/></svg></div> <div class="es11-person"><div class="es11-kicker">مساحة الموظف</div><h2 id="dashboardUserName">محمد الشويكي</h2> <div class="es11-meta"><span id="employeeDailyIdentity">—</span><span id="employeeDailyManager">المدير المباشر: —</span></div> </div> </div> <div class="es11-header-tools"> <div class="es11-clock" aria-label="الوقت الحالي"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2.5"/></svg><div><div id="dashboardLiveTime" dir="ltr">--:-- --</div><div id="dashboardLiveDate"></div></div></div> <div class="es11-work-actions"> <div class="es11-control es11-gold"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 3 15 9-15 9Z" fill="currentColor" stroke="none"/></svg><button type="button" id="workProofStart" onclick="workProofStart()">بدء العمل</button></div> <div class="es11-control"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h12v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4ZM16 9h2a3 3 0 0 1 0 6h-2M3 23h16M8 2v2m4-3v3"/></svg><button type="button" id="workProofBreak" onclick="workProofBreak()" disabled>استراحة</button></div> <div class="es11-control es11-no-work-control"><svg class="es11-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4m-7 7h6"/></svg><button type="button" id="workProofNoWork" onclick="workProofNoWork()" disabled>لا يوجد عمل لدي</button></div> <div class="es11-control es11-red"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1.5" fill="currentColor" stroke="none"/></svg><button type="button" id="workProofEnd" onclick="workProofEnd()" disabled>إنهاء العمل</button></div> </div> </div> </header> <div class="es11-main-grid"> <article class="es11-card es11-attendance">
+<div class="es11-card-head"><h3><svg aria-hidden="true" class="es11-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.85" viewbox="0 0 24 24"><rect height="16" rx="2" width="18" x="3" y="5"></rect><path d="M7 3v4m10-4v4M3 11h18M7 15h1m4 0h1m4 0h1M7 18h1m4 0h1"></path></svg>دوامي اليوم</h3><span class="es11-pill" id="es11AttendanceState"><i></i><span>لم يتم التسجيل</span></span></div>
+<div class="es11-attendance-times">
+<div><span><svg aria-hidden="true" class="es11-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.85" viewbox="0 0 24 24"><path d="M14 3h7v18h-7M3 12h12m-5-5 5 5-5 5"></path></svg>وقت الدخول</span><strong dir="ltr" id="es11CheckIn">--:--</strong><small id="es11CheckInSub">لم يتم التسجيل</small></div>
+<div><span><svg aria-hidden="true" class="es11-icon" fill="none" stroke="currentColor" stroke-width="1.85" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 6v6l4 2"></path></svg>المدة منذ الدخول</span><strong dir="ltr" id="m16EntryElapsed">--:--:--</strong><small id="m16EntryElapsedSub">بانتظار تسجيل الدخول</small></div>
+</div>
+<div class="m16-entry-note">من سجل الحضور المحفوظ؛ يظهر العداد بعد تسجيل الدخول أو ربط البصمة. ليس احتسابًا للأجر.</div>
+</article> <article class="es11-card es11-status" id="workProofBar"> <div class="es11-card-head"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h5l3-9 4 18 3-9h5"/></svg>حالة اليوم</h3></div> <div class="es11-status-body"><svg class="es11-icon es11-main-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2.5"/></svg><h4><span class="work-proof-dot" id="workProofDot"></span><span id="es11StatusTitle">لم يبدأ العمل بعد</span></h4><p id="es11StatusSub">ابدأ يومك بالضغط على زر بدء العمل</p></div> <button type="button" class="es11-button es11-gold es11-wide" id="es11MainStart" onclick="document.getElementById('workProofStart').click()"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 3 15 9-15 9Z" fill="currentColor" stroke="none"/></svg><span>بدء العمل</span></button> </article> <article class="es11-card es11-task"> <div class="es11-card-head"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4h8v3M3 12l9 3 9-3M10 15v2h4v-2"/></svg>مهمتي الحالية</h3><span class="es11-pill"><i></i><span id="es11TaskCount">لا توجد مهام حالياً</span></span></div> <div class="es11-task-body"><svg class="es11-icon es11-main-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H5v18h14V8Z"/><path d="M14 3v6h5M8 13h8m-8 4h6"/></svg><h4 id="es11TaskTitle">لا يوجد عمل لدي</h4><p id="es11TaskSub">تظهر هنا المهام المسندة إليك فقط</p></div> <button type="button" class="es11-button es11-wide" id="es11TaskButton" onclick="MoshEmployeeView11.showMyTasks()"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M15 7l5 5-5 5"/></svg><span>عرض مهامي فقط</span></button> </article> </div> <div class="es11-tiles"> <button type="button" class="es11-tile es11-purple" id="employeeAnnouncementBtn" onclick="openEmployeeAnnouncements()" aria-label="التعاميم والتنبيهات"><div class="es11-tile-copy"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H5v18h14V8Z"/><path d="M14 3v6h5M8 13h8m-8 4h6"/></svg>التعاميم والتنبيهات</h3><strong><b id="es11Unread">0</b> جديد</strong><small id="es11UnreadSub">لا توجد تعاميم غير مقروءة</small></div><div class="es11-tile-symbol"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17c3-3 2-5 3-9a5 5 0 0 1 10 0c1 4 0 6 3 9Z"/><path d="M10 21h4M12 2v1"/></svg></div></button> <button type="button" class="es11-tile es11-amber" onclick="openEmployeePortal()"><div class="es11-tile-copy"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18M7 15h1m4 0h1m4 0h1M7 18h1m4 0h1"/></svg>رصيد الإجازات</h3><strong><b id="es11Leave">0</b> يوم متبقي</strong><small id="es11LeaveSub">مستخدم 0 من 0</small></div><div class="es11-tile-symbol"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13a10 10 0 0 1 20 0c-2-2-4-2-6 0-2-2-6-2-8 0-2-2-4-2-6 0Z" fill="currentColor" stroke="none"/><path d="M12 13v6c0 4 5 4 5 0M12 2v1"/></svg></div></button> <button type="button" class="es11-tile es11-green" onclick="openEmployeePortal()"><div class="es11-tile-copy"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H5v18h14V8Z"/><path d="M14 3v6h5M8 13h8m-8 4h6"/></svg>طلباتي</h3><strong><b id="es11Requests">0</b> طلب</strong><small id="es11RequestsSub">لا توجد طلبات معلقة</small></div><div class="es11-tile-symbol"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H5v18h14V8Z"/><path d="M14 3v6h5M8 13h8m-8 4h6"/></svg></div></button> <button type="button" class="es11-tile es11-blue" onclick="MoshEmployeeView11.showAttendance()"><div class="es11-tile-copy"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18M7 15h1m4 0h1m4 0h1M7 18h1m4 0h1"/></svg>الحضور هذا الشهر</h3><strong><b id="es11Month">0</b> يوم</strong><small id="es11MonthSub">0 تأخير هذا الشهر</small></div><div class="es11-tile-symbol"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3" fill="currentColor" stroke="none"/><circle cx="17" cy="9" r="2.5" fill="currentColor" stroke="none"/><path d="M2 21v-3c0-6 14-6 14 0v3Zm15 0v-3a7 7 0 0 0-2-5c6-1 8 2 8 5v3Z" fill="currentColor" stroke="none"/></svg></div></button> </div> <div class="es11-bottom-grid"> <article class="es11-card es11-bottom-card"><div class="es11-card-head"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2.5"/></svg>سجل الدوام الأخير</h3><button type="button" class="es11-button es11-small" onclick="MoshEmployeeView11.showAttendance()"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H4m5-5-5 5 5 5"/></svg><span>عرض الكل</span></button></div><div id="es11RecentAttendance" class="es11-recent"><div class="es11-empty"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5h12M9 12h12M9 19h12"/><circle cx="3" cy="5" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="3" cy="19" r="1" fill="currentColor"/></svg><b>لا يوجد سجل دوام</b><p>سيظهر هنا آخر سجل دوام محفوظ في ملفك</p></div></div></article> <article class="es11-card es11-bottom-card es11-quick"><div class="es11-card-head"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 2-11 12h8l-1 8 11-13h-8Z" fill="currentColor" stroke="none"/></svg>إجراءات سريعة</h3></div><div class="es11-quick-grid"> <button type="button" class="es11-button " onclick="openEmployeePortal()"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H5v18h14V8Z"/><path d="M14 3v6h5M8 13h8m-8 4h6"/></svg><span>طلب جديد</span></button> <button type="button" class="es11-button " onclick="hrProOpenRequestForm('annual_leave','self')"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18M7 15h1m4 0h1m4 0h1M7 18h1m4 0h1"/></svg><span>طلب إجازة</span></button> <button type="button" class="es11-button " onclick="hrProOpenRequestForm('hourly_leave','self')"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5h12M9 12h12M9 19h12"/><circle cx="3" cy="5" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="3" cy="19" r="1" fill="currentColor"/></svg><span>طلب إذن خروج</span></button> <button type="button" class="es11-button " onclick="MoshEmployeeView11.showAttendance()"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2.5"/></svg><span>سجل الدوام</span></button> </div></article> <article class="es11-card es11-bottom-card"><div class="es11-card-head"><h3><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17c3-3 2-5 3-9a5 5 0 0 1 10 0c1 4 0 6 3 9Z"/><path d="M10 21h4M12 2v1"/></svg>آخر التنبيهات</h3><button type="button" class="es11-button es11-small" onclick="openEmployeeAnnouncements()"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H4m5-5-5 5 5 5"/></svg><span>عرض الكل</span></button></div><div id="es11RecentNotices" class="es11-recent"><div class="es11-empty"><svg class="es11-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17c3-3 2-5 3-9a5 5 0 0 1 10 0c1 4 0 6 3 9Z"/><path d="M10 21h4M12 2v1"/></svg><b>لا توجد تنبيهات حالياً</b><p>سيتم عرض التعاميم والتنبيهات الجديدة هنا</p></div></div></article> </div> <div class="employee-daily-context" hidden="" id="employeeDailyContext">
+<button class="employee-context-card action" hidden="" id="employeeRequiredAction" onclick="openEmployeeAnnouncements('action')" type="button"><span class="employee-context-label">إجراء مطلوب منك</span><b id="employeeRequiredActionTitle">—</b><small id="employeeRequiredActionText"></small></button>
+<div class="employee-context-card upcoming" hidden="" id="employeeUpcoming"><span class="employee-context-label">القادم</span><b id="employeeUpcomingTitle">—</b><small id="employeeUpcomingText"></small></div>
+</div> <div id="es11OriginalBindings" hidden aria-hidden="true"><span id="workProofStatus"></span><span id="workProofDetail"></span><span id="dashboardTodayAttendance"></span><span id="dashboardTodayAttendanceSub"></span><span id="dashboardLeaveBalance"></span><span id="dashboardLeaveBalanceSub"></span><span id="dashboardPendingRequests"></span><span id="dashboardPendingRequestsSub"></span><span id="dashboardMonthAttendance"></span><span id="dashboardMonthAttendanceSub"></span><span id="employeeAnnouncementCount"></span></div>
+</div>
+<details id="dashboardDepartments" class="home-departments"><summary><span>الأقسام والوصول السريع</span><span class="home-dept-toggle"><span class="home-dept-show">إظهار الأقسام</span><span class="home-dept-hide">طيّ الأقسام</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+<div class="dashboard-sections">
+<div class="dashboard-section-btn" onclick="goApp('tasks')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M9 8h6M9 12h6M9 16h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+<div class="name">المهمات</div>
+<div class="desc">الدخول إلى جميع مهام الشركة</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('admin')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 20v-5h6v5M8 11h.01M12 11h.01M16 11h.01" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+<div class="name">قسم الإدارة</div>
+<div class="desc">الدخول إلى قسم الإدارة</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('hr')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="16.5" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 19a4.5 4.5 0 0 1 9 0M13.5 19a3.5 3.5 0 0 1 7 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+<div class="name">قسم الموارد البشرية</div>
+<div class="desc">الدخول إلى قسم الموارد البشرية</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('sales')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="6" width="14" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M8 9.5h8M9 14.5h2.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+<div class="name">قسم المبيعات</div>
+<div class="desc">الدخول إلى قسم المبيعات</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('marketing')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13V8.5A1.5 1.5 0 0 1 5.5 7H8l7-3v13l-7-3H5.5A1.5 1.5 0 0 1 4 13Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M8 14.5 9.5 19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+<div class="name">قسم التسويق</div>
+<div class="desc">الدخول إلى قسم التسويق</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('design')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5A7.5 7.5 0 1 0 19.5 12a2.5 2.5 0 0 1-2.5 2.5H15.5a2 2 0 0 0 0 4h.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/><circle cx="11" cy="8" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="8.5" cy="15" r="1" fill="currentColor"/></svg></div>
+<div class="name">قسم التصميم</div>
+<div class="desc">الدخول إلى قسم التصميم</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('photo')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M9 7l1.2-2h3.6L15 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="12" cy="12.5" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></div>
+<div class="name">قسم التصوير</div>
+<div class="desc">الدخول إلى قسم التصوير</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('editing')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M9 8 7 10v4l2 2M15 8l2 2v4l-2 2M10.5 8v8M13.5 8v8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div class="name">قسم المونتاج</div>
+<div class="desc">الدخول إلى قسم المونتاج</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('promotion')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="m15 9 4-4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="m19 5-1 4-4-1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div class="name">قسم الترويج</div>
+<div class="desc">الدخول إلى قسم الترويج</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('logistics')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9v8H4zM13 10h3l2 2v3h-5z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="8" cy="17" r="1.8" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17" cy="17" r="1.8" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></div>
+<div class="name">قسم اللوجستيات</div>
+<div class="desc">الدخول إلى قسم اللوجستيات</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('purchases')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="18" r="1.6" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17" cy="18" r="1.6" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4 6h2l2 8h9l2-6H7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div class="name">قسم المشتريات</div>
+<div class="desc">الدخول إلى قسم المشتريات</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('accounting')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6.5" rx="5.5" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M6.5 6.5v4c0 1.4 2.5 2.5 5.5 2.5s5.5-1.1 5.5-2.5v-4M6.5 10.5v4c0 1.4 2.5 2.5 5.5 2.5s5.5-1.1 5.5-2.5v-4" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></div>
+<div class="name">قسم المحاسبة</div>
+<div class="desc">الدخول إلى قسم المحاسبة</div>
+</div>
+<div class="dashboard-section-btn" onclick="goApp('platform')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4 12h16M12 4a13 13 0 0 1 0 16M12 4a13 13 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></div>
+<div class="name">منصة MOSH MEDIA</div>
+<div class="desc">الدخول إلى منصة MOSH MEDIA</div>
+</div>
+<div class="dashboard-section-btn" id="instructionsDashboardCard" onclick="goApp('instructions')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5.5A2.5 2.5 0 0 1 8.5 3H19v15.5A2.5 2.5 0 0 0 16.5 16H6z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M6 5.5V19a2 2 0 0 0 2 2h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 7.5h6M9 11h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+<div class="name">تعليمات إدارية عامة</div>
+<div class="desc">الدخول إلى التعليمات الإدارية العامة</div>
+</div>
+<div class="dashboard-section-btn" id="archiveDashboardCard" onclick="goApp('archive')">
+<div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="4" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M6 9h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Z" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M10 13h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+<div class="name">الأرشيف العام</div>
+<div class="desc">الدخول إلى الأرشيف العام</div>
+</div>
+</div>
+</details>
+<div class="dashboard-mood-panel">
+<div class="dashboard-mood-copy">
+<div class="eyebrow">MOSH GROUP</div>
+<h3>حكمة اليوم</h3>
+<p>رتّب أولوياتك، افتح مهامك، وخلي يومك أوضح من أول دقيقة.</p>
+<div id="dashboardMoodCopyright" style="margin-top:8px;font-size:12px;line-height:1.5;color:var(--muted);text-align:right">جميع الحقوق محفوظة © <bdi dir="ltr">MOSH GROUP</bdi></div>
+</div>
+<div class="dashboard-mood-quote">
+<div class="quote-mark">✦</div>
+<div>معاً نصنع الفرق</div>
+</div>
+</div>
+</section> <section id="employeePortalApp" class="view">
+<div class="employee-portal-shell">
+<div class="employee-portal-head">
+<div>
+<div class="eyebrow">EMPLOYEE SELF-SERVICE</div>
+<h2>بوابة الموظف</h2>
+<p>ملفك اليومي، أرصدتك، طلباتك، واحتياجاتك الإدارية من مكان واحد.</p>
+</div>
+<button class="btn" type="button" onclick="closeEmployeePortal()">العودة للرئيسية</button>
+</div>
+<div class="employee-portal-profile" id="employeePortalProfile"></div>
+<div class="employee-portal-kpis" id="employeePortalKpis"></div>
+<div class="employee-portal-grid">
+<div class="employee-portal-card employee-portal-card-wide">
+<div class="employee-portal-card-head"><div><b>خدماتي</b><span>طلبات مباشرة بدون الدخول إلى الموارد البشرية</span></div></div>
+<div class="employee-portal-services">
+<button onclick="hrProOpenRequestForm('annual_leave','self')"><b>إجازة سنوية</b><small>طلب أيام من رصيدك</small></button>
+<button onclick="hrProOpenRequestForm('hourly_leave','self')"><b>إجازة ساعية</b><small>إذن خروج أو ساعات</small></button>
+<button onclick="hrProOpenRequestForm('attendance_correction','self')"><b>تصحيح دوام</b><small>نسيان بصمة أو تعديل وقت</small></button>
+<button onclick="hrProOpenRequestForm('advance','self')"><b>طلب سلفة</b><small>سلفة على الراتب</small></button>
+<button onclick="hrProOpenRequestForm('salary_certificate','self')"><b>شهادة راتب</b><small>تعريف أو شهادة عمل</small></button>
+<button onclick="hrProOpenRequestForm('document_update','self')"><b>تحديث وثيقة</b><small>هوية، جواز أو بيانات</small></button>
+</div>
+</div>
+<div class="employee-portal-card"><div class="employee-portal-card-head"><div><b>إجازاتي</b><span>الرصيد والاستخدام الحالي</span></div></div><div id="employeePortalLeaveDetails"></div></div>
+<div class="employee-portal-card"><div class="employee-portal-card-head"><div><b>الدوام</b><span>ملخص الحضور والتأخير</span></div></div><div id="employeePortalAttendance"></div></div>
+<div class="employee-portal-card employee-portal-card-wide"><div class="employee-portal-card-head"><div><b>طلباتي</b><span>آخر الطلبات وحالة كل طلب</span></div></div><div id="employeePortalRequests"></div></div>
+<div class="employee-portal-card"><div class="employee-portal-card-head"><div><b>وثائقي</b><span>المحفوظة ضمن ملف الموظف</span></div></div><div id="employeePortalDocuments"></div></div>
+<div class="employee-portal-card"><div class="employee-portal-card-head"><div><b>قريباً</b><span>نوسع البوابة مع تقدم النظام</span></div></div><div class="employee-portal-coming">الراتب والمستحقات · العهد · التقييمات · الشهادات · سجل الترقيات والإجراءات</div></div>
+</div>
+</div>
+</section> <section id="salesApp" class="view">
+<div class="menu-strip">
+<div class="menu">
+<button id="salesDistributionTab" class="design-menu-btn" onclick="openProductiveDistributionPage('sales')">القائمة الرئيسية لقسم المبيعات <span id="salesDistributionBadge" class="design-menu-badge"></span></button>
+</div>
+<div class="menu">
+<button id="salesRunningTab" class="design-menu-btn" onclick="openProductiveRunningTasksPage('sales')">مهام قسم المبيعات</button>
+</div>
+<div class="menu"><button onclick="toggleDrop('ordersDrop')">المبيعات ▾</button>
+<div id="ordersDrop" class="dropdown">
+<button onclick="salesList('quotes')">إضافة عرض سعر</button>
+<button onclick="salesList('orders')">عرض سعر موافق</button>
+<button onclick="salesList('cancelledquotes')">عرض سعر ملغي</button>
+<button onclick="salesList('servicecontracts')">عقد بيع</button>
+</div>
+</div>
+<div class="menu"><button onclick="toggleDrop('customersDrop')">العملاء ▾</button>
+<div id="customersDrop" class="dropdown">
+<button onclick="salesList('newcustomer')">إضافة عميل جديد</button>
+<button onclick="salesList('editcustomer')">تعديل معلومات عميل</button>
+<button onclick="salesList('customergroup')">قائمة العملاء</button>
+</div>
+</div>
+<div class="menu"><button onclick="toggleDrop('servicesDrop')">الخدمات ▾</button>
+<div id="servicesDrop" class="dropdown">
+<button onclick="salesList('newservice')">إضافة خدمة</button>
+<button onclick="salesList('editservice')">تعديل خدمة</button>
+<button onclick="salesList('servicelist')">قائمة الخدمات</button>
+</div>
+</div>
+<div class="menu"><button onclick="toggleDrop('reportsDrop')">إعداد التقارير ▾</button>
+<div id="reportsDrop" class="dropdown">
+<button onclick="salesList('salesreport')">إعداد تقرير مبيعات معيّن</button>
+<button onclick="salesList('customerreport')">حسب العملاء</button>
+<button onclick="salesList('salespeople')">حسب مندوبي المبيعات</button>
+<button onclick="salesList('productsreport')">حسب الخدمات</button>
+</div>
+</div>
+<div class="menu"><button onclick="toggleDrop('configDrop')">التهيئة ▾</button>
+<div id="configDrop" class="dropdown">
+<button onclick="salesList('newsalesperson')">إضافة مندوب مبيعات</button>
+<button onclick="salesList('quotetemplates')">خيارات قوالب عرض السعر</button>
+</div>
+</div>
+<div class="menu">
+<button type="button" onclick="openDeptExecReportStep3('sales','المبيعات')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+</div>
+<div id="salesDynamic"></div>
+</section> <section id="tasksApp" class="view">
+<div class="toolbar">
+<div class="toolbar-left"><h2 style="margin:0">المهمات</h2></div>
+<div class="toolbar-right"><span class="muted">جميع مهام الشركة</span></div>
+</div>
+<div id="allTasksContainer"></div>
+</section> <section id="adminApp" class="view">
+<div class="admin-tabs-only">
+<input type="radio" name="adminPureTab" id="adminTabDistribution">
+<input type="radio" name="adminPureTab" id="adminTabRunning">
+<input type="radio" name="adminPureTab" id="adminTabHome" checked>
+<input type="radio" name="adminPureTab" id="adminTabReports">
+<input type="radio" name="adminPureTab" id="adminTabApprovals">
+<input type="radio" name="adminPureTab" id="adminTabDecisions">
+<input type="radio" name="adminPureTab" id="adminTabMeetings">
+<input type="radio" name="adminPureTab" id="adminTabComms">
+<input type="radio" name="adminPureTab" id="adminTabTasks">
+<input type="radio" name="adminPureTab" id="adminTabWork">
+<div class="admin-pure-nav">
+<label id="adminDistributionTab" for="adminTabDistribution" onclick="openProductiveDistributionPage('admin')">القائمة الرئيسية لقسم الإدارة <span id="adminDistributionBadge" class="design-menu-badge"></span></label>
+<label id="adminRunningTab" for="adminTabRunning" onclick="openProductiveRunningTasksPage('admin')">مهام الإدارة</label>
+<label for="adminTabHome">الرئيسية</label>
+<label for="adminTabReports">التقارير التنفيذية</label>
+<label for="adminTabApprovals">الاعتمادات</label>
+<label for="adminTabDecisions">القرارات الإدارية</label>
+<label for="adminTabMeetings">الاجتماعات والمحاضر</label>
+<label for="adminTabComms">التعاميم والسياسات</label>
+<label for="adminTabTasks">مهام الإدارة</label>
+<label for="adminTabWork">متابعة العمل الآن</label>
+</div>
+<div class="admin-pure-pages">
+<div class="admin-pure-page admin-page-productivity">
+<div id="adminProductiveWorkspace"></div>
+</div>
+<div class="admin-pure-page admin-page-home">
+<div class="admin-pure-title">
+<h2>الإدارة التنفيذية</h2>
+<p>الرئيسية الإدارية</p>
+</div>
+<div class="admin-pure-kpis">
+<div><span>التقارير التنفيذية</span><b>تقارير الأقسام</b></div>
+<div><span>الاعتمادات</span><b>الحالات الاستثنائية فقط</b></div>
+<div><span>القرارات</span><b>سجل الإدارة</b></div>
+<div><span>الاجتماعات</span><b>المحاضر والنتائج</b></div>
+</div>
+<div class="admin-pure-grid">
+<div class="admin-pure-card">
+<h3>التقارير التنفيذية</h3>
+<p>تقارير مدراء الأقسام المرسلة للمدير التنفيذي.</p>
+<label for="adminTabReports" class="admin-pure-action">فتح التقارير</label>
+</div>
+<div class="admin-pure-card">
+<h3>مهام الإدارة</h3>
+<p>المهام التشغيلية الخاصة بالإدارة.</p>
+<label for="adminTabTasks" class="admin-pure-action">فتح المهام</label>
+</div>
+<div class="admin-pure-card">
+<h3>متابعة العمل الآن</h3>
+<p>دليل نشاط الموظفين داخل النظام.</p>
+<label for="adminTabWork" class="admin-pure-action">فتح المتابعة</label>
+</div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-reports">
+<div class="admin-pure-title">
+<h2>التقارير التنفيذية</h2>
+<p>التقارير التي يرسلها مدراء الأقسام للمدير التنفيذي.</p>
+</div>
+<div class="admin-pure-card admin-pure-launch-card">
+<button type="button" class="admin-pure-button" onclick="openExecReportsStep2()">فتح مركز التقارير التنفيذية</button>
+</div>
+<div id="adminExecReportsStep2" style="display:none"></div>
+</div>
+<div class="admin-pure-page admin-page-approvals">
+<div class="admin-pure-title">
+<h2>الاعتمادات</h2>
+<p>فقط الحالات التي تحتاج اعتماد الإدارة فعلياً.</p>
+</div>
+<div class="admin-pure-empty">
+<b>لا توجد اعتمادات إدارية حالياً</b>
+<span>المشتريات واللوجستيات الروتينية لا تدخل ضمن هذه الصفحة.</span>
+</div>
+</div>
+<div class="admin-pure-page admin-page-decisions">
+<div class="admin-pure-title">
+<h2>القرارات الإدارية</h2>
+<p>سجل القرارات والمسؤولين وحالة التنفيذ.</p>
+</div>
+<div class="admin-pure-table">
+<div class="admin-pure-row admin-pure-th">
+<span>القرار</span><span>المسؤول</span><span>القسم</span><span>الموعد</span><span>الحالة</span>
+</div>
+<div class="admin-pure-row">
+<span>لا توجد قرارات مسجلة حالياً</span><span>—</span><span>—</span><span>—</span><span>—</span>
+</div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-meetings">
+<div class="admin-pure-title">
+<h2>الاجتماعات والمحاضر</h2>
+<p>الاجتماعات الإدارية وجدول الأعمال والمحاضر.</p>
+</div>
+<div class="admin-pure-table">
+<div class="admin-pure-row admin-pure-th">
+<span>الاجتماع</span><span>التاريخ</span><span>الحضور</span><span>الحالة</span><span>المحضر</span>
+</div>
+<div class="admin-pure-row">
+<span>لا توجد اجتماعات مسجلة حالياً</span><span>—</span><span>—</span><span>—</span><span>—</span>
+</div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-comms">
+<div class="admin-pure-title">
+<h2>التعاميم والتنبيهات</h2>
+<p>نفس الأرشيف الموحد المستخدم في الموارد البشرية، مع فصل واضح بين التعميم والتنبيه.</p>
+</div>
+<div class="admin-pure-grid">
+<div class="admin-pure-card">
+<h3>مركز التواصل الموحد</h3>
+<p>التعاميم والتنبيهات محفوظة في سجل واحد مشترك بين الإدارة والموارد البشرية.</p>
+<button type="button" class="admin-pure-button" onclick="goApp('hr',null);setTimeout(()=>openHRPro('communications'),0)">فتح الأرشيف الموحد</button>
+</div>
+<div class="admin-pure-card">
+<h3>دليل الموارد البشرية</h3>
+<p>الدليل والسياسات التشغيلية أصبحت ضمن قسم الموارد البشرية.</p>
+</div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-tasks">
+<div class="admin-pure-title">
+<h2>مهام الإدارة</h2>
+<p>المهام التشغيلية الخاصة بقسم الإدارة.</p>
+</div>
+<div class="admin-pure-card admin-pure-launch-card">
+<button type="button" class="admin-pure-button" onclick="openAdminTasksV2161()">فتح مهام الإدارة</button>
+</div>
+<div id="adminAppContent" style="display:none">
+<div id="adminAppTasks"></div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-work">
+<div class="admin-pure-title">
+<h2>متابعة العمل الآن</h2>
+<p>دليل نشاط الموظفين داخل النظام، وليس نظام دوام.</p>
+</div>
+<div class="admin-pure-card admin-pure-launch-card">
+<button type="button" class="admin-pure-button" onclick="openWorkProofAdmin()">فتح متابعة العمل الآن</button>
+</div>
+<div id="adminWorkProofContent" style="display:none"></div>
+</div>
+</div>
+</div>
+</section> <section id="hrApp" class="view">
+<div class="hr-pro-nav" id="hrProNav">
+<button id="hrDistributionTab" class="active" type="button" onclick="openProductiveDistributionPage('hr')">القائمة الرئيسية لقسم الموارد البشرية <span id="hrDistributionBadge" class="design-menu-badge"></span></button>
+<button id="hrRunningTab" type="button" onclick="openProductiveRunningTasksPage('hr')">مهام قسم الموارد البشرية</button>
+<button data-hr-view="employees" onclick="openHRPro('employees',this)">الموظفون</button>
+<button data-hr-view="attendance" onclick="openHRPro('attendance',this)">الدوام والإجازات</button>
+<button data-hr-view="recruitment" onclick="openHRPro('recruitment',this)">التوظيف</button>
+<button data-hr-view="performance" onclick="openHRPro('performance',this)">الأداء والتطوير</button>
+<button data-hr-view="requests" onclick="openHRPro('requests',this)">الطلبات والموافقات</button>
+<button id="hrCommunicationsTab" data-hr-view="communications" type="button" onclick="openHRPro('communications',this)">التعاميم والتنبيهات</button>
+<button id="hrHandbookTab" type="button" onclick="goApp('instructions',this)">دليل وسياسات الموارد البشرية</button>
+<button data-hr-view="reports" onclick="openHRPro('reports',this)">التقارير</button>
+<button type="button" onclick="openDeptExecReportStep3('hr','الموارد البشرية')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+<div id="hrProContent"></div>
+<div id="hrAppContent" style="display:none">
+<div id="hrAppTasks"></div>
+</div>
+<div id="hrStaffConfigContent" style="display:none">
+<div class="toolbar">
+<div class="toolbar-left"><h2 style="margin:0">ملفات الموظفين</h2></div>
+<div class="toolbar-right"><button class="btn" onclick="openHRPro('employees')">رجوع إلى الموظفين</button></div>
+</div>
+<div id="staffWorkflowConfig"></div>
+</div>
+<div id="hrStandaloneContent" style="display:none"></div>
+</section> <section id="designApp" class="view">
+<div class="menu-strip design-top-menu">
+<div class="menu">
+<button id="designDistributionTab" class="design-menu-btn" onclick="openProductiveDistributionPage('design')">القائمة الرئيسية لقسم التصميم <span id="designDistributionBadge" class="design-menu-badge"></span></button>
+</div>
+<div class="menu">
+<button id="designRunningTab" class="design-menu-btn" onclick="openProductiveRunningTasksPage('design')">مهام قسم التصميم</button>
+</div><div class="menu"><button id="designWorkReportTab" class="design-menu-btn" onclick="openDesignWorkReport()">تقرير العمل</button>
+</div>
+<div class="menu">
+<button type="button" onclick="openDeptExecReportStep3('design','التصميم')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+</div>
+<div id="designAppContent" style="display:none">
+<div id="designTaskWorkspace"></div>
+</div>
+</section>
+<section id="photoApp" class="view">
+<div class="menu-strip design-top-menu">
+<div class="menu">
+<button id="photoDistributionTab" class="design-menu-btn" onclick="openProductiveDistributionPage('photo')">القائمة الرئيسية لقسم التصوير <span id="photoDistributionBadge" class="design-menu-badge"></span></button>
+</div>
+<div class="menu">
+<button id="photoRunningTab" class="design-menu-btn" onclick="openProductiveRunningTasksPage('photo')">مهام قسم التصوير</button>
+</div>
+<div class="menu">
+<button type="button" onclick="openDeptExecReportStep3('photo','التصوير')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+</div>
+<div id="photoAppContent" style="display:none">
+<div id="photoTaskWorkspace"></div>
+</div>
+</section>
+<section id="editingApp" class="view">
+<div class="menu-strip design-top-menu">
+<div class="menu">
+<button id="editingDistributionTab" class="design-menu-btn" onclick="openProductiveDistributionPage('editing')">القائمة الرئيسية لقسم المونتاج <span id="editingDistributionBadge" class="design-menu-badge"></span></button>
+</div>
+<div class="menu">
+<button id="editingRunningTab" class="design-menu-btn" onclick="openProductiveRunningTasksPage('editing')">مهام قسم المونتاج</button>
+</div>
+<div class="menu">
+<button type="button" onclick="openDeptExecReportStep3('editing','المونتاج')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+</div>
+<div id="editingAppContent" style="display:none">
+<div id="editingTaskWorkspace"></div>
+</div>
+</section>
+<section id="marketingApp" class="view">
+<div class="menu-strip design-top-menu">
+<div class="menu">
+<button id="marketingDistributionTab" class="design-menu-btn" onclick="openProductiveDistributionPage('marketing')">القائمة الرئيسية لقسم التسويق <span id="marketingDistributionBadge" class="design-menu-badge"></span></button>
+</div>
+<div class="menu">
+<button id="marketingRunningTab" class="design-menu-btn" onclick="openProductiveRunningTasksPage('marketing')">مهام قسم التسويق</button>
+</div>
+<div class="menu"><button id="marketingCustomersTab" class="design-menu-btn" onclick="MoshMarketingV33.openDashboard()">عملاء التسويق</button>
+</div>
+<div class="menu">
+<button type="button" onclick="openDeptExecReportStep3('marketing','التسويق')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+</div>
+<div id="marketingAppContent" style="display:none">
+<div id="marketingTaskWorkspace"></div>
+</div>
+</section>
+<section class="view" id="socialApp"><div class="menu-strip"><div class="menu"><button class="btn" id="socialDistributionTab" onclick="openProductiveDistributionPage('social')" type="button">لوحة التحكم</button></div><div class="menu"><button class="btn" id="socialRunningTab" onclick="openProductiveRunningTasksPage('social')" type="button">مهام قسم السوشال ميديا</button></div><div class="menu"><button class="btn" id="socialHubTab" onclick="openMoshSocialHub()" type="button">إدارة السوشال ميديا</button></div></div><div id="socialAppContent"><div id="socialTaskWorkspace"></div></div></section>
+<section id="purchasesApp" class="view">
+<div class="menu-strip design-top-menu">
+<div class="menu"><button id="purchasesDistributionTab" class="design-menu-btn" onclick="document.getElementById('purchasesRequestsContent').style.display='none';openProductiveDistributionPage('purchases')">القائمة الرئيسية لقسم المشتريات <span id="purchasesDistributionBadge" class="design-menu-badge"></span></button></div>
+<div class="menu"><button id="purchasesRunningTab" class="design-menu-btn" onclick="document.getElementById('purchasesRequestsContent').style.display='none';openProductiveRunningTasksPage('purchases')">مهام قسم المشتريات</button></div>
+<div class="menu"><button onclick="openSupportRequestsPage('purchase')">طلبات الشراء <span id="purchaseRequestsBadge" class="support-menu-badge"></span></button></div>
+<div class="menu"><button type="button" onclick="openDeptExecReportStep3('purchases','المشتريات')">إرسال تقرير للمدير التنفيذي</button></div>
+</div>
+<div id="purchasesAppContent" style="display:none">
+<div class="toolbar"><div class="toolbar-left"><h2 style="margin:0">قسم المشتريات</h2></div><div class="toolbar-right"><span class="muted">المهام الموجودة حاليًا في قسم المشتريات</span></div></div>
+<div id="purchasesAppTasks"></div>
+</div>
+<div id="purchasesRequestsContent" style="display:none"><div id="purchasesRequestsWorkspace"></div></div>
+</section>
+<section id="promotionApp" class="view">
+<div class="menu-strip design-top-menu">
+<div class="menu">
+<button id="promotionDistributionTab" class="design-menu-btn" onclick="openProductiveDistributionPage('promotion')">القائمة الرئيسية لقسم الترويج <span id="promotionDistributionBadge" class="design-menu-badge"></span></button>
+</div>
+<div class="menu">
+<button id="promotionRunningTab" class="design-menu-btn" onclick="openProductiveRunningTasksPage('promotion')">مهام قسم الترويج</button>
+</div>
+<div class="menu">
+<button type="button" onclick="openDeptExecReportStep3('promotion','الترويج')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+</div>
+<div id="promotionAppContent" style="display:none">
+<div id="promotionTaskWorkspace"></div>
+</div>
+</section>
+<section id="logisticsApp" class="view">
+<div class="menu-strip">
+<div class="menu"><button id="logisticsDistributionTab" class="design-menu-btn" onclick="document.getElementById('logisticsRequestsContent').style.display='none';openProductiveDistributionPage('logistics')">القائمة الرئيسية لقسم اللوجستيات <span id="logisticsDistributionBadge" class="design-menu-badge"></span></button></div>
+<div class="menu"><button id="logisticsRunningTab" class="design-menu-btn" onclick="document.getElementById('logisticsRequestsContent').style.display='none';openProductiveRunningTasksPage('logistics')">مهام قسم الخدمات الإدارية</button></div>
+<div class="menu"><button onclick="openSupportRequestsPage('logistics')">الطلبات اللوجستية <span id="logisticsRequestsBadge" class="support-menu-badge"></span></button></div>
+<div class="menu"><button type="button" onclick="openDeptExecReportStep3('logistics','اللوجستيات')">إرسال تقرير للمدير التنفيذي</button></div>
+</div>
+<div id="logisticsAppContent" style="display:none">
+<div id="logisticsAppTasks"></div>
+</div>
+<div id="logisticsRequestsContent" style="display:none"><div id="logisticsRequestsWorkspace"></div></div>
+</section> <section id="accountingApp" class="view"><div class="menu-strip"><div class="menu"><button id="accountingDistributionTab" class="design-menu-btn" onclick="resetDepartmentLanding('accounting');openProductiveDistributionPage('accounting')">القائمة الرئيسية لقسم المحاسبة <span id="accountingDistributionBadge" class="design-menu-badge"></span></button></div><div class="menu"><button id="accountingRunningTab" class="design-menu-btn" onclick="resetDepartmentLanding('accounting');openProductiveRunningTasksPage('accounting')">مهام قسم المحاسبة</button></div><div class="menu"><button onclick="toggleDrop('accountingMenuDrop')">المحاسبة ▾</button><div id="accountingMenuDrop" class="dropdown"><button onclick="openAccountingSection('packages')">قائمة الباقات</button><button onclick="openAccountingSection('billing')">مهام بانتظار الفوترة</button><button onclick="openAccountingSection('invoices')">فواتير العملاء</button></div></div><div class="menu"><button type="button" onclick="openDeptExecReportStep3('accounting','المحاسبة')">إرسال تقرير للمدير التنفيذي</button></div></div><div id="accountingTasksContent" style="display:none"><div id="accountingDepartmentTasks"></div></div>
+<div id="accountingPackagesContent" style="display:none">
+<div id="accountingPackagesWorkspace"></div>
+</div>
+<div id="accountingBillingContent" style="display:none">
+<div class="toolbar"><div class="toolbar-left"><h2 style="margin:0">قسم المحاسبة / مهام بانتظار الفوترة</h2></div></div>
+<div class="panel" style="margin-bottom:14px">
+<table class="list-table">
+<thead><tr><th class="mt54-reference" hidden aria-hidden="true">رقم المهمة</th><th>المهمة</th><th>العميل</th><th>مرجع أمر المبيعات</th><th>القسم الأخير</th><th>الحالة</th><th></th></tr></thead>
+<tbody id="billingTaskRows"></tbody>
+</table>
+<div class="empty" id="billingTaskEmpty">لا يوجد مهام بانتظار الفوترة.</div>
+</div>
+</div>
+<div id="accountingInvoicesContent" style="display:none">
+<div class="toolbar"><div class="toolbar-left"><h2 style="margin:0">قسم المحاسبة / فواتير العملاء</h2></div></div>
+<div class="accounting-cards">
+<div class="metric"><div class="muted">ذمم العملاء</div><div class="n" id="arTotal">0</div></div>
+<div class="metric"><div class="muted">فواتير العملاء</div><div class="n" id="invCount">0</div></div>
+<div class="metric"><div class="muted">الصندوق</div><div class="n">0</div></div>
+<div class="metric"><div class="muted">البنك</div><div class="n">0</div></div>
+</div>
+<div class="panel">
+<div class="toolbar" style="padding:12px;margin:0"><div class="toolbar-left"><h3 style="margin:0">فواتير العملاء</h3></div><button class="btn primary" type="button" data-f21="new-invoice">+ فاتورة عميل</button></div>
+<table class="list-table">
+<thead><tr><th>الرقم</th><th>العميل</th><th>المصدر</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+<tbody id="invoiceRows"></tbody>
+</table>
+<div class="empty" id="invoiceEmpty">لا يوجد فواتير حتى الآن.</div>
+</div>
+</div>
+</section> <section id="platformApp" class="view">
+<div class="menu-strip design-top-menu">
+<div class="menu"><button id="platformDistributionTab" class="design-menu-btn" onclick="openProductiveDistributionPage('platform')">لوحة التحكم <span id="platformDistributionBadge" class="design-menu-badge"></span></button></div>
+<div class="menu"><button id="platformRunningTab" class="design-menu-btn" onclick="openProductiveRunningTasksPage('platform')">مهام قسم MOSH MEDIA</button></div>
+<div class="menu"><button type="button" onclick="openDeptExecReportStep3('platform','MOSH MEDIA')">إرسال تقرير للمدير التنفيذي</button></div>
+</div>
+<div id="platformAppContent" style="display:none">
+<div id="platformTaskWorkspace"></div>
+</div>
+</section> <section id="instructionsApp" class="view"> <div class="hb17" id="handbook17" dir="rtl"> <header class="hb17-top"><div><div class="hb17-kicker">MOSH GROUP / PEOPLE HANDBOOK</div><h1>تعليمات إدارية عامة</h1><p>دليلك للدوام والإجازات والسلوك المهني وحقوق استخدام ممتلكات الشركة، والمستحقات والمكافآت.</p></div><div class="hb17-source-chip"><b>20</b>صفحة في الدليل المرفق</div></header> <div class="hb17-tools"><div class="hb17-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="hb17Search" placeholder="ابحث عن تعليمة… إجازة، تأخير، سلفة، شورت" aria-label="البحث في دليل السياسات" autocomplete="off"><button type="button" class="hb17-tool" id="hb17Clear" data-hb-clear hidden aria-label="مسح البحث">مسح</button></div><button type="button" class="hb17-tool " data-hb-go="overview">فهرس الدليل</button><button type="button" class="hb17-tool " data-hb-print="all">طباعة الدليل</button></div> <div id="hb17SearchStatus" aria-live="polite" role="status" class="hb17-meta"></div> <div class="hb17-layout"><details class="hb17-index" id="hb17Index" open><summary>فهرس التعليمات <span>15 موضوعاً</span></summary><nav aria-label="موضوعات تعليمات إدارية عامة"><button type="button" class="hb17-nav" data-hb-go="overview" aria-current="page"><b>⌂</b><span>بداية الدليل</span></button><button type="button" class="hb17-nav" data-hb-go="intro"><b>مقدمة</b><span>عن المجموعة وطريقة استخدام الدليل</span></button><button type="button" class="hb17-nav" data-hb-go="hours"><b>HR-01</b><span>ساعات العمل</span></button><button type="button" class="hb17-nav" data-hb-go="leave"><b>HR-02</b><span>سياسة الإجازات</span></button><button type="button" class="hb17-nav" data-hb-go="probation"><b>HR-03</b><span>فترة الاختبار</span></button><button type="button" class="hb17-nav" data-hb-go="relations"><b>HR-04</b><span>العلاقات الشخصية بين مزوّدي الخدمات</span></button><button type="button" class="hb17-nav" data-hb-go="discipline"><b>HR-05</b><span>الانضباط الوظيفي</span></button><button type="button" class="hb17-nav" data-hb-go="property"><b>HR-06</b><span>ممتلكات الشركة وسرية الأعمال</span></button><button type="button" class="hb17-nav" data-hb-go="overtime"><b>HR-07</b><span>تزويد الشركة بساعات إضافية</span></button><button type="button" class="hb17-nav" data-hb-go="advances"><b>HR-09</b><span>سياسة القرض والسلف</span></button><button type="button" class="hb17-nav" data-hb-go="performance"><b>HR-10</b><span>تقييم الأداء والمكافآت</span></button><button type="button" class="hb17-nav" data-hb-go="star"><b>HR-11</b><span>سياسة نجم الشهر</span></button><button type="button" class="hb17-nav" data-hb-go="telecom"><b>HR-12</b><span>باقات الاتصالات والدعم التقني</span></button><button type="button" class="hb17-nav" data-hb-go="expenses"><b>HR-13</b><span>المصاريف النثرية وبدلات الطوارئ</span></button><button type="button" class="hb17-nav" data-hb-go="fees"><b>HR-14</b><span>احتساب المستحقات والأتعاب</span></button><button type="button" class="hb17-nav" data-hb-go="appearance"><b>HR-15</b><span>المظهر العام واللباس</span></button><div class="hb17-nav-sep"><button type="button" class="hb17-nav" data-hb-go="notes"><b>!</b><span>توضيحات المصدر</span></button></div></nav></details><main class="hb17-main"><section data-hb-screen="overview"> <div class="hb17-meta">دليل مزوّدي الخدمات والسياسات والإجراءات</div> <h2 tabindex="-1">التعليمات أوضح… خطوة بخطوة</h2> <p class="hb17-lead">اختر الموضوع الذي تحتاجه، واقرأ القاعدة وشروطها وخطوات الإجراء. التفاصيل مقسّمة إلى عناوين قابلة للفتح والطيّ، مع رقم السياسة وصفحتها في الدليل.</p> <div class="hb17-start"><button type="button" class="hb17-tool " data-hb-go="hours">مواعيد الدوام</button><button type="button" class="hb17-tool " data-hb-go="leave">كيف أطلب إجازة؟</button><button type="button" class="hb17-tool " data-hb-go="appearance">تعليمات اللباس</button></div> <div class="hb17-statement">المصدر هو <bdi>MoshGroup HandBook.pdf</bdi>. يستخدم الدليل مصطلح «مزوّد الخدمة» ويُقرأ مع الاتفاق والسياسات الصادرة. يُحال أي تعارض أو توضيح إلى مدير الموارد البشرية. إضافة هذه الصفحة لا تغيّر العقود أو الحسابات أو مسارات الموافقات.</div> <div class="hb17-overview-grid"><button type="button" class="hb17-topic-link" data-hb-go="intro"><span class="hb17-code">مقدمة</span><span><b>عن المجموعة وطريقة استخدام الدليل</b><small>تعرّف إلى مجموعة موش، وما يتوقعه الدليل من مزوّد الخدمة، والجهة التي تراجعها عند الحاجة إلى توضيح.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="hours"><span class="hb17-code">HR-01</span><span><b>ساعات العمل</b><small>مواعيد الدوام والاستراحة، التأخير والغياب، وكيفية تنسيق العمل خارج المكتب.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="leave"><span class="hb17-code">HR-02</span><span><b>سياسة الإجازات</b><small>أنواع الإجازات ومددها، خطوات طلب الإجازة واعتمادها، وضوابط الإجازة الساعية.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="probation"><span class="hb17-code">HR-03</span><span><b>فترة الاختبار</b><small>ثلاثة أشهر للتقييم المتبادل، مع تقييم مباشر وإبلاغ رسمي بالنتيجة.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="relations"><span class="hb17-code">HR-04</span><span><b>العلاقات الشخصية بين مزوّدي الخدمات</b><small>فصل العلاقة المهنية عن الشؤون الشخصية وتجنب المحسوبية وتعارض المصالح.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="discipline"><span class="hb17-code">HR-05</span><span><b>الانضباط الوظيفي</b><small>أمثلة المخالفات، توثيق الواقعة، تدرّج التحذير ومدة سريانه.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="property"><span class="hb17-code">HR-06</span><span><b>ممتلكات الشركة وسرية الأعمال</b><small>العناية بالعهدة، ملكية المخرجات، إذن النشر، والإبلاغ عن التلف أو الفقد.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="overtime"><span class="hb17-code">HR-07</span><span><b>تزويد الشركة بساعات إضافية</b><small>موافقة مسبقة، توثيق بالبصمة، واعتماد مدير القسم قبل الإقفال الشهري.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="advances"><span class="hb17-code">HR-09</span><span><b>سياسة القرض والسلف</b><small>طلب سلفة واحد شهرياً خلال الفترة المحددة، وبحد تغطيه الأتعاب الشهرية.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="performance"><span class="hb17-code">HR-10</span><span><b>تقييم الأداء والمكافآت</b><small>ما الذي يُقيّم، متى يحدث التقييم، ومن تشملهم أهلية المكافأة؟</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="star"><span class="hb17-code">HR-11</span><span><b>سياسة نجم الشهر</b><small>معايير الترشيح والمراجعة والإعلان ومزايا نجم الشهر.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="telecom"><span class="hb17-code">HR-12</span><span><b>باقات الاتصالات والدعم التقني</b><small>استحقاق بحسب حاجة العمل، استخدام مهني، سقف شهري وملكية خطوط الشركة.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="expenses"><span class="hb17-code">HR-13</span><span><b>المصاريف النثرية وبدلات الطوارئ</b><small>متى يستحق بدل طعام أو نقل، وما الموافقات والإثباتات اللازمة للمصاريف الميدانية؟</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="fees"><span class="hb17-code">HR-14</span><span><b>احتساب المستحقات والأتعاب</b><small>مصدر بيانات الأتعاب، الاعتماد الشهري، التسليم الشخصي وسرية المعلومات المالية.</small></span></button><button type="button" class="hb17-topic-link" data-hb-go="appearance"><span class="hb17-code">HR-15</span><span><b>المظهر العام واللباس</b><small>لباس مهني مناسب للعمل، مع ضوابط واضحة للزيارات والتصوير الرسمي.</small></span></button></div> <div class="hb17-footer"><span>مقدمة + 14 سياسة واردة في الملف · أرقام السياسات محفوظة كما في المصدر</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> </section><section data-hb-screen="intro" data-hb-topic="intro" data-title="عن المجموعة وطريقة استخدام الدليل" data-code="مقدمة" data-pages="3–4" data-keywords="مقدمة شركة قيم رشوة هدايا سلوك تمييز شكوى تبليغ" hidden> <div class="hb17-meta"><span class="hb17-code">مقدمة</span><span>المصدر ص 3–4</span><span>· المجموعة والدليل</span></div> <h2 tabindex="-1">عن المجموعة وطريقة استخدام الدليل</h2><p class="hb17-lead">تعرّف إلى مجموعة موش، وما يتوقعه الدليل من مزوّد الخدمة، والجهة التي تراجعها عند الحاجة إلى توضيح.</p><div class="hb17-warning">يتضمن هذا الموضوع صياغة تحتاج توضيحاً من الموارد البشرية؛ الملاحظة مبيّنة مع البند المعني.</div> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-intro-0" open><summary>عن Mosh Group</summary><div class="hb17-block-body"><p>بحسب الدليل، تعمل Mosh Group في تطوير الأعمال والتسويق والإعلان في سوريا والمنطقة منذ عام 2019، من مقريها في دمشق وعمّان. تشمل خدماتها تطوير الأعمال والاستشارات الاستراتيجية والتسويق الرقمي وتصميم الهوية البصرية والإنتاج الإعلاني. وتركّز على الإبداع والجودة ورضا العملاء والمسؤولية، وعلى الإسهام الإيجابي في قطاع التسويق والإعلان.</p></div></details><details class="hb17-block" id="hb17-intro-1"><summary>على من ينطبق الدليل؟ وكيف يُقرأ؟</summary><div class="hb17-block-body"><ul><li>يصف المصدر نفسه بأنه «دليل مزودو الخدمات والسياسات والإجراءات». تنطبق محتوياته بالتساوي على مزوّدي الخدمة، ويجري تطبيقها حسب الاقتضاء.</li><li>يُقرأ الدليل مع محاضر الاتفاق والسياسات الصادرة وإجراءات العمل القياسية؛ وعند وجود تعارض أو حاجة إلى توضيح، تُحال المسألة إلى مدير الموارد البشرية.</li><li>ينص المصدر على صلاحية الشركة في تعديل محتوى الدليل والسياسات وإجراءات التشغيل الأخرى.</li><li>المطلوب معرفة التعليمات والالتزام بها؛ ويذكر الدليل أن الجهل بمحتوياته أو بوثيقة سياسة أخرى ليس دفاعاً في حال اتخاذ إجراء تأديبي.</li></ul><div class="hb17-note">توضيح العرض: استخدام كلمة «الموظف» في واجهة التطبيق لا يغيّر مصطلح «مزوّد الخدمة» أو طبيعة العلاقة الواردة في الدليل والاتفاق. هذه الصفحة عرض منظم للمصدر، وليست تغييراً للعقد أو لإعدادات التطبيق.</div></div></details><details class="hb17-block" id="hb17-intro-2"><summary>القيم والسلوك الشخصي</summary><div class="hb17-block-body"><ul><li>الصدق والنزاهة والأمانة والاحتراف، وتحمل المسؤولية والاستجابة وتقديم المشورة المناسبة في وقتها، مع الحفاظ على مستوى مهني عالٍ حتى أثناء الضغط أو ساعات العمل الطويلة.</li><li>تجنب اللغة البذيئة التي قد تسيء إلى زميل أو زائر، وعدم الإدلاء بملاحظات مسيئة أو مهينة تتعلق بالعرق أو الدين. ويطلب الدليل اعتذاراً فورياً إذا شعر أحد الأطراف المستمعة بالإساءة.</li><li>تكافؤ الفرص وعدم التمييز على أساس الجنس أو الحالة الاجتماعية أو الأبوية أو المعتقدات الدينية أو السياسية أو اللون أو العرق أو الأصل العرقي أو العمر أو الإعاقة أو معيار لا صلة له بالخدمة المرتقبة أو الفعلية.</li></ul></div></details><details class="hb17-block" id="hb17-intro-3"><summary>الرشاوى والمزايا والإبلاغ عن المخالفات</summary><div class="hb17-block-body"><ul><li>يحظر قبول أو تقديم رشوة أو عمولة أو ميزة من أو إلى عميل أو مورّد أو طرف ثالث. ويجب إبلاغ الموارد البشرية فوراً بأي عرض أو طلب من هذا النوع.</li><li>تشجّع الشركة، وفق فقرة «المبلغ عن المخالفات»، على إثارة المخاوف المشروعة بحسن نية لدى الموارد البشرية. وفي حال الإثبات، تقدر الإدارة مكافأة بحسب تأثير التبليغ.</li></ul><div class="hb17-note">تعارض في المصدر: صفحة 11 تدرج أيضاً عبارة «الإبلاغ عن المخالفات» ضمن أمثلة الانتهاكات، بينما صفحة 4 تشجعه بحسن نية. يلزم توضيح مدير الموارد البشرية؛ لم تُحذف العبارة أو تُحسم دلالتها في هذا العرض.</div></div></details><details class="hb17-block" id="hb17-intro-4"><summary>ضوابط التحقيق والإجراءات التأديبية</summary><div class="hb17-block-body"><ul><li>يذكر الدليل التحقيق في حالات سوء السلوك قبل اتخاذ إجراء تأديبي، وإكمال التحقيق بصورة مرضية ومعقولة للشركة.</li><li>في جميع المراحل، يتم إخطار الشخص بطبيعة الشكوى وإتاحة الفرصة له لعرض قضيته في اجتماع تأديبي قبل اتخاذ القرار.</li><li>لا يشترط أن تكون المخالفات من الطبيعة نفسها، ويمكن جمعها عند النظر في الإجراء. وتُتخذ الخطوات دون تأخير غير معقول.</li><li>تشمل الأمثلة الواردة في المقدمة: التأخير وإضاعة الوقت وضعف الأداء، واللباس غير المناسب، ومخالفات السلامة البسيطة، والسلوك التخريبي، ومهام العمل غير العادلة، والنقد المستمر غير المبرر، والسلوك المهين أو العدائي، وعدم التعاون أو العزلة أو الاستبعاد من الزملاء.</li><li>يَرِد تدرج من لفت النظر إلى الإنذارات الخطية ثم الإنذار النهائي الممكن مع الفصل. وتظل مدة كل إنذار سنة واحدة. تفاصيل التدرج في سياسة HR-05.</li></ul></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 3–4</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="overview">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="hours">الموضوع التالي ←</button></div> </section><section data-hb-screen="hours" data-hb-topic="hours" data-title="ساعات العمل" data-code="HR-01" data-pages="5–6" data-keywords="دوام حضور دخول انصراف خروج تأخير السبت الجمعة الاستراحة البصمة مرونة" hidden> <div class="hb17-meta"><span class="hb17-code">HR-01</span><span>المصدر ص 5–6</span><span>· الدوام والعلاقة المهنية</span></div> <h2 tabindex="-1">ساعات العمل</h2><p class="hb17-lead">مواعيد الدوام والاستراحة، التأخير والغياب، وكيفية تنسيق العمل خارج المكتب.</p><div class="hb17-warning">يتضمن هذا الموضوع صياغة تحتاج توضيحاً من الموارد البشرية؛ الملاحظة مبيّنة مع البند المعني.</div> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-hours-0" open><summary>الهدف والالتزام العام</summary><div class="hb17-block-body"><p>تنظيم المواعيد لتحقيق التنسيق وانسيابية العمل، والموازنة بين احتياجات العمل والراحة، والمحافظة على الإنتاجية في جميع الأقسام. المطلوب التواجد في المكتب في الموعد المحدد ومتابعة تسجيل الحضور والانصراف.</p></div></details><details class="hb17-block" id="hb17-hours-1"><summary>جدول العمل الرسمي</summary><div class="hb17-block-body"><div class="hb17-table-wrap"><table><thead><tr><th scope="col">اليوم / الحالة</th><th scope="col">الموعد أو القاعدة</th></tr></thead><tbody><tr><td>الأحد إلى الخميس</td><td>من 9:30 صباحاً إلى 5:30 مساءً.</td></tr><tr><td>السبت</td><td>من 12:00 ظهراً إلى 5:00 مساءً.</td></tr><tr><td>الجمعة</td><td>عطلة أسبوعية مدفوعة الأجر وفق السياسة.</td></tr><tr><td>العمل في العطلة الأسبوعية</td><td>قد يُطلب للضرورة أو للعمل العاجل، ويعوّض وفق سياسة الساعات الإضافية HR-07.</td></tr></tbody></table></div></div></details><details class="hb17-block" id="hb17-hours-2"><summary>استراحة الغداء</summary><div class="hb17-block-body"><ul><li>نصف ساعة يومياً، عدا السبت، من 1:00 إلى 1:30 ظهراً.</li><li>تُستخدم للغداء أو الأنشطة الشخصية بما يتوافق مع الحاجة.</li></ul><div class="hb17-note">النص كما ورد في صفحة 5: «يعتبر هذا الوقت خارج ساعات العمل الرسمية ولا يخصم من إجمالي ساعات العمل اليومية». أبقيت العبارة دون افتراض طريقة إضافية لاحتسابها؛ أي تفسير محاسبي يرجع للموارد البشرية.</div></div></details><details class="hb17-block" id="hb17-hours-3"><summary>عند التأخير أو الغياب</summary><div class="hb17-block-body"><ul><li>أبلغ مديرك المباشر مسبقاً واشرح السبب؛ ويتولى المدير أو مشرف القسم التنسيق مع الموارد البشرية.</li><li>إذا كان السبب مقبولاً، تناقش الحلول المناسبة مع الإدارة. ويذكر الدليل خصم مدة التأخير من تقديم الخدمة اليومي في جميع الحالات، واستقطاعاً إذا لم يتم إكمال 8 ساعات في اليوم نفسه أو غيره.</li><li>الغياب المتكرر أو غير المبرر يخضع لإجراءات الانضباط.</li></ul><div class="hb17-note">توضيح مطلوب من الموارد البشرية: النص العام الخاص بثماني ساعات يُقرأ بجانب جدول السبت ذي الخمس ساعات. لا يفترض هذا العرض خصماً آلياً على السبت، ولا يغيّر احتساب الأجر أو الحضور.</div></div></details><details class="hb17-block" id="hb17-hours-4"><summary>مرونة الأقسام الميدانية والاستثناءات</summary><div class="hb17-block-body"><ul><li>يمكن للأقسام التي تتطلب طبيعتها فعاليات أو عملاً خارج المكتب وفي أوقات غير رسمية، مثل التصوير والترويج، طلب مرونة في الساعات.</li><li>يحدد القسم الساعات المطلوب تعديلها أو إعادة توزيعها حسب الفعالية أو المهمة، ويحصل على موافقة المدير المباشر، مع متابعة التعويض عن الإضافي أو الغياب مع الموارد البشرية.</li><li>يُبلّغ المعنيون بالتعديل ويُوثق في سجلات الحضور. ويجب ألا يؤثر التنسيق على سير الأقسام الأخرى أو رضا العملاء.</li><li>أي تغير بسبب ظرف طارئ أو حاجة شخصية يُبلّغ به المدير المباشر في أقرب وقت، ثم ينسق مشرف القسم مع الموارد البشرية. وتخضع الاستثناءات لتقدير المدير والإجراءات المعتمدة.</li></ul></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 5–6</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="intro">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="leave">الموضوع التالي ←</button></div> </section><section data-hb-screen="leave" data-hb-topic="leave" data-title="سياسة الإجازات" data-code="HR-02" data-pages="7–8" data-keywords="إجازة اجازة سنوية مرضية أمومة زواج وفاة رصيد إذن ساعية ساعتين ساعات خروج 14 24" hidden> <div class="hb17-meta"><span class="hb17-code">HR-02</span><span>المصدر ص 7–8</span><span>· الدوام والعلاقة المهنية</span></div> <h2 tabindex="-1">سياسة الإجازات</h2><p class="hb17-lead">أنواع الإجازات ومددها، خطوات طلب الإجازة واعتمادها، وضوابط الإجازة الساعية.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-leave-0" open><summary>الهدف</summary><div class="hb17-block-body"><p>تنظيم العلاقة بين مزوّد الخدمة والمدير المباشر والموارد البشرية عند طلب الإجازة، مع متابعة الرصيد وضمان الاستحقاق واستمرار العمل وإتاحة الراحة والتجديد.</p></div></details><details class="hb17-block" id="hb17-leave-1"><summary>أنواع الإجازات والاستحقاق الوارد في الدليل</summary><div class="hb17-block-body"><div class="hb17-table-wrap"><table><thead><tr><th scope="col">نوع الإجازة</th><th scope="col">المدة</th><th scope="col">الشرط أو المستند</th></tr></thead><tbody><tr><td>سنوية</td><td>14 يوماً مدفوعة الأجر</td><td>المراجعة النهائية تشمل رصيد الإجازات والاستحقاق.</td></tr><tr><td>مرضية</td><td>بحد أقصى 14 يوماً في السنة، مدفوعة الأجر</td><td>تقرير طبي معتمد وموثّق.</td></tr><tr><td>أمومة</td><td>120 يوماً للمولود الأول؛ 90 للثاني؛ 75 للثالث</td><td>مدفوعة الأجر مع شهادة طبية مصدقة أصولاً.</td></tr><tr><td>زواج</td><td>7 أيام مدفوعة الأجر</td><td>إتمام سنة في الشركة.</td></tr><tr><td>وفاة</td><td>3 أيام مدفوعة الأجر</td><td>وفاة قريب مما يسميه الدليل الدرجة الأولى: الإخوة، أحد الوالدين، الزوج أو الزوجة.</td></tr></tbody></table></div><div class="hb17-note">حدود المصدر: الدليل المرفق لا يشرح معادلة التقسيط الشهري أو ترحيل الرصيد، ولا يفصل حالات غير المذكورة بالجدول. عرض السياسة هنا لا يغيّر إعدادات احتساب الإجازة الموجودة في التطبيق.</div></div></details><details class="hb17-block" id="hb17-leave-2"><summary>تقديم الإجازة وموافقة المدير</summary><div class="hb17-block-body"><ol><li>قدّم الطلب كتابة باستخدام نموذج الإجازة، مع تحديد النوع وتاريخ البدء والانتهاء، واحصل على توقيع المدير المباشر.</li><li>قدّم الطلب قبل الموعد المحدد بـ24 ساعة. وفق الدليل، عدم الالتزام بهذه المدة يجعل الإجازة بلا أجر، إلا إذا كانت اضطرارية لسبب مثل المرض أو الوفاة.</li><li>للمدير قبول الطلب أو رفضه مع توضيح الأسباب. وعند الموافقة، يرسله إلى الموارد البشرية للمراجعة النهائية.</li></ol></div></details><details class="hb17-block" id="hb17-leave-3"><summary>المراجعة النهائية والرصيد</summary><div class="hb17-block-body"><ol><li>تراجع الموارد البشرية الرصيد المتاح والاستحقاق. وإذا كان الرصيد مستنفداً، تُعلم مزوّد الخدمة وتتخذ الإجراءات اللازمة.</li><li>تصدر الموافقة النهائية أو الرفض، ويُشعر الشخص بالقرار مع تحديد تواريخ الإجازة الدقيقة.</li></ol></div></details><details class="hb17-block" id="hb17-leave-4"><summary>الإجازة الساعية / إذن الخروج</summary><div class="hb17-block-body"><ul><li>حدّد السبب ومدة الغياب بدقة، وقدّم الطلب قبل موعده بوقت كافٍ.</li><li>احصل على موافقة المدير المباشر قبل الإجازة، وسجّل وقت الخروج ووقت العودة لحساب المدة.</li><li>إذا تجاوزت الإجازة الساعية ثلاث ساعات وتعذر تعويضها بالعمل بعد الدوام الرسمي، ينص الدليل على استقطاع أجر يوم كامل.</li><li>للمدير المباشر رفض الطلب أو تأجيله وفق مقتضيات مصلحة العمل.</li></ul></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 7–8</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="hours">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="probation">الموضوع التالي ←</button></div> </section><section data-hb-screen="probation" data-hb-topic="probation" data-title="فترة الاختبار" data-code="HR-03" data-pages="9" data-keywords="تجربة اختبار 3 أشهر ثلاثة تعيين جديد تقييم" hidden> <div class="hb17-meta"><span class="hb17-code">HR-03</span><span>المصدر ص 9</span><span>· الدوام والعلاقة المهنية</span></div> <h2 tabindex="-1">فترة الاختبار</h2><p class="hb17-lead">ثلاثة أشهر للتقييم المتبادل، مع تقييم مباشر وإبلاغ رسمي بالنتيجة.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-probation-0" open><summary>الهدف والنطاق</summary><div class="hb17-block-body"><p>تتيح فترة الاختبار لمزوّد الخدمة والشركة مراجعة ملاءمة العمل قبل الالتزام بالتوظيف الدائم. تنطبق السياسة على المنضمين الجدد المطلوب منهم قضاء فترة اختبار، لتقييم المعرفة والمهارات والموقف المهني. ويذكر المصدر هدف الامتثال للتشريعات المحلية.</p></div></details><details class="hb17-block" id="hb17-probation-1"><summary>المدة والتقييم والمسؤوليات</summary><div class="hb17-block-body"><ol><li>مدة فترة الاختبار ثلاثة أشهر. ويحق لمزوّد الخدمة تقييم من مشرفه المباشر عند انتهائها.</li><li>قبل أسبوع من نهاية الفترة، يكتب مدير الموارد البشرية إلى رئيس القسم مع تاريخ إكمال الاختبار ونموذج التقييم.</li><li>المشرف المباشر مسؤول عن إكمال النموذج وتوقيعه وتقديمه لرئيس القسم للمراجعة والقرار النهائي والموافقة.</li><li>يناقش المشرف التقييم والقرار مع مزوّد الخدمة المعني. ويتولى مدير الموارد البشرية نظام متابعة يضمن إكمال تقييمات المنضمين الجدد.</li></ol></div></details><details class="hb17-block" id="hb17-probation-2"><summary>النتيجة الرسمية</summary><div class="hb17-block-body"><ul><li>بناء على القرار النهائي، ترسل الموارد البشرية تأكيد إكمال فترة الاختبار بنجاح.</li><li>أو ترسل خطاب إنهاء الخدمة بسبب عدم نجاح فترة الاختبار.</li></ul></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 9</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="leave">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="relations">الموضوع التالي ←</button></div> </section><section data-hb-screen="relations" data-hb-topic="relations" data-title="العلاقات الشخصية بين مزوّدي الخدمات" data-code="HR-04" data-pages="10" data-keywords="علاقات شخصية مودة محاباة محسوبية نفوذ اجتماعات" hidden> <div class="hb17-meta"><span class="hb17-code">HR-04</span><span>المصدر ص 10</span><span>· الدوام والعلاقة المهنية</span></div> <h2 tabindex="-1">العلاقات الشخصية بين مزوّدي الخدمات</h2><p class="hb17-lead">فصل العلاقة المهنية عن الشؤون الشخصية وتجنب المحسوبية وتعارض المصالح.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-relations-0" open><summary>الغاية من السياسة</summary><div class="hb17-block-body"><p>الحفاظ على بيئة عمل جيدة وعلاقات مهنية، وفصل الشؤون الشخصية والمهنية، وتجنب النزاعات التي تشتت التركيز والإنتاجية، ومنع المحسوبية والتمييز.</p></div></details><details class="hb17-block" id="hb17-relations-1"><summary>التوصيات والقيود</summary><div class="hb17-block-body"><ul><li>يوصي الدليل بشدة بتجنب العلاقات الشخصية التي قد تنشأ مع أي موظف في الشركة.</li><li>يجب الامتناع عن الإظهار العلني للمودة داخل مقر الشركة، مثل إمساك الأيدي والمعانقة.</li><li>لا يجوز استخدام المنصب أو النفوذ على الزملاء لتحقيق مكاسب شخصية من أي نوع.</li><li>لا يجوز استخدام الشركة مكاناً للاجتماعات الشخصية، خصوصاً بعد ساعات العمل.</li></ul></div></details><details class="hb17-block" id="hb17-relations-2"><summary>عند المخالفة</summary><div class="hb17-block-body"><p>ينص المصدر على تطبيق الإجراءات التأديبية بحق المعنيين عند الانحراف عما ورد أعلاه. عرض التوصية والقيود هنا يحافظ على الفرق بين ما صيغ كتوصية وما صيغ كمنع.</p></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 10</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="probation">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="discipline">الموضوع التالي ←</button></div> </section><section data-hb-screen="discipline" data-hb-topic="discipline" data-title="الانضباط الوظيفي" data-code="HR-05" data-pages="11؛ وتُقرأ معه ص 4" data-keywords="إنذار تنبيه فصل مخالفة تحذير لفت نظر شائعات سرية" hidden> <div class="hb17-meta"><span class="hb17-code">HR-05</span><span>المصدر ص 11؛ وتُقرأ معه ص 4</span><span>· الدوام والعلاقة المهنية</span></div> <h2 tabindex="-1">الانضباط الوظيفي</h2><p class="hb17-lead">أمثلة المخالفات، توثيق الواقعة، تدرّج التحذير ومدة سريانه.</p><div class="hb17-warning">يتضمن هذا الموضوع صياغة تحتاج توضيحاً من الموارد البشرية؛ الملاحظة مبيّنة مع البند المعني.</div> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-discipline-0" open><summary>الهدف والنطاق</summary><div class="hb17-block-body"><p>تعزيز كفاءة سير العمل والمساءلة، والحفاظ على بيئة منتجة ومحترمة مع فرص للتحسين. يشير هذا القسم إلى جميع العاملين ومزوّدي الخدمات كما ورد في المصدر.</p></div></details><details class="hb17-block" id="hb17-discipline-1"><summary>أمثلة الانتهاكات المذكورة</summary><div class="hb17-block-body"><ul><li>الفشل في أداء الوظيفة، سوء السلوك أو السلوك غير القانوني، المضايقة أو العنف تجاه الزملاء، مخالفات اللباس والحضور، وخيانة الأمانة والتمييز.</li><li>السلوك غير اللائق مع الزملاء أو العملاء، تعاطي المخدرات في مكان العمل، خرق السرية وتضارب المصالح، وإهمال السلامة.</li><li>انتهاك سياسات الشركة أو إجراءاتها، العصيان، إتلاف الممتلكات، والاستخدام الشخصي المفرط لموارد الشركة.</li><li>خلق بيئة عدائية، النميمة أو نشر الشائعات، رفض التعليقات أو التدريب، وعدم تلبية المعايير أو السلوك المهني.</li></ul><div class="hb17-note">وردت أيضاً عبارة «الإبلاغ عن المخالفات» ضمن أمثلة صفحة 11. وهي متعارضة مع تشجيع التبليغ المشروع بحسن نية في صفحة 4؛ تُراجع الموارد البشرية لتوضيحها ولا تُعرض هنا كحظر محسوم على التبليغ.</div></div></details><details class="hb17-block" id="hb17-discipline-2"><summary>توثيق الواقعة وضمان سماع الطرف المعني</summary><div class="hb17-block-body"><ul><li>يبدأ تنفيذ التحذير بطلب يوضح التاريخ والوقت والسبب وشرح الحادثة بشكل كامل.</li><li>تُقرأ هذه الخطوة مع ضوابط صفحة 4: التحقيق الكامل، وإخطار الشخص بطبيعة الشكوى، وإتاحة عرض قضيته في اجتماع قبل القرار، وعدم التأخير غير المعقول.</li></ul></div></details><details class="hb17-block" id="hb17-discipline-3"><summary>تدرّج التحذير كما ورد</summary><div class="hb17-block-body"><div class="hb17-table-wrap"><table><thead><tr><th scope="col">المرحلة</th><th scope="col">متى تستخدم بحسب الدليل؟</th></tr></thead><tbody><tr><td>لفت نظر</td><td>المخالفة البسيطة؛ فرصة للتواصل وتصحيح المشكلة فوراً.</td></tr><tr><td>الإنذار الأول</td><td>استمرار انخفاض الأداء بعد لفت النظر؛ تحذير رسمي للتعامل مع المشكلة بجدية.</td></tr><tr><td>التحذير الثاني</td><td>عدم إحراز تقدم مرضٍ أو تكرار سوء السلوك.</td></tr><tr><td>الإنذار الثالث «نهائي بالفصل»</td><td>عدم التحسن بعد التحذيرات السابقة أو حصول تجاوزات خطيرة، للتنبيه إلى العواقب.</td></tr><tr><td>الإنذار النهائي «أو فصل مباشر»</td><td>استمرار السلوك أو الأداء غير المرضي رغم التدخلات؛ يذكر النص الإنهاء نتيجة نهائية عند عدم التحسن وكملاذ أخير.</td></tr></tbody></table></div><div class="hb17-note">عناوين مرحلتي «الإنذار الثالث» و«الإنذار النهائي» متداخلة في المصدر. أبقيتا منفصلتين كما وردتا؛ تحديد الإجراء في واقعة معينة يحتاج مراجعة الموارد البشرية، ولا يُنشئ هذا العرض إنذاراً أو فصلاً تلقائياً.</div></div></details><details class="hb17-block" id="hb17-discipline-4"><summary>مدة السريان</summary><div class="hb17-block-body"><p>كل تحذير يظل سارياً لمدة سنة واحدة، وفق السياسة.</p></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 11؛ وتُقرأ معه ص 4</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="relations">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="property">الموضوع التالي ←</button></div> </section><section data-hb-screen="property" data-hb-topic="property" data-title="ممتلكات الشركة وسرية الأعمال" data-code="HR-06" data-pages="12" data-keywords="عهدة لابتوب موبايل سيارة معدات تلف سرقة نشر بورتفوليو ملكية عميل سرية" hidden> <div class="hb17-meta"><span class="hb17-code">HR-06</span><span>المصدر ص 12</span><span>· الأصول والمستحقات</span></div> <h2 tabindex="-1">ممتلكات الشركة وسرية الأعمال</h2><p class="hb17-lead">العناية بالعهدة، ملكية المخرجات، إذن النشر، والإبلاغ عن التلف أو الفقد.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-property-0" open><summary>العناية بالأصول</summary><div class="hb17-block-body"><p>يقع على مزوّد الخدمة واجب العناية بأصول الشركة المقدمة لأداء المهام، ومنها المباني والمعدات والمركبات والأثاث والإلكترونيات والمستندات. وتشمل المسؤولية صيانة وأمن العناصر المسلّمة مثل المعدات والمركبات وبطاقات الهوية.</p></div></details><details class="hb17-block" id="hb17-property-1"><summary>ملكية الأعمال وحق النشر</summary><div class="hb17-block-body"><ul><li>التصاميم والفيديوهات والحملات التسويقية وغيرها من المخرجات التي يشارك مزوّد الخدمة في إنتاجها تعد، وفق الدليل، ملكية حصرية للشركة.</li><li>المشاركة أو المساعدة في تنفيذ العمل لا تمنح حق ملكيته أو استخدامه خارج المهام الرسمية.</li><li>لا ينشر أو يشارك أي جزء من الأعمال على الحسابات الشخصية في التواصل الاجتماعي أو المواقع إلا بموافقة خطية صريحة من الإدارة، وفق الاتفاقية الموقّعة.</li></ul></div></details><details class="hb17-block" id="hb17-property-2"><summary>السرية أثناء التعاون وبعده</summary><div class="hb17-block-body"><ul><li>الحفاظ على سرية بيانات العملاء والخطط الاستراتيجية والميزانيات وقوائم بيانات الشركة.</li><li>عدم تسريب أو تداول معلومات سير العمل الداخلية أو أسرار المهنة لطرف ثالث. يذكر الدليل استمرار الالتزام بعد انتهاء التعاون.</li></ul></div></details><details class="hb17-block" id="hb17-property-3"><summary>الفقد أو التلف أو الحوادث</summary><div class="hb17-block-body"><ul><li>أبلغ مديرك المباشر والموارد البشرية فور وقوع خسارة أو ضرر بممتلكات الشركة.</li><li>تجري الموارد البشرية التحقيق بصورة أساسية، وتوفر المشتريات والشؤون المالية المعلومات وتقديرات الإصلاح أو الاستبدال اللازمة.</li><li>إذا أثبت التحقيق الإهمال، قد يتبع ذلك إجراء تأديبي مناسب، ويذكر المصدر ضمنه خصم تكاليف الإصلاح أو الاستبدال من الراتب. تنطبق السياسة بغض النظر عن المنصب.</li></ul></div></details><details class="hb17-block" id="hb17-property-4"><summary>المشاركة والاستخدام غير المصرّح</summary><div class="hb17-block-body"><p>يحظر توزيع الممتلكات أو مشاركتها أو منحها، بما فيها أصول العميل، لشخص أو منظمة غير مصرح لها دون موافقة مسبقة. ويشمل ذلك المستندات والتقارير والرسومات والخطط والمذكرات والمراسلات والسجلات والمواد الأخرى ونسخها، مع التعامل معها بسرية وعناية.</p></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 12</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="discipline">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="overtime">الموضوع التالي ←</button></div> </section><section data-hb-screen="overtime" data-hb-topic="overtime" data-title="تزويد الشركة بساعات إضافية" data-code="HR-07" data-pages="13" data-keywords="إضافي اوفر تايم ساعات 1.25 بصمة مدير شهر" hidden> <div class="hb17-meta"><span class="hb17-code">HR-07</span><span>المصدر ص 13</span><span>· الأصول والمستحقات</span></div> <h2 tabindex="-1">تزويد الشركة بساعات إضافية</h2><p class="hb17-lead">موافقة مسبقة، توثيق بالبصمة، واعتماد مدير القسم قبل الإقفال الشهري.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-overtime-0" open><summary>التعريف والأهلية</summary><div class="hb17-block-body"><ul><li>تذكر السياسة أن ساعات تقديم الخدمة القياسية ثماني ساعات يومياً. والساعات الإضافية هي ما يتجاوز المتفق عليه أو ما يقدّم في العطل الرسمية أو العطلة الأسبوعية.</li><li>قد تُطلب الساعات الإضافية وفق المهام المحددة من المدير المباشر. يذكر الدليل أهلية جميع مزوّدي الخدمات لتعويضها، عدا المدراء.</li></ul></div></details><details class="hb17-block" id="hb17-overtime-1"><summary>قبل العمل وبعده</summary><div class="hb17-block-body"><ol><li>الحصول على إذن المشرف أو المدير قبل تنفيذ المهمة الإضافية.</li><li>تأكيد جميع الساعات الإضافية باستخدام نظام البصمة لضمان التتبع.</li><li>تُعتمد الساعات وتحتسب بموافقة مدير القسم حصراً، وتُرسل للموارد البشرية قبل نهاية الشهر؛ وإلا تُحتسب في الشهر التالي.</li></ol></div></details><details class="hb17-block" id="hb17-overtime-2"><summary>احتساب التعويض وصرفه</summary><div class="hb17-block-body"><p>يذكر الدليل تعويض الساعات الإضافية بمعدل 1.25 ضعف أجر الساعة، في الأيام العادية والعطل الرسمية والأسبوعية، وإضافته إلى دفعة الأتعاب الشهرية.</p><div class="hb17-note">تقرأ قاعدة الثماني ساعات مع جدول السبت في HR-01. لا يحدد هذا العرض من تلقاء نفسه استثناءات إضافية أو يعيد حساب المستحقات.</div></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 13</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="property">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="advances">الموضوع التالي ←</button></div> </section><section data-hb-screen="advances" data-hb-topic="advances" data-title="سياسة القرض والسلف" data-code="HR-09" data-pages="14" data-keywords="سلفة سلف قرض قروض دين 10 25" hidden> <div class="hb17-meta"><span class="hb17-code">HR-09</span><span>المصدر ص 14</span><span>· الأصول والمستحقات</span></div> <h2 tabindex="-1">سياسة القرض والسلف</h2><p class="hb17-lead">طلب سلفة واحد شهرياً خلال الفترة المحددة، وبحد تغطيه الأتعاب الشهرية.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-advances-0" open><summary>الغرض</summary><div class="hb17-block-body"><p>تنظيم السحب النقدي وضبط السيولة، وتوثيق العمليات وتتبعها ومراجعتها، وتحديد الحقوق والالتزامات ومنع السحوبات العشوائية.</p></div></details><details class="hb17-block" id="hb17-advances-1"><summary>طلبات السلف</summary><div class="hb17-block-body"><ul><li>يسمح بطلب السلفة مرة واحدة في الشهر، خلال الفترة من يوم 10 إلى يوم 25. لا تقبل الطلبات خارج هذه الفترة.</li><li>يجب أن تغطي الأتعاب الشهرية قيمة السلفة المطلوبة. ولا يقبل مبلغ يتجاوز هذا الحد.</li></ul><div class="hb17-note">لا يورد النص هنا جدول أقساط أو رسوماً أو نسبة أخرى للسلفة؛ لم تُضف أي منها إلى التعليمات.</div></div></details><details class="hb17-block" id="hb17-advances-2"><summary>القروض والديون والمساهمات</summary><div class="hb17-block-body"><p>يذكر الدليل أن الشركة غير ملزمة بمنح قرض أو دين أو مساهمة، وأنها لا تقدم هذا النوع من التمويل، ويطلب عدم الإحراج بتقديمه. تبقى السلفة ضمن الضوابط الموضحة أعلاه.</p></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 14</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="overtime">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="performance">الموضوع التالي ←</button></div> </section><section data-hb-screen="performance" data-hb-topic="performance" data-title="تقييم الأداء والمكافآت" data-code="HR-10" data-pages="15" data-keywords="تقييم أداء مكافأة حوافز ربع سنوي ممتاز 90 70 50 إنذار" hidden> <div class="hb17-meta"><span class="hb17-code">HR-10</span><span>المصدر ص 15</span><span>· التقييم والتحفيز</span></div> <h2 tabindex="-1">تقييم الأداء والمكافآت</h2><p class="hb17-lead">ما الذي يُقيّم، متى يحدث التقييم، ومن تشملهم أهلية المكافأة؟</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-performance-0" open><summary>الغرض والنطاق ومعايير القياس</summary><div class="hb17-block-body"><p>تطبق السياسة على جميع مقدمي الخدمات، لربط الأداء بالمكافآت والحوافز ضمن إطار عادل وشفاف يعزز الإنتاجية والابتكار.</p><ul><li>الأهداف الكمية.</li><li>الأهداف النوعية.</li><li>المعايير الإدارية: الالتزام والدوام والمظهر والتعاون.</li></ul></div></details><details class="hb17-block" id="hb17-performance-1"><summary>مواعيد التقييم</summary><div class="hb17-block-body"><ul><li>تقييم ربع سنوي لمراجعة الأهداف قصيرة المدى وتصحيح المسار.</li><li>تقييم سنوي شامل في نهاية العام المالي لتحديد الزيادات السنوية والمكافآت.</li></ul></div></details><details class="hb17-block" id="hb17-performance-2"><summary>أهلية المكافأة السنوية</summary><div class="hb17-block-body"><ul><li>تقتصر الأهلية على مزوّد الخدمة الموجود على رأس عمله.</li><li>يذكر المصدر عدم الأهلية لمن تقدم بإنهاء الاتفاق، أو انتهى اتفاقه قبل صرف المكافأة، أو ما زال بفترة التجربة، أو لديه إنذاران في السنة نفسها.</li></ul></div></details><details class="hb17-block" id="hb17-performance-3"><summary>التقدير وآلية احتساب المكافأة</summary><div class="hb17-block-body"><p>في نهاية السنة الميلادية، تحدد المكافأة كنسبة من الراتب الشهري الأساسي بناء على درجة الأداء المحققة.</p><div class="hb17-table-wrap"><table><thead><tr><th scope="col">نتيجة التقييم</th><th scope="col">التقدير</th></tr></thead><tbody><tr><td>90%–100%</td><td>ممتاز</td></tr><tr><td>70%–89%</td><td>جيد</td></tr><tr><td>50%–69%</td><td>متوسط</td></tr><tr><td>0%–49%</td><td>أقل من المتوقع</td></tr></tbody></table></div><div class="hb17-note">هذه النسب درجات تقييم وليست نسب مكافأة. الدليل لا يحدد نسبة المكافأة المالية المقابلة لكل درجة؛ لم تُفترض مبالغ أو نسب غير منصوص عليها.</div></div></details><details class="hb17-block" id="hb17-performance-4"><summary>المكافآت الفورية وسرية السجلات</summary><div class="hb17-block-body"><ul><li>يجوز للإدارة صرف مكافأة فورية خارج التقييم السنوي، مثل إنجاز مشروع ضخم بوقت قياسي بعائد جيد، أو فكرة مبتكرة حسنت كفاءة الإنتاج بوضوح.</li><li>يؤخذ أداء مزوّد الخدمة على مدى شهر كامل بعين الاعتبار.</li><li>تُحفظ سجلات التقييم لدى الموارد البشرية بسرية.</li></ul></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 15</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="advances">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="star">الموضوع التالي ←</button></div> </section><section data-hb-screen="star" data-hb-topic="star" data-title="سياسة نجم الشهر" data-code="HR-11" data-pages="16" data-keywords="نجم الشهر ترشيح شهادة واتساب تقدير" hidden> <div class="hb17-meta"><span class="hb17-code">HR-11</span><span>المصدر ص 16</span><span>· التقييم والتحفيز</span></div> <h2 tabindex="-1">سياسة نجم الشهر</h2><p class="hb17-lead">معايير الترشيح والمراجعة والإعلان ومزايا نجم الشهر.</p><div class="hb17-warning">يتضمن هذا الموضوع صياغة تحتاج توضيحاً من الموارد البشرية؛ الملاحظة مبيّنة مع البند المعني.</div> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-star-0" open><summary>الهدف ونطاق الأهلية</summary><div class="hb17-block-body"><p>تقدير الجهد الاستثنائي وتحفيز الإبداع والالتزام بالجودة في مشاريع الميديا والتسويق.</p><div class="hb17-note">صياغة النطاق في المصدر: «تطبق هذه السياسة على جميع مقدمو الخدمات عدا المدراء الذين أكملوا فترة التجريبية». موضع شرط إكمال التجربة غير واضح من الجملة؛ تؤكد الموارد البشرية نطاق الأهلية قبل الترشيح، ولا يُحسم هنا بتفسير جديد.</div></div></details><details class="hb17-block" id="hb17-star-1"><summary>معايير الترشيح</summary><div class="hb17-block-body"><ul><li>التميز الفني.</li><li>كفاءة الأداء.</li><li>روح الفريق.</li><li>الابتكار.</li><li>الالتزام.</li></ul></div></details><details class="hb17-block" id="hb17-star-2"><summary>كيف يتم الاختيار والإعلان؟</summary><div class="hb17-block-body"><ol><li>ترشح الإدارة أو مشرفو الأقسام الأسماء.</li><li>تراجع الأسماء في الاجتماع الشهري.</li><li>يعلن اسم نجم الشهر في الأسبوع الأول من الشهر التالي عبر مجموعة الواتساب الرسمية.</li></ol></div></details><details class="hb17-block" id="hb17-star-3"><summary>المزايا</summary><div class="hb17-block-body"><p>مكافأة مالية وشهادة تقدير. لا يحدد المصدر قيمة نقدية ثابتة لهذه المكافأة.</p></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 16</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="performance">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="telecom">الموضوع التالي ←</button></div> </section><section data-hb-screen="telecom" data-hb-topic="telecom" data-title="باقات الاتصالات والدعم التقني" data-code="HR-12" data-pages="17" data-keywords="انترنت اتصال اتصالات باقة خط شريحة SIM دعم تقني" hidden> <div class="hb17-meta"><span class="hb17-code">HR-12</span><span>المصدر ص 17</span><span>· المصاريف والسلوك اليومي</span></div> <h2 tabindex="-1">باقات الاتصالات والدعم التقني</h2><p class="hb17-lead">استحقاق بحسب حاجة العمل، استخدام مهني، سقف شهري وملكية خطوط الشركة.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-telecom-0" open><summary>لمن تخصص الباقات؟</summary><div class="hb17-block-body"><p>لتنظيم الاتصال بالعملاء وإنجاز المشاريع وضبط النفقات. تقتصر على من تتطلب مهامهم تواصلاً مستمراً مع العملاء أو إدارة المنصات الرقمية، مثل مدراء الحسابات ومسؤولي الدعم الفني والاتصال، ولا تُمنح للجميع تلقائياً.</p></div></details><details class="hb17-block" id="hb17-telecom-1"><summary>الموافقة والاستخدام والسقف</summary><div class="hb17-block-body"><ul><li>تمنح باقة اتصال أو إنترنت، أو تعويضاً محدد القيمة مسبقاً، بناء على حاجة العمل الفعلية وبموافقة المدير التنفيذي.</li><li>تستخدم لمهام العمل والتواصل مع العملاء فقط؛ الاستخدام الشخصي محظور.</li><li>تحدد الإدارة حداً أقصى شهرياً. وعند تجاوزه دون إذن مسبق ومبرر مهني واضح، يتحمل مزوّد الخدمة الكلفة الزائدة وتخصم من مستحقاته وفق النص.</li></ul></div></details><details class="hb17-block" id="hb17-telecom-2"><summary>ملكية الشريحة والرقم</summary><div class="hb17-block-body"><p>الشريحة والرقم المسلّمان من الشركة يظلان ملكاً لها، وتوقفهما الإدارة أو تستردهما فور انتهاء أو إنهاء التعاقد.</p></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 17</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="star">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="expenses">الموضوع التالي ←</button></div> </section><section data-hb-screen="expenses" data-hb-topic="expenses" data-title="المصاريف النثرية وبدلات الطوارئ" data-code="HR-13" data-pages="18" data-keywords="طعام وجبة عشاء مواصلات نقل مصاريف نثرية طوارئ فاتورة 20000 200 12 ساعة" hidden> <div class="hb17-meta"><span class="hb17-code">HR-13</span><span>المصدر ص 18</span><span>· المصاريف والسلوك اليومي</span></div> <h2 tabindex="-1">المصاريف النثرية وبدلات الطوارئ</h2><p class="hb17-lead">متى يستحق بدل طعام أو نقل، وما الموافقات والإثباتات اللازمة للمصاريف الميدانية؟</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-expenses-0" open><summary>الأصل العام والنطاق</summary><div class="hb17-block-body"><p>تطبق السياسة على مزوّدي الخدمات الداخليين والميدانيين عند أداء مهام لصالح الشركة. الأصل أن الشركة لا تقدم وجبات يومية أو وسيلة مواصلات يومية أو بدل نقل دوري؛ فهذه التكاليف مشمولة في الأتعاب الشهرية المتفق عليها.</p></div></details><details class="hb17-block" id="hb17-expenses-1"><summary>بدل الطعام الطارئ</summary><div class="hb17-block-body"><ul><li>استثناء في الطوارئ وضغط المشاريع، بتقدير وموافقة المدير المباشر أن المهمة تحتاج أربع ساعات إضافية على الأقل.</li><li>يشترط بلوغ 12 ساعة عمل فعلية منتجة متواصلة. العبرة بالإنجاز الفعلي لا بمجرد التواجد، ولا يستحق البدل من بدأ متأخراً ولم يكمل أو لن يكمل هذه المدة.</li><li>القيمة في المصدر: 20,000 ليرة سورية قديمة، أو 200 ليرة سورية جديدة، مع وصل الشراء / الفاتورة.</li><li>إذا لم يُشترَ الطعام لأي سبب، فلا يحتسب البدل ولا يدوّر مستحقاً في ذمة الشركة؛ فهو مرتبط بالاستهلاك الفعلي.</li></ul></div></details><details class="hb17-block" id="hb17-expenses-2"><summary>بدل التنقل المتأخر</summary><div class="hb17-block-body"><ul><li>ينطبق استثنائياً إذا استمر تقديم الخدمة بمقر الشركة أو موقع التصوير بعد 10:00 ليلاً بسبب ظروف العمل الطارئة.</li><li>يشترط عدم وجود سيارة للشركة تؤمن التوصيل حينها. والبدل المقطوع المذكور هو 20,000 ليرة سورية قديمة، أو 200 ليرة سورية جديدة.</li><li>يسقط البدل إذا أمّنت الشركة وسيلة نقل، أو عاد الشخص مع زميل أو بطريقة أخرى دون كلفة إضافية؛ ولا يتحول إلى مستحق مؤجل.</li></ul></div></details><details class="hb17-block" id="hb17-expenses-3"><summary>المصاريف الجانبية والميدانية</summary><div class="hb17-block-body"><ul><li>قبل دفع مصروف تشغيلي من المال الخاص، يلزم أخذ موافقة المدير المباشر والمدير التنفيذي معاً قبل الشراء؛ مثل تنقل طارئ لعميل أو أدوات إنتاج مستعجلة أو قطع غيار طارئة.</li><li>لا يُرد أي مبلغ دون فاتورة أو إثبات رسمي واضح يطابق المواد أو الخدمات التي اشتريت فعلاً لصالح المشروع.</li></ul></div></details><details class="hb17-block" id="hb17-expenses-4"><summary>ملاحظة المصدر المالي</summary><div class="hb17-block-body"><p>المبالغ ومسميات «قديمة / جديدة» معروضة كما وردت في صفحة 18 من الملف المرفق. ليست أسعار صرف محدثة أو تحققاً خارجياً، وإضافة هذه السياسة لا تنشئ بدلات أو خصومات تلقائية بالتطبيق.</p></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 18</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="telecom">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="fees">الموضوع التالي ←</button></div> </section><section data-hb-screen="fees" data-hb-topic="fees" data-title="احتساب المستحقات والأتعاب" data-code="HR-14" data-pages="19" data-keywords="راتب رواتب أتعاب مستحقات بصمة خصم توقيع سرية صرف قبض" hidden> <div class="hb17-meta"><span class="hb17-code">HR-14</span><span>المصدر ص 19</span><span>· المصاريف والسلوك اليومي</span></div> <h2 tabindex="-1">احتساب المستحقات والأتعاب</h2><p class="hb17-lead">مصدر بيانات الأتعاب، الاعتماد الشهري، التسليم الشخصي وسرية المعلومات المالية.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-fees-0" open><summary>الهدف ومصدر الاحتساب</summary><div class="hb17-block-body"><p>ضمان دقة الأتعاب الشهرية وتقليل الأخطاء البشرية وحماية السرية المالية. تعتمد الموارد البشرية بيانات جهاز البصمة الإلكتروني لساعات التواجد والحضور والانصراف. ويذكر المصدر أن الغياب بلا إجازة أو التأخير أو الخروج المبكر يترجم إلى خصومات من الأتعاب الشهرية الأساسية.</p></div></details><details class="hb17-block" id="hb17-fees-1"><summary>الاعتماد والصرف</summary><div class="hb17-block-body"><ul><li>تعد الموارد البشرية مسودة الأتعاب في نهاية كل شهر ميلادي، وترسلها إلى المدير التنفيذي للمراجعة والاعتماد النهائي.</li><li>يحظر استلام أي مزوّد خدمة أتعاب أو مستحقات شخص آخر تحت أي ظرف.</li><li>تسلم الأتعاب للشخص المعني حصراً، بموجب توقيع حي على مستند القبض.</li></ul></div></details><details class="hb17-block" id="hb17-fees-2"><summary>سرية الأتعاب والمكافآت</summary><div class="hb17-block-body"><p>ينص الدليل على اعتبار الأتعاب والمكافآت شديدة السرية. ويعد محاولة كشفها أو مناقشتها بين مزوّدي الخدمات مخالفة إدارية جسيمة، يذكر لها المساءلة والإنذار والخصم للسائل والمجيب، وقد تصل إلى إنهاء التعاون.</p><div class="hb17-note">هذا نقل منظم لما تقوله السياسة الداخلية، وليس تحققاً من نفاذ أحكامها أو تطبيقاً آلياً للجزاءات. توضيح نطاقها أو تعارضها مع الاتفاق يُحال للموارد البشرية وفق مقدمة الدليل.</div></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 19</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="expenses">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="appearance">الموضوع التالي ←</button></div> </section><section data-hb-screen="appearance" data-hb-topic="appearance" data-title="المظهر العام واللباس" data-code="HR-15" data-pages="20" data-keywords="لباس ملابس مظهر شورت شورط شحاطة صندل بدلة رسمي نظافة" hidden> <div class="hb17-meta"><span class="hb17-code">HR-15</span><span>المصدر ص 20</span><span>· المصاريف والسلوك اليومي</span></div> <h2 tabindex="-1">المظهر العام واللباس</h2><p class="hb17-lead">لباس مهني مناسب للعمل، مع ضوابط واضحة للزيارات والتصوير الرسمي.</p> <div class="hb17-topic-actions"><button type="button" class="hb17-tool " data-hb-expand="all">فتح كل التفاصيل</button><button type="button" class="hb17-tool " data-hb-expand="none">طيّ التفاصيل</button><button type="button" class="hb17-tool " data-hb-print="topic">طباعة هذا الموضوع</button></div> <details class="hb17-block" id="hb17-appearance-0" open><summary>الغاية والمظهر اليومي</summary><div class="hb17-block-body"><p>طبيعة الإعلام والتسويق تتطلب تمثيل الشركة بصورة لائقة أمام العملاء والزوار وفي العمل اليومي. يلتزم مزوّدو الخدمات بملابس أنيقة ونظيفة ومحتشمة تناسب البيئة المكتبية والمهنية.</p></div></details><details class="hb17-block" id="hb17-appearance-1"><summary>ما يمنعه الدليل</summary><div class="hb17-block-body"><ul><li>الملابس الرياضية الفجة، ومنها الشورتات والبدلات الرياضية الكاملة.</li><li>الملابس التي تحمل شعارات أو رسومات غير لائقة أو سياسية، والملابس الممزقة.</li><li>الشحاطات والصنادل والكلاشات.</li></ul></div></details><details class="hb17-block" id="hb17-appearance-2"><summary>الزيارات والتصوير والمرونة الإبداعية</summary><div class="hb17-block-body"><ul><li>في الأيام التي تتضمن زيارة عملاء أو تصويراً رسمياً، يُتوقع من المعنيين بالاجتماعات مظهر رسمي أو شبه رسمي.</li><li>تقبل المرونة التي تعبّر عن الهوية الإبداعية بشرط البقاء ضمن اللياقة العامة والاحترافية والاحترام المتبادل.</li></ul></div></details> <div class="hb17-footer"><span class="hb17-source-file">المصدر: <bdi>MoshGroup HandBook.pdf</bdi> · ص 20</span><button type="button" class="hb17-tool " data-hb-go="notes">توضيحات المصدر</button></div> <div class="hb17-nextprev"><button type="button" class="hb17-tool " data-hb-go="fees">→ الموضوع السابق</button><button type="button" class="hb17-tool " data-hb-go="overview">العودة للفهرس ←</button></div> </section><section data-hb-screen="notes" hidden><div class="hb17-meta">ملاحظات على صياغة الملف المرفق · ليست سياسات جديدة</div><h2 tabindex="-1">توضيحات تحتاج مراجعة الموارد البشرية</h2><p class="hb17-lead">حُفظت القواعد والأرقام كما وردت. هذه المواضع في المصدر تحتاج توضيحاً، ولم تُحسم بتخمين أو تُستبدل بقواعد خارجية.</p><div class="hb17-clarification"><h3>التبليغ عن المخالفات</h3><p>صفحة 4 تشجع إثارة المخاوف المشروعة بحسن نية لدى الموارد البشرية، وتذكر مكافأة عند الإثبات. بينما صفحة 11 تورد «الإبلاغ عن المخالفات» ضمن قائمة الانتهاكات. يحتاج ذلك إلى توضيح مكتوب من الموارد البشرية؛ لم أستبدل العبارة بمعنى مفترض.</p><div class="hb17-meta">المرجع: ص 4 و11</div><button type="button" class="hb17-tool " data-hb-go="discipline">قراءة السياسة المرتبطة</button></div><div class="hb17-clarification"><h3>ساعات السبت والاستراحة</h3><p>جدول السبت من 12 ظهراً إلى 5 مساءً، في مقابل ذكر ثماني ساعات يومياً في النص العام. وتصف صفحة 5 الاستراحة بأنها خارج ساعات العمل الرسمية ولا تخصم من إجمالي الساعات اليومية. تُقرأ النصوص معاً دون افتراض معالجة مالية إضافية.</p><div class="hb17-meta">المرجع: ص 5 و13</div><button type="button" class="hb17-tool " data-hb-go="hours">قراءة السياسة المرتبطة</button></div><div class="hb17-clarification"><h3>أهلية نجم الشهر</h3><p>صياغة نطاق السياسة تجمع استثناء المدراء وعبارة إكمال فترة التجربة دون فصل واضح. نُقل النص في قسمه وتُراجع الموارد البشرية لتحديد المقصود.</p><div class="hb17-meta">المرجع: ص 16</div><button type="button" class="hb17-tool " data-hb-go="star">قراءة السياسة المرتبطة</button></div><div class="hb17-clarification"><h3>تدرّج الإنذارات</h3><p>وُرد «الإنذار الثالث (نهائي بالفصل)» ثم «الإنذار النهائي (أو فصل مباشر)». حُفظ التدرج كما هو، دون دمج المرحلتين أو افتراض فصل تلقائي.</p><div class="hb17-meta">المرجع: ص 4 و11</div><button type="button" class="hb17-tool " data-hb-go="discipline">قراءة السياسة المرتبطة</button></div><div class="hb17-clarification"><h3>ما لم يفصله الدليل</h3><p>لا يذكر الدليل معادلة تقسيم رصيد السنوية شهرياً أو ترحيله. كما أن جدول التقييم يحدد درجات الأداء، لا النسبة المالية للمكافأة. لم تُملأ هذه الفجوات بقواعد جديدة.</p><div class="hb17-meta">المرجع: ص 7–8 و15</div><button type="button" class="hb17-tool " data-hb-go="leave">قراءة السياسة المرتبطة</button></div><div class="hb17-clarification"><h3>الفهرس وترقيم السياسات</h3><p>ترقيم المصدر ينتقل من HR-07 إلى HR-09؛ لا توجد سياسة HR-08 في الملف المرفق. وسياسة HR-13 موجودة بصفحة 18 رغم غيابها عن فهرس صفحة 2. أُدرج محتواها هنا مع رقمها الأصلي.</p><div class="hb17-meta">المرجع: ص 2 و13–20</div><button type="button" class="hb17-tool " data-hb-go="expenses">قراءة السياسة المرتبطة</button></div><button type="button" class="hb17-tool " data-hb-go="overview">العودة إلى فهرس الدليل</button></section><section data-hb-screen="search" hidden><div class="hb17-meta">بحث في عناوين السياسات ونصوصها</div><h2 tabindex="-1" id="hb17ResultsTitle">نتائج البحث</h2><div id="hb17Results"></div></section></main></div> <p class="hb17-print-note">نسخة قراءة منظّمة من الدليل المرفق، وليست مراجعة قانونية أو تحديثاً تلقائياً لسياسات التطبيق. جميع الحقوق محفوظة © MOSH GROUP.</p> </div>
+</section> <section id="archiveApp" class="view">
+<div class="toolbar">
+<div class="toolbar-left">
+<div>
+<h2 style="margin:0">الأرشيف العام</h2>
+<div class="muted" style="margin-top:5px">المهام المنتهية وسجل تغييرات النظام</div>
+</div>
+</div>
+<div class="toolbar-right">
+<button class="btn" onclick="refreshCurrentArchiveSection()">تحديث</button>
+</div>
+</div>
+<div class="archive-task-tabs">
+<button type="button" id="archiveTabTasks" class="active" onclick="openArchiveSection('tasks')">أرشيف المهمات</button>
+<button type="button" id="archiveTabAudit" onclick="openArchiveSection('audit')">سجل التعديلات</button>
+</div>
+<div id="archiveTaskListsContent">
+<div id="archiveTaskListsWorkspace"></div>
+</div>
+<div id="archiveAuditContent" style="display:none">
+<div class="accounting-cards" style="margin-bottom:14px">
+<div class="metric">
+<div class="muted">إجمالي النسخ المؤرشفة</div>
+<div class="n" id="archiveTotalCount">0</div>
+</div>
+<div class="metric">
+<div class="muted">آخر أرشفة</div>
+<div class="n" id="archiveLatestTime" style="font-size:16px">—</div>
+</div>
+<div class="metric">
+<div class="muted">الحساب الحالي</div>
+<div class="n" id="archiveCurrentUser" style="font-size:16px">—</div>
+</div>
+<div class="metric">
+<div class="muted">الحفظ</div>
+<div class="n" style="font-size:16px">تلقائي</div>
+</div>
+</div>
+<div class="panel">
+<table class="list-table">
+<thead>
+<tr>
+<th>الوقت</th>
+<th>المستخدم</th>
+<th>المكان</th>
+<th>نوع التغيير</th>
+<th>ملخص التغيير</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="archiveRows"></tbody>
+</table>
+<div class="empty" id="archiveEmpty">لا يوجد تعديلات مؤرشفة حتى الآن.</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<button type="button" class="mosh-ai-launcher" id="moshAiLauncher" onclick="moshAiToggle()" title="مساعد MOSH التنفيذي">
+<span class="ai-orb">AI</span>
+
+<span class="ai-dot"></span>
+</button>
+<aside class="mosh-ai-panel" id="moshAiPanel" aria-label="MOSH AI Executive Assistant">
+<div class="mosh-ai-head">
+<div class="mosh-ai-logo">AI</div>
+<div class="mosh-ai-title">
+<strong>MOSH AI — سكرتيرك التنفيذي</strong>
+<span id="moshAiUserLine">مساعد شخصي مرتبط ببياناتك وصلاحياتك</span>
+</div>
+<span class="mosh-ai-preview-badge">PREVIEW</span>
+<button type="button" class="mosh-ai-close" onclick="moshAiClose()" title="إغلاق">×</button>
+</div>
+<div class="mosh-ai-context">
+<span class="mosh-ai-context-label">السياق الحالي</span>
+<span class="mosh-ai-context-chip" id="moshAiContextChip">اللوحة الرئيسية</span>
+</div>
+<div class="mosh-ai-messages" id="moshAiMessages"></div>
+<div class="mosh-ai-quick" id="moshAiQuickActions">
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('شو عندي اليوم؟')">شو عندي اليوم؟</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('رتبلي أولوياتي')">رتب أولوياتي</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('شو المتأخر؟')">المتأخر</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('لخصلي المهمة الحالية')">لخص المهمة</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('شو وضع الفريق؟')">وضع الفريق</button>
+</div>
+<div class="mosh-ai-compose">
+<textarea id="moshAiInput" class="mosh-ai-input" rows="1" placeholder="احكي معي... مثلاً: شو لازم أعمل اليوم؟" onkeydown="moshAiInputKey(event)"></textarea>
+<button type="button" class="mosh-ai-send" onclick="moshAiSend()" title="إرسال">➤</button>
+</div>
+<div class="mosh-ai-footer">نسخة تجريبية محلية — ما في API Key مخزّن داخل التطبيق</div>
+</aside>
+<div id="archiveDetailsModal" class="modal" onclick="if(event.target===this)closeArchiveDetails()">
+<div class="modalbox" style="width:min(980px,100%);max-height:92vh;overflow:auto">
+<div class="toolbar">
+<div>
+<h3 style="margin:0">تفاصيل الأرشفة</h3>
+<div class="muted" id="archiveDetailsMeta" style="margin-top:5px"></div>
+</div>
+<button class="btn" onclick="closeArchiveDetails()">إغلاق</button>
+</div>
+<div class="panel" style="margin-bottom:14px">
+<div class="muted">ملخص التغيير</div>
+<div id="archiveDetailsSummary" style="font-weight:800;margin-top:6px"></div>
+</div>
+<div id="archiveHumanDetails"></div>
+</div>
+</div>
+<div id="salesReportPreviewModal" class="modal" onclick="if(event.target===this)closeSalesReportPreview()">
+<div class="modalbox" style="width:min(1120px,100%);max-height:94vh;overflow:auto">
+<div class="toolbar">
+<div>
+<h3 style="margin:0">معاينة التقرير</h3>
+<div class="muted" style="margin-top:4px">نسخة مرتبة للطباعة والحفظ PDF</div>
+</div>
+<div style="display:flex;gap:8px">
+<button class="btn primary" onclick="printSalesReportPdf()">تحويل إلى PDF</button>
+<button class="btn" onclick="closeSalesReportPreview()">إغلاق</button>
+</div>
+</div>
+<div id="salesReportPreviewBody"></div>
+</div>
+</div>
+<div id="serviceContractPreviewModal" class="modal" onclick="if(event.target===this)closeServiceContractPreview()">
+<div class="modalbox" style="width:min(1120px,100%);max-height:94vh;overflow:auto">
+<div class="toolbar">
+<div>
+<h3 style="margin:0">معاينة عقد بيع خدمات MOSH GROUP</h3>
+<div class="muted" style="margin-top:4px">نسخة رسمية جاهزة للطباعة والحفظ PDF</div>
+</div>
+<div style="display:flex;gap:8px">
+<button class="btn primary" onclick="printServiceContractPdf()">تحويل إلى PDF</button>
+<button class="btn" onclick="closeServiceContractPreview()">إغلاق</button>
+</div>
+</div>
+<div id="serviceContractPreviewBody"></div>
+</div>
+</div>
+<div id="previewModal" class="modal" onclick="if(event.target===this)closeModal('previewModal')">
+<div class="modalbox" style="width:min(850px,100%);max-height:92vh;overflow:auto">
+<div class="toolbar">
+<h3 style="margin:0">معاينة العميل</h3>
+<div class="toolbar-right">
+<button class="btn primary" onclick="savePreviewPdf()">حفظ PDF</button>
+<button class="btn green" onclick="sendPreviewWhatsApp()">إرسال واتساب</button>
+<button class="btn" onclick="closeModal('previewModal')">إغلاق</button>
+</div>
+</div>
+<div id="previewContent"></div>
+</div>
+</div>
+<div id="standaloneTaskModal" class="modal" onclick="if(event.target===this)cancelStandaloneTask()">
+<div class="modalbox" style="width:min(760px,100%)">
+<div class="toolbar r25-task-header">
+<h3 style="margin:0" id="standaloneTaskModalTitle">إنشاء مهمة جديدة</h3>
+<button class="btn" onclick="cancelStandaloneTask()">إغلاق</button>
+<div class="field r38-creator-field"><label for="standaloneTaskCreator">منشئ المهمة:</label><input id="standaloneTaskCreator" readonly title="يُسجل تلقائياً من الحساب الحالي"></div>
+</div>
+<div class="r25-task-scroll-area" role="region" aria-label="تفاصيل إنشاء المهمة" tabindex="0">
+<div class="field-grid r38-task-grid">
+<div class="field r38-task-primary"><label for="standaloneTaskTitle">اسم المهمة <span class="customer-required">*</span></label><input id="standaloneTaskTitle" placeholder="اسم واضح ومختصر للمهمة"></div>
+<div class="field">
+<label for="standaloneTaskCustomer">العميل <span style="color:#d4af37">*</span></label>
+<input id="standaloneTaskCustomer"
+list="standaloneCustomersList"
+autocomplete="off"
+placeholder="ابحث واختر العميل">
+<datalist id="standaloneCustomersList"></datalist>
+</div>
+<div class="field r38-department-field"><label for="standaloneTaskDepartment">القسم المنفّذ</label>
+<select id="standaloneTaskDepartment" onchange="refreshStandaloneAssignmentUI()">
+<option value="المهمات">قسم المهمات</option>
+<option value="التصميم">قسم التصميم</option>
+<option value="التصوير">قسم التصوير</option>
+<option value="المونتاج">قسم المونتاج</option>
+<option value="التسويق">قسم التسويق</option>
+<option value="السوشال ميديا">قسم السوشال ميديا</option>
+<option value="المشتريات">قسم المشتريات</option>
+<option value="الترويج">قسم الترويج</option>
+<option value="اللوجستيات">قسم اللوجستيات</option>
+<option value="المبيعات">قسم المبيعات</option>
+<option value="الإدارة">قسم الإدارة</option>
+<option value="المحاسبة">قسم المحاسبة</option>
+<option value="الموارد البشرية">قسم الموارد البشرية</option>
+</select>
+</div>
+<div class="field" id="standaloneAssignmentModeField"><label for="standaloneTaskAssignmentMode">طريقة الإسناد</label>
+<select id="standaloneTaskAssignmentMode" onchange="refreshStandaloneAssignmentUI()">
+<option value="manager">إرسال لمدير القسم ليوزعها</option>
+<option value="direct">تعيين مباشر لموظف</option>
+</select>
+</div>
+<div class="field" id="standaloneAssigneeField" style="display:none">
+<label for="standaloneTaskAssignee">الموظف المنفذ</label>
+<input id="standaloneTaskAssignee" list="standaloneStaffList" autocomplete="off" placeholder="اختر موظف من القسم">
+<datalist id="standaloneStaffList"></datalist>
+</div>
+<div class="field r38-deadline-field"><label for="standaloneTaskDueDate">موعد التسليم</label><input id="standaloneTaskDueDate" type="date"></div>
+</div>
+<div class="field r38-task-description"><label for="standaloneTaskDescription">تفاصيل المهمة</label><textarea id="standaloneTaskDescription" rows="3" placeholder="اكتب المطلوب من الفريق، والمرجع، وأي تفاصيل مهمة…"></textarea></div>
+<details class="r38-optional-notes"><summary><span class="r40-notes-chevron" aria-hidden="true">⌄</span>ملاحظات قبل التنفيذ <span class="muted">اختياري</span></summary><div class="field"><textarea id="standaloneTaskNotes" rows="3" aria-label="ملاحظات يجب الاطلاع عليها قبل تنفيذ المهمة" placeholder="أي تعليمات يجب الاطلاع عليها قبل البدء…"></textarea></div></details>
+<div class="task-attachments-box">
+<div class="task-attachments-title">مرفقات المهمة</div>
+<div class="task-attachment-actions r40-labeled-actions">
+<button type="button" class="attachment-icon-btn" title="إضافة ملف" aria-label="إضافة ملف" onclick="document.getElementById('standaloneAttachmentInput').click()">
+<svg viewBox="0 0 24 24" aria-hidden="true" class="attach-svg">
+<path d="M8.5 12.8l6.1-6.1a3.2 3.2 0 0 1 4.5 4.5l-7.8 7.8a5 5 0 0 1-7.1-7.1l8-8"></path>
+</svg>
+</button>
+<button type="button" class="attachment-icon-btn voice-icon-btn" id="standaloneVoiceBtn" title="تسجيل صوت" aria-label="تسجيل صوت" onclick="toggleStandaloneVoiceRecording()">
+<svg viewBox="0 0 24 24" aria-hidden="true" class="attach-svg" id="standaloneVoiceSvg">
+<rect x="9" y="3.5" width="6" height="11" rx="3"></rect>
+<path d="M6.5 11.5a5.5 5.5 0 0 0 11 0"></path>
+<path d="M12 17v3.5"></path>
+<path d="M9 20.5h6"></path>
+</svg>
+<span class="voice-timer" id="standaloneVoiceTimer">00:00</span>
+</button>
+<input id="standaloneAttachmentInput" type="file" multiple hidden onchange="addStandaloneAttachments(this.files)">
+</div>
+<div id="standaloneAttachmentsList" class="task-attachment-list">
+<div class="muted">لا يوجد مرفقات.</div>
+</div>
+<div id="micLocalNote" class="mic-local-note">للتسجيل المباشر افتح النظام عبر START_MOSH.command</div>
+</div>
+</div>
+<div class="r25-task-footer">
+<button class="btn primary" id="standaloneTaskCreateBtn" onclick="saveStandaloneTask()">إنشاء المهمة</button>
+<button class="btn cancel-edit-btn" onclick="cancelStandaloneTask()">إلغاء الأمر</button>
+<span class="r40-task-required">الحقول المعلّمة <span aria-hidden="true">*</span> مطلوبة</span>
+</div>
+</div>
+</div>
+<div id="subTaskModal" class="modal" onclick="if(event.target===this)closeModal('subTaskModal')">
+<div class="modalbox" style="width:min(760px,100%)">
+<div class="toolbar">
+<h3 style="margin:0">إضافة مهمة فرعية</h3>
+<button class="btn" onclick="closeModal('subTaskModal')">إغلاق</button>
+</div>
+<div class="field-grid">
+<div class="field"><label>اسم المهمة الفرعية</label><input id="subTaskTitle"></div>
+<div class="field"><label>القسم</label>
+<select id="subTaskDepartment" onchange="refreshSubTaskAssignmentUI()">
+<option value="التصميم">قسم التصميم</option>
+<option value="التصوير">قسم التصوير</option>
+<option value="المونتاج">قسم المونتاج</option>
+<option value="التسويق">قسم التسويق</option>
+<option value="السوشال ميديا">قسم السوشال ميديا</option>
+<option value="المشتريات">قسم المشتريات</option>
+<option value="الترويج">قسم الترويج</option>
+<option value="اللوجستيات">قسم اللوجستيات</option>
+<option value="المبيعات">قسم المبيعات</option>
+<option value="الإدارة">قسم الإدارة</option>
+<option value="المحاسبة">قسم المحاسبة</option>
+<option value="الموارد البشرية">قسم الموارد البشرية</option>
+</select>
+</div>
+<div class="field"><label>طريقة الإسناد</label>
+<select id="subTaskAssignmentMode" onchange="refreshSubTaskAssignmentUI()">
+<option value="manager">إرسال لمدير القسم ليوزعها</option>
+<option value="direct">تعيين مباشر لموظف</option>
+</select>
+</div>
+<div class="field" id="subTaskAssigneeField" style="display:none">
+<label>الموظف المنفذ</label>
+<input id="subTaskAssignee" list="subTaskStaffList" autocomplete="off" placeholder="اختر موظف من القسم">
+<datalist id="subTaskStaffList"></datalist>
+</div>
+<div class="field"><label>الموعد</label><input id="subTaskDueDate" type="date"></div>
+</div>
+<div class="field" style="grid-template-columns:1fr;margin-top:12px"><label>تفاصيل المهمة بشكل كامل</label><textarea id="subTaskDescription" rows="5"></textarea></div>
+<div class="field" style="grid-template-columns:1fr;margin-top:12px"><label>ملاحظات يجب الاطلاع عليها قبل تنفيذ المهمة</label><textarea id="subTaskNotes" rows="4"></textarea></div>
+<div style="margin-top:14px;display:flex;gap:8px">
+<button class="btn primary" onclick="saveSubTask()">حفظ وإضافة المهمة الفرعية</button>
+<button class="btn cancel-edit-btn" onclick="cancelSubTask()">إلغاء الأمر</button>
+</div>
+</div>
+</div>
+<div id="salesTaskModal" class="modal" onclick="if(event.target===this)closeModal('salesTaskModal')">
+<div class="modalbox" style="width:min(760px,100%)">
+<div class="toolbar">
+<h3 style="margin:0">إنشاء مهمة مبيعات</h3>
+<button class="btn" onclick="closeModal('salesTaskModal')">إغلاق</button>
+</div>
+<div class="field-grid">
+<div class="field"><label>اسم المهمة</label><input id="taskTitle"></div>
+<div class="field"><label>القسم الأول</label>
+<select id="taskDepartment">
+<option value="التصميم">قسم التصميم</option>
+<option value="التصوير">قسم التصوير</option>
+<option value="المونتاج">قسم المونتاج</option>
+<option value="التسويق">قسم التسويق</option>
+<option value="السوشال ميديا">قسم السوشال ميديا</option>
+<option value="المشتريات">قسم المشتريات</option>
+<option value="الترويج">قسم الترويج</option>
+<option value="اللوجستيات">قسم اللوجستيات</option>
+<option value="المبيعات">قسم المبيعات</option>
+<option value="الإدارة">قسم الإدارة</option>
+<option value="المحاسبة">قسم المحاسبة</option>
+<option value="الموارد البشرية">قسم الموارد البشرية</option>
+</select>
+</div>
+<div class="field"><label>المسؤول</label><input id="taskAssignee"></div>
+<div class="field"><label>الموعد</label><input id="taskDueDate" type="date"></div>
+</div>
+<div class="field" style="grid-template-columns:1fr;margin-top:12px"><label>تفاصيل المهمة بشكل كامل</label><textarea id="taskDescription" rows="5"></textarea></div>
+<div class="field" style="grid-template-columns:1fr;margin-top:12px"><label>ملاحظات يجب الاطلاع عليها قبل تنفيذ المهمة</label><textarea id="taskNotes" rows="4"></textarea></div>
+<div style="margin-top:14px"><button class="btn primary" onclick="saveSalesTask()">إنشاء المهمة</button><button class="btn cancel-edit-btn" onclick="cancelSalesTaskModal()">إلغاء الأمر</button></div>
+</div>
+</div>
+<div id="deleteTaskConfirmModal" class="modal" onclick="if(event.target===this)closeDeleteTaskConfirm()">
+<div class="modalbox" style="width:min(520px,100%)">
+<div class="toolbar">
+<h3 style="margin:0">تأكيد الحذف</h3>
+</div>
+<div id="deleteTaskConfirmText" style="padding:16px 0;line-height:1.8"></div>
+<div style="display:flex;gap:8px">
+<button type="button" class="btn delete-task-btn" onclick="confirmTaskDelete()">نعم، حذف</button>
+<button type="button" class="btn" onclick="closeDeleteTaskConfirm()">تراجع</button>
+</div>
+</div>
+</div>
+<div id="supportRequestModal" class="modal" onclick="if(event.target===this)closeSupportRequestModal()">
+<div class="modalbox" style="width:min(780px,100%);max-height:92vh;overflow:auto">
+<div class="modalhead"><div><b id="supportRequestModalTitle">طلب لإتمام المهمة</b><div id="supportRequestTaskMeta" class="muted" style="margin-top:3px"></div></div><button class="btn" type="button" onclick="closeSupportRequestModal()">إغلاق</button></div>
+<div id="supportRequestFormBody"></div>
+<div class="modal-actions"><button type="button" class="btn" onclick="closeSupportRequestModal()">إلغاء</button><button type="button" class="btn primary" onclick="createSupportRequest()">إرسال الطلب</button></div>
+</div>
+</div>
+<div id="supportRequestDetailsModal" class="modal" onclick="if(event.target===this)closeSupportRequestDetails()">
+<div class="modalbox" style="width:min(860px,100%);max-height:92vh;overflow:auto">
+<div class="modalhead"><div><b id="supportRequestDetailsTitle">تفاصيل الطلب</b><div id="supportRequestDetailsMeta" class="muted" style="margin-top:3px"></div></div><button class="btn" type="button" onclick="closeSupportRequestDetails()">إغلاق</button></div>
+<div id="supportRequestDetailsBody"></div>
+</div>
+</div>
+<div id="systemSettingsModal" class="modal" onclick="if(event.target===this)closeSystemSettings()">
+<div class="modalbox system-settings-modalbox">
+<div class="toolbar system-settings-head">
+<div>
+<h3 style="margin:0">إعدادات النظام</h3>
+<div class="muted" style="margin-top:4px">تظهر لك فقط الإعدادات التي يسمح بها حسابك</div>
+</div>
+<button class="btn" onclick="closeSystemSettings()">إغلاق</button>
+</div>
+<div class="panel settings-account-panel">
+<div class="muted">الحساب الحالي</div>
+<div style="font-weight:900;margin-top:5px" id="settingsCurrentAccount">محمد الشويكي — صانع التطبيق</div>
+</div>
+<div class="settings-section">
+<div class="settings-section-title">
+<div><b>بيانات النظام</b><div class="muted">الاسم والهوية الأساسية</div></div>
+</div>
+<div class="field-grid settings-grid">
+<div class="field"><label>اسم النظام</label><input id="systemSettingAppName"></div>
+<div class="field"><label>اسم الشركة</label><input id="systemSettingCompanyName"></div>
+</div>
+</div>
+<div class="settings-section">
+<div class="settings-section-title">
+<div><b>أحجام الكتابة</b><div class="muted">عدّل وضوح النصوص على كامل التطبيق</div></div>
+<button class="btn settings-reset-small" type="button" onclick="resetSystemTypographyDefaults()">إرجاع أحجام الخط</button>
+</div>
+<div class="settings-font-row">
+<label class="settings-font-card">
+<span>نوع الخط</span>
+<select id="systemSettingFontFamily">
+<option value="arial">Arial — الأكثر ثباتاً</option>
+<option value="tahoma">Tahoma — أوضح بالعربي</option>
+<option value="system">خط النظام</option>
+</select>
+<small>لا يتم تحميل أي فونت خارجي؛ إذا لم يتوفر الخط المختار يعود التطبيق تلقائياً إلى Arial.</small>
+</label>
+</div>
+<div class="settings-size-grid">
+<label class="settings-size-card">
+<span>العناوين الرئيسية</span>
+<div><input id="systemSettingHeadingSize" type="range" min="20" max="38" step="1"><output id="systemSettingHeadingSizeValue">26px</output></div>
+</label>
+<label class="settings-size-card">
+<span>الكتابة الأساسية</span>
+<div><input id="systemSettingBodySize" type="range" min="13" max="22" step="1"><output id="systemSettingBodySizeValue">16px</output></div>
+</label>
+<label class="settings-size-card">
+<span>الكتابة الصغيرة والثانوية</span>
+<div><input id="systemSettingSmallSize" type="range" min="11" max="18" step="1"><output id="systemSettingSmallSizeValue">14px</output></div>
+</label>
+</div>
+</div>
+<div class="settings-section">
+<div class="settings-section-title">
+<div><b>ألوان الكتابة</b><div class="muted">لون مستقل لكل مستوى من النص</div></div>
+</div>
+<div class="settings-color-grid">
+<label class="settings-color-card"><span><i class="settings-swatch heading"></i>العناوين</span><input id="systemSettingHeadingColor" type="color"></label>
+<label class="settings-color-card"><span><i class="settings-swatch body"></i>الكتابة الأساسية</span><input id="systemSettingTextColor" type="color"></label>
+<label class="settings-color-card"><span><i class="settings-swatch muted"></i>الكتابة الصغيرة</span><input id="systemSettingMutedColor" type="color"></label>
+</div>
+</div>
+<div class="settings-section">
+<div class="settings-section-title">
+<div><b>ألوان الواجهة</b><div class="muted">الخلفيات، البطاقات، الحقول، الحدود واللون الرئيسي</div></div>
+</div>
+<div class="settings-color-grid">
+<label class="settings-color-card"><span>خلفية التطبيق</span><input id="systemSettingBgColor" type="color"></label>
+<label class="settings-color-card"><span>خلفية القائمة</span><input id="systemSettingSidebarColor" type="color"></label>
+<label class="settings-color-card"><span>البطاقات</span><input id="systemSettingPanelColor" type="color"></label>
+<label class="settings-color-card"><span>البطاقات الثانوية</span><input id="systemSettingPanel2Color" type="color"></label>
+<label class="settings-color-card"><span>الحقول والجداول</span><input id="systemSettingFieldColor" type="color"></label>
+<label class="settings-color-card"><span>الحدود والفواصل</span><input id="systemSettingBorderColor" type="color"></label>
+<label class="settings-color-card"><span>اللون الرئيسي</span><input id="systemSettingAccentColor" type="color"></label>
+<label class="settings-color-card"><span>اللون الرئيسي الفاتح</span><input id="systemSettingAccentColor2" type="color"></label>
+</div>
+</div>
+<div class="settings-section hr-policy-settings-section">
+<div class="settings-section-title">
+<div><b>سياسات الموارد البشرية</b><div class="muted">إعدادات HR العامة — خارج صفحات التشغيل اليومية</div></div>
+</div>
+<div class="field-grid settings-grid">
+<div class="field"><label>الإجازة السنوية / يوم</label><input id="hrPolicyAnnualLeave" type="number" min="0"></div>
+<div class="field"><label>الإجازة المرضية / يوم</label><input id="hrPolicySickLeave" type="number" min="0"></div>
+<div class="field"><label>ساعات يوم العمل</label><input id="hrPolicyWorkdayHours" type="number" min="1" max="24"></div>
+<div class="field"><label>مدة صلاحية الإنذار / يوم</label><input id="hrPolicyWarningDays" type="number" min="1"></div>
+</div>
+<div class="muted" style="margin-top:9px;line-height:1.7">تستخدم هذه القيم تلقائياً في أرصدة الإجازات، مؤشرات الدوام، والتنبيهات داخل ملف الموظف.</div>
+</div>
+<div class="settings-preview" id="systemAppearancePreview">
+<div class="settings-preview-head">معاينة مباشرة</div>
+<div class="settings-preview-title">عنوان رئيسي واضح</div>
+<div class="settings-preview-body">هذا مثال عن الكتابة الأساسية داخل التطبيق.</div>
+<div class="settings-preview-small">وهذا مثال عن النص الصغير والمعلومات الثانوية.</div>
+</div>
+<div class="panel" style="margin-top:14px">
+<b>أساس الصلاحيات</b>
+<div class="muted" style="margin-top:7px;line-height:1.8">إعدادات المظهر منفصلة عن إدارة الحسابات والصلاحيات. كل حساب يرى فقط ما تم السماح له به.</div>
+</div>
+<div class="settings-actions">
+<button class="btn primary" onclick="saveSystemSettings()">حفظ الإعدادات</button>
+<button class="btn" type="button" onclick="resetSystemAppearanceDefaults()">استعادة المظهر الافتراضي</button>
+<button class="btn" onclick="closeSystemSettings()">إلغاء الأمر</button>
+</div>
+</div>
+</div>
+<div id="emailModal" class="modal" onclick="if(event.target===this)closeModal('emailModal')">
+<div class="modalbox">
+<div class="toolbar"><h3 style="margin:0">إرسال عرض السعر</h3><button class="btn" onclick="closeModal('emailModal')">إغلاق</button></div>
+<div class="field-grid">
+<div class="field"><label>إلى</label><input id="emailTo" placeholder="customer@example.com"></div>
+<div class="field"><label>الموضوع</label><input id="emailSubject"></div>
+</div>
+<div class="field" style="grid-template-columns:1fr;margin-top:12px"><label>الرسالة</label><textarea id="emailBody" rows="7"></textarea></div>
+<div style="margin-top:12px"><button class="btn primary" onclick="markSent()">إرسال</button></div>
+</div>
+</div>
+
+<div id="managerFinishConfirmModal" class="mosh-action-confirm" aria-hidden="true">
+<div class="mosh-action-confirm-card">
+<div class="mosh-action-confirm-icon" id="managerFinishConfirmIcon">✓</div>
+<div class="mosh-action-confirm-main">
+<h3 id="managerFinishConfirmTitle">اعتماد وإنهاء للفوترة</h3>
+<p id="managerFinishConfirmText"></p>
+<div id="managerFinishConfirmMeta" class="mosh-action-confirm-meta"></div>
+</div>
+<div class="mosh-action-confirm-actions">
+<button type="button" class="btn" onclick="closeManagerFinishConfirm()">إلغاء</button>
+<button type="button" class="btn primary" id="managerFinishConfirmAction" onclick="confirmManagerFinishAndInvoice()">اعتماد وتحويل للمحاسبة</button>
+</div>
+</div>
+</div>
+<div id="packageBillingConfirmModal" class="mosh-action-confirm" aria-hidden="true">
+<div class="mosh-action-confirm-card">
+<div class="mosh-action-confirm-icon">🧾</div>
+<div class="mosh-action-confirm-main">
+<h3 id="packageBillingConfirmTitle">إنهاء الباقة وإرسالها للفوترة</h3>
+<p id="packageBillingConfirmText"></p>
+<div id="packageBillingConfirmMeta" class="mosh-action-confirm-meta"></div>
+</div>
+<div class="mosh-action-confirm-actions">
+<button type="button" class="btn" onclick="closePackageBillingConfirm()">إلغاء</button>
+<button type="button" class="btn primary" onclick="confirmPackageBillingSend()">تأكيد الإنهاء والإرسال</button>
+</div>
+</div>
+</div>
+<div id="billingTaskPreviewModal" class="billing-preview-modal">
+<div class="billing-preview-card">
+<div class="billing-preview-head">
+<div><h3 id="billingTaskPreviewTitle">تفاصيل المهمة</h3><span id="billingTaskPreviewMeta"></span></div>
+<button type="button" class="billing-preview-close" onclick="closeBillingTaskPreview()">×</button>
+</div>
+<div id="billingTaskPreviewBody" class="billing-preview-body"></div>
+</div>
+</div>
+<div id="billingFinalizeModal" class="mosh-action-confirm" aria-hidden="true">
+<div class="mosh-action-confirm-card">
+<div class="mosh-action-confirm-icon">✓</div>
+<div class="mosh-action-confirm-main">
+<h3 id="billingFinalizeTitle">إغلاق المهمة محاسبياً</h3>
+<p id="billingFinalizeText"></p>
+<div id="billingFinalizeMeta" class="mosh-action-confirm-meta"></div>
+</div>
+<div class="mosh-action-confirm-actions">
+<button type="button" class="btn" onclick="closeBillingFinalizeModal()">إلغاء</button>
+<button type="button" class="btn primary" id="billingFinalizeAction" onclick="confirmBillingFinalize()">تأكيد</button>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+  
+ 
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="requestResults28eModal" aria-hidden="true"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- MOSH v32E: Manager Approval is the third action in the existing Dashboard | Running Tasks bar -->
+
+
+
+
+
+<!-- MOSH v33: rebuilt Marketing workspace -->
+
+
+
+
+
+<!-- MOSH v34: searchable marketing customer selector + customer follow-up log -->
+
+
+
+
+
+<!-- MOSH v36 PRE-BETA: marketing dashboard reliability + immediate manager-tab sync -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- v44 — employee task assignment matching no longer depends on an HR profile existing. -->
+
+
+
+
+
+
+
+<!-- MOSH v47: employee task opening uses the native task details renderer inside a protected overlay. -->
+
+
+
+
+
+<!-- MOSH v48: employee-only task workflow controls inside the protected employee task overlay. -->
+
+
+
+
+<script src="config.js"></script>
+<script src="js/api-client.js?v=be2dcbf6ea1d"></script>
+<script src="js/api-boot.js?v=a4a4596fe4d7"></script>
+</body>
+</html>

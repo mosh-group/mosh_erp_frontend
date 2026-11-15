@@ -1,0 +1,22 @@
+PASS Canonical valid start 1790521140000
+PASS Canonical valid start 1790521140000
+PASS Canonical valid start 1790521140
+PASS Canonical valid start 2026-09-27T14:59:00.000Z
+PASS snake_case same object
+PASS snake_case resource and explicitly seconds duration
+PASS Explicit active session
+PASS Closed session is never revived
+PASS No fallback to fingerprint, receipt or update date
+PASS Invalid total preserved null
+PASS Invalid total preserved undefined
+PASS Invalid total preserved -1
+PASS Invalid total preserved bad
+PASS Invalid total preserved Infinity
+PASS Contradictory aliases flagged
+PASS Contradictory duration aliases flagged
+PASS Paused ignores old live start, keeps saved total
+PASS Future start rejected
+PASS Over24h active session flagged, no clamp
+PASS Over24h saved cumulative valid
+PASS Adapter is read-only
+TOTAL 21

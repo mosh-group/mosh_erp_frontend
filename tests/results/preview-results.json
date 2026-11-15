@@ -1,0 +1,1 @@
+{"passed": 8, "checks": ["Full standalone preview boots", "Zero network requests", "No runtime exceptions", "Break works", "Resume works", "Daily timeline opens", "Report closes", "Mobile390px no workdesk overflow"]}

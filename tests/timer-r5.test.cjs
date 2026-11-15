@@ -1,0 +1,20 @@
+'use strict';
+const assert=require('node:assert/strict'),M=require('../js/55-mosh-workday-model.js');
+let count=0;function test(n,f){f();count++;console.log('PASS',n)}
+const NOW=Date.parse('2026-09-27T14:37:36Z'),START=NOW-75*60000;
+for(const v of [0,'0',null,undefined,'',' ',false,true,NaN,Infinity,-1,'garbage','1970-01-01T00:00:00Z','1970-01-21T12:00:00Z',[],{}])test('reject missing/invalid start '+String(v),()=>assert.ok(Number.isNaN(M.epoch(v))));
+for(const v of [START,String(START),START/1000,String(START/1000),new Date(START).toISOString(),'2026-09-27T16:22:36+03:00'])test('equivalent timestamp '+v,()=>{assert.equal(M.epoch(v),START);assert.equal(M.duration(M.elapsed(v,NOW,M.LIVE_LIMIT)),'01:15:00')});
+test('zero start reproduces old displayed 497366:37:36',()=>assert.equal(M.duration(NOW-0),'497366:37:36'));
+test('zero start now displays unknown, never epoch age',()=>assert.equal(M.duration(M.elapsed(0,NOW,M.LIVE_LIMIT)),'—'));
+test('future timestamp flagged',()=>assert.ok(Number.isNaN(M.elapsed(NOW+60000,NOW,M.LIVE_LIMIT))));
+test('2 second server Date rounding tolerance',()=>assert.equal(M.elapsed(NOW+1000,NOW,M.LIVE_LIMIT),0));
+test('live session >24h review instead of clipping or resetting',()=>assert.ok(Number.isNaN(M.elapsed(NOW-25*3600000,NOW,M.LIVE_LIMIT))));
+test('cumulative history may exceed 24h',()=>assert.equal(M.duration(50*3600000),'50:00:00'));
+test('pause length not included in resumed session',()=>assert.equal(M.elapsed(NOW-300000,NOW,M.LIVE_LIMIT),300000));
+test('invalid format duration stays unknown',()=>{for(const v of [NaN,Infinity,-1,undefined])assert.equal(M.duration(v),'—')});
+const args={date:'2026-09-27',timeZone:'UTC',now:NOW,complete:true,attendance:[{date:'2026-09-27',inTime:'09:00'}]};
+test('invalid activity does not authorize waste',()=>{const d=M.account({...args,activities:[{kind:'task',startAt:0,open:true}]});assert.equal(d.totals.waste,0);assert.equal(d.totals.review,d.presenceMs);assert.ok(d.issues.length)});
+test('seconds and ms produce identical reports',()=>{const s={kind:'task',startAt:START,endAt:NOW,taskId:'UUID',taskTitle:'تصميم'};assert.deepEqual(M.account({...args,activities:[s]}).totals,M.account({...args,activities:[{...s,startAt:START/1000,endAt:NOW/1000}]}).totals)});
+test('render model never alters original data',()=>{const tasks=[{id:'T1',title:'تصميم',assignee:'وليد',employeeState:'working',workTiming:{activeStartedAt:0,totalMs:12345,sessions:[{workerId:'E1',startAt:START,endAt:NOW,durationMs:4500000}]}}];const before=JSON.stringify(tasks);M.account({...args,activities:M.taskIntervals(tasks,{id:'E1',name:'وليد'},NOW)});assert.equal(JSON.stringify(tasks),before)});
+test('missing working task interval is flagged not omitted',()=>{const t={id:'T1',employeeState:'working',assignee:'وليد',workTiming:{activeStartedAt:0}};const rows=M.taskIntervals([t],{id:'E1',name:'وليد'},NOW);assert.equal(rows.length,1);assert.equal(rows[0].startAt,0)});
+console.log('TOTAL',count);

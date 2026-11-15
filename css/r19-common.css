@@ -1,0 +1,24 @@
+/* R19 shared dialogs and feedback use the original MOSH palette and typography. */
+:root{color-scheme:dark}
+.r19-dialog{margin:auto;padding:0;border:1px solid #4a4438;border-radius:15px;background:#151718;color:#f1f0e9;width:min(670px,calc(100vw - 28px));max-height:calc(100dvh - 40px);box-shadow:0 28px 100px #0009;font-family:Arial,Tahoma,sans-serif;overflow:auto;overscroll-behavior:contain}
+.r19-dialog-wide{width:min(1060px,calc(100vw - 28px))}
+.r19-dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
+.r19-dialog-head{padding:17px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#1b1d1e;border-bottom:1px solid #373a38;position:sticky;top:0;z-index:2}
+.r19-dialog h2{font-size:21px;font-weight:700;margin:0;color:#eee9da;line-height:1.6}
+.r19-dialog h3{font-size:18px;line-height:1.7}.r19-dialog p{line-height:1.9;font-size:15px}
+.r19-dialog-body{padding:22px}.r19-dialog-close{border:1px solid #464740!important;background:#232526!important;width:35px;height:35px;border-radius:8px;font:25px/1 Arial!important;color:#dfd9c9!important;cursor:pointer}
+.r19-dialog button,.r19-dialog input,.r19-dialog select,.r19-dialog textarea{font:inherit;font-size:15px;color:#f0eee7}
+.r19-dialog input,.r19-dialog select,.r19-dialog textarea{background:#202324;border:1px solid #464a45;border-radius:8px;padding:10px 12px;box-sizing:border-box;max-width:100%}
+.r19-dialog textarea{resize:vertical;line-height:1.8}
+.r19-dialog input:focus,.r19-dialog select:focus,.r19-dialog textarea:focus{outline:2px solid #b3944b;outline-offset:2px}
+.r19-dialog button{background:#252827;border:1px solid #4b4e47;border-radius:8px;padding:9px 13px;cursor:pointer;line-height:1.65}
+.r19-dialog button.primary,.r19-dialog .primary{background:#c5a44e;color:#151718;border-color:#c5a44e;font-weight:700}
+.r19-dialog button:hover{filter:brightness(1.12)}.r19-dialog button:disabled{opacity:.5;cursor:not-allowed}
+.r19-dialog-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:17px;border-top:1px solid #3b3e38}
+.r19-dialog [hidden],#r19Toast[hidden]{display:none!important}
+.r19-toast{position:fixed;z-index:2147483600;bottom:24px;left:50%;transform:translateX(-50%);width:max-content;max-width:min(650px,calc(100vw - 32px));padding:13px 20px;border:1px solid #86734b;border-radius:10px;background:#25231eee;color:#fff4d8;box-shadow:0 10px 40px #0008;font:15px/1.8 Arial,Tahoma,sans-serif;text-align:center;pointer-events:none}
+@media(max-width:850px){.r19-dialog-body{padding:16px}.r19-dialog-head{padding:13px 16px}.r19-dialog h2{font-size:18px}}
+@media print{.r19-toast{display:none!important}}
+
+/* R20: square close buttons keep the × optically centered regardless of generic button padding. */
+.r19-dialog button.r19-dialog-close{display:grid!important;place-items:center!important;padding:0!important;box-sizing:border-box!important;line-height:1!important;text-align:center!important}

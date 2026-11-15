@@ -1,0 +1,395 @@
+{
+  "samples": [
+    {
+      "phase": "initial-document",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/60-mosh-task-presentation-r6.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/55-mosh-workday-model.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/01-mosh-auth-v37-prelock.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/02-mosh-core-runtime-14.js?v=r16",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/03-inline.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/04-v206-hr-enterprise-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/05-v207-safe-dashboard-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/06-v208-employee-portal-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/07-v209-hr-unified-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/08-v211-employee-daily-hub-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/09-work-evidence-v2161-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/10-step2-exec-reports-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/11-step3-department-exec-report-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/12-design-work-report-safe-v8a.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/13-mosh-department-dashboards-v9-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/14-hr-notices-v10-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/15-employee-space-v11-js-transport.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/16-mosh-hr13-runtime.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/17-mosh-documents-14-runtime.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/18-mosh-hr14-complete.js?v=r15-merged",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/19-mosh-v15-runtime.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/20-mosh-v16-runtime.js?v=r15-merged",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/21-mosh-handbook-v17-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/22-mosh-ops18-js.js?v=r15-merged",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/23-mosh-calm19-runtime.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/24-mosh-finance22-js.js?v=r15-merged",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/25-mosh-v25-dark-controls-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/26-mosh-wisdom-v26-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/27-mosh-sidebar-order-v27a.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/28-v27d-wisdom-merge.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/29-v27e-wisdom-layout-fix-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/30-mosh-manager-approvals-v28-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/31-mosh-request-results-v28b-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/32-mosh-v28c-request-routing-repair.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/33-mosh-v28e-request-actions-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/34-mosh-marketing-v29-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/35-mosh-field-work-v30b-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/36-mosh-v30c-field-admin-sync-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/37-mosh-v32-systematic-shared-distribution-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/38-mosh-v32c-runtime-safety.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/39-mosh-v32e-manager-inline-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/40-mosh-marketing-v33-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/41-mosh-marketing-v34-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/42-mosh-v36-prebeta-stability-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/43-mosh-auth-v37-js.js?v=r15-merged",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/44-mosh-v38-my-tasks-enforcement-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/45-mosh-v41-employee-task-sync-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/46-mosh-v42-employee-link-reconcile-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/47-mosh-v44-task-assignment-account-fix.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/48-mosh-v45-employee-tasks-unified-marker.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/49-mosh-v46-employee-task-open-nav-marker.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/50-mosh-v47-employee-task-overlay-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/51-mosh-v48-employee-task-workflow-js.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/52-mosh-v48-marker.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/53-mosh-task-receipts-model.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/54-mosh-task-inbox.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/56-mosh-workdesk.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/57-mosh-reminder-model.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/58-mosh-activity-reminder.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/59-mosh-home-notices.js?v=workdesk-r9",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/61-mosh-zkteco-admin.js?v=zkteco-r5",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/61-mosh-r14-system-polish.js?v=r16",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "js/62-mosh-r16-field-fixes.js?v=r16",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    },
+    {
+      "phase": "ready",
+      "opacity": "0",
+      "visible": "hidden",
+      "panel": false
+    }
+  ],
+  "errors": []
+}

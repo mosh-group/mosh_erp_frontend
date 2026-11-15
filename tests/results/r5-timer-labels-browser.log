@@ -1,0 +1,58 @@
+PASS 1 Full application starts
+PASS 2 Exact reported zero-start defect fixed
+PASS 3 Visible reason rather than false zero timer
+PASS 4 Contradictory active state cannot classify empty server history as waste
+PASS 5 Core task timer also unknown when start absent
+PASS 6 Rendering never writes repairs to API
+PASS 7 Client preserves recorded total, sessions and zero source
+PASS 8 Correct 00:38:12 for milliseconds
+PASS 9 Raw start preserved milliseconds
+PASS 10 No timing warning milliseconds
+PASS 11 Detail cumulative includes saved30min milliseconds
+PASS 12 Correct 00:38:12 for milliseconds string
+PASS 13 Raw start preserved milliseconds string
+PASS 14 No timing warning milliseconds string
+PASS 15 Detail cumulative includes saved30min milliseconds string
+PASS 16 Correct 00:38:12 for Unix seconds
+PASS 17 Raw start preserved Unix seconds
+PASS 18 No timing warning Unix seconds
+PASS 19 Detail cumulative includes saved30min Unix seconds
+PASS 20 Correct 00:38:12 for Unix seconds string
+PASS 21 Raw start preserved Unix seconds string
+PASS 22 No timing warning Unix seconds string
+PASS 23 Detail cumulative includes saved30min Unix seconds string
+PASS 24 Correct 00:38:12 for ISO string
+PASS 25 Raw start preserved ISO string
+PASS 26 No timing warning ISO string
+PASS 27 Detail cumulative includes saved30min ISO string
+PASS 28 Correct 00:38:12 for ISO offset
+PASS 29 Raw start preserved ISO offset
+PASS 30 No timing warning ISO offset
+PASS 31 Detail cumulative includes saved30min ISO offset
+PASS 32 Bad timer flags future
+PASS 33 Bad timer flags 1970 ISO
+PASS 34 Bad timer flags invalid text
+PASS 35 Bad timer flags stale 25h
+PASS 36 Bad timer flags null
+PASS 37 No task number on home or workdesk
+PASS 38 Task/client text retained
+PASS 39 Enlarged20px title16px client22px selected
+PASS 40 Picker labels do not show references
+PASS 41 Search by customer works and holds focus
+PASS 42 All-my-tasks list hides task references
+PASS 43 Employee detail opens without code in title
+PASS 44 Task number field hidden not deleted
+PASS 45 Same execution buttons present
+PASS 46 UI changes never wrote task IDs or timing data
+PASS 47 No workdesk overflow with long labels at1920
+PASS 48 No inbox overflow at1920
+PASS 49 No workdesk overflow with long labels at1440
+PASS 50 No inbox overflow at1440
+PASS 51 No workdesk overflow with long labels at1024
+PASS 52 No inbox overflow at1024
+PASS 53 No workdesk overflow with long labels at768
+PASS 54 No inbox overflow at768
+PASS 55 No workdesk overflow with long labels at390
+PASS 56 No inbox overflow at390
+PASS 57 No uncaught errors throughout targeted suite
+TOTAL 57

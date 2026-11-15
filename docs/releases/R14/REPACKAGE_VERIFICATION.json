@@ -1,0 +1,32 @@
+{
+  "release": "R14_SYSTEM_POLISH",
+  "generated": "2026-10-01",
+  "roots": [
+    "MOSH_LARAVEL_BACKEND",
+    "MOSH_VANILLA_FRONTEND"
+  ],
+  "file_counts": {
+    "backend": 8722,
+    "frontend": 183
+  },
+  "key_sha256": {
+    "MOSH_VANILLA_FRONTEND/index.html": "b1166f90f7613e4377cf9c1e0d46d2a229409d0c6aeaeae94eda3e0b5c690a26",
+    "MOSH_VANILLA_FRONTEND/api-map.json": "bdf95d07e32b61b0513a4be3ca49f68a56b8a12c74919cc479804546e331fd54",
+    "MOSH_VANILLA_FRONTEND/css/r14-system-polish.css": "22380b0bd2b5be8db74c62db497116b7419635923a2bd9ea98f9c649ea36fbaf",
+    "MOSH_VANILLA_FRONTEND/js/61-mosh-r14-system-polish.js": "a1298e6485e8f669f7947b4a35f6791d8085cdb5920d1eb027c63fb56615cef8",
+    "MOSH_LARAVEL_BACKEND/.env": "b70f9dd9ea5de175a97ca4245de937554eb94fffae33a80bde34f003b1b38acc",
+    "MOSH_LARAVEL_BACKEND/database/database.sqlite": "052a6c46408193301111e7adecadf7faf3d6ee9f7d0109d00495f2f8a2337996",
+    "MOSH_VANILLA_FRONTEND/config.js": "89406420f132fc645b01fc5acabdd25ab5e31ccfcc83103d0e4fc7ed67add610"
+  },
+  "sqlite_quick_check": {
+    "database-before-dummy-data.sqlite": "ok",
+    "database.backup-20260921-120137.sqlite": "ok",
+    "database.before-cleanup-20260922-164942.sqlite": "ok",
+    "database.sqlite": "ok"
+  },
+  "backend_vs_r13_changed_files": 0,
+  "notes": [
+    "Backend is byte-identical to R13 base.",
+    "R14 changes are frontend/system UX and printing only."
+  ]
+}

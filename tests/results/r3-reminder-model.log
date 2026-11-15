@@ -1,0 +1,36 @@
+PASS 1 Not due at 4m59s
+PASS 2 Due at exactly five minutes
+PASS 3 Continuous gap retains original start
+PASS 4 Repeated mouse input is irrelevant
+PASS 5 No signed-in account
+PASS 6 No linked employee
+PASS 7 No reminder in task
+PASS 8 No reminder in break
+PASS 9 No reminder in no_work
+PASS 10 No reminder during busy
+PASS 11 No reminder during uncertain
+PASS 12 Known save error suppresses reminder
+PASS 13 Offline suppresses reminder
+PASS 14 Unconfirmed server clock
+PASS 15 Incomplete server history
+PASS 16 Invalid computed history
+PASS 17 Historical date is not today
+PASS 18 Other employee snapshot
+PASS 19 Clock skew into future rejected
+PASS 20 Stale snapshot rejected
+PASS 21 Stale confirmation rejected
+PASS 22 Known outage rejected
+PASS 23 Attendance overlap rejected
+PASS 24 No attendance
+PASS 25 Fingerprint-out ends eligibility
+PASS 26 Nonlive snapshot cannot advance
+PASS 27 Prior gap is not current
+PASS 28 Unknown gap not classified as waste
+PASS 29 Recorded activity even with stale UI
+PASS 30 Separate gaps never accumulate
+PASS 31 Dismiss postpones five minutes, does not move gap start
+PASS 32 Work-start without task remains eligible
+PASS 33 Work-end before fingerprint-out remains eligible
+PASS 34 Evaluation never mutates the attendance or timeline
+PASS 35 Different employee gets a different reminder key
+TOTAL 35

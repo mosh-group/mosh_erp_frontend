@@ -1,0 +1,50 @@
+/* Approved change 07: one work/tasks surface with the original live nodes.
+   Main structural spacing remains on the shared 20px scale from change 06. */
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-grid {
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-areas:"work" "summary"!important;
+}
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Panel { gap:var(--mosh-section-gap); }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-head h3 { font-size:21px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls { grid-template-columns:repeat(4,minmax(0,1fr))!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls button { gap:8px!important; min-height:44px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls svg { width:20px!important; height:20px!important; flex:0 0 20px!important; stroke-width:1.7; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body {
+ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch;
+ border-top:1px solid var(--compact-soft-line); padding-top:var(--mosh-section-gap); min-width:0;
+}
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body>.wd06-current {
+ border:0; padding:0; padding-inline-end:var(--mosh-section-gap); gap:var(--mosh-section-gap);
+}
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body>.es11-card.es11-task {
+ display:flex!important; grid-area:auto!important; grid-column:auto!important; grid-row:auto!important;
+ min-width:0!important; width:auto!important; min-height:0!important; margin:0!important;
+ padding:0!important; padding-inline-start:var(--mosh-section-gap)!important;
+ border:0!important; border-inline-start:1px solid var(--compact-soft-line)!important;
+ border-radius:0!important; background:transparent!important; box-shadow:none!important;
+}
+html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox { gap:var(--mosh-section-gap); }
+html.mosh-compact01 #appShell #employeeSpaceV11 .es11-task .es11-card-head { min-height:32px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox h3,
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-picker>label { font-size:14px!important; font-weight:500!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-inbox-count { font-size:12px!important; color:var(--compact-muted)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task { min-height:200px!important; gap:12px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task[data-empty="true"] { border:0!important; background:transparent!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-task-actions { margin-top:auto!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox .wd51-home-task { flex-shrink:0; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd51HomeError { order:1; }
+@media(max-width:730px) {
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body { grid-template-columns:minmax(0,1fr); gap:var(--mosh-section-gap); }
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body>.wd06-current { padding-inline-end:0; }
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body>.es11-card.es11-task {
+  padding-inline-start:0!important; padding-top:var(--mosh-section-gap)!important;
+  border-inline-start:0!important; border-top:1px solid var(--compact-soft-line)!important;
+ }
+ html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task { min-height:180px!important; }
+ html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task[data-empty="true"] { min-height:120px!important; }
+}
+@media(max-width:360px) {
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-head h3 { font-size:18px!important; }
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls button { padding:8px 5px!important; gap:6px!important; }
+}

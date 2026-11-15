@@ -1,0 +1,43 @@
+PASS 8h balances into task + breaks + no work + waste
+PASS attendance gap outside building is not waste
+PASS overnight shift clips at date boundaries
+PASS overlapping punches unioned and flagged
+PASS incomplete historical presence not fake waste
+PASS partially covered timeline only authorizes covered gaps
+PASS overlap different tasks flagged not double counted
+PASS overlap task and break is review
+PASS duplicate identical events do not double count
+PASS task time outside attendance never charged to presence
+PASS old missing checkout needs review, not a 24h fabricated shift
+PASS today missing checkout is provisional until now
+PASS missing checkin does not infer presence
+PASS equal in and out is not 24 hours
+PASS future date has zero attendance
+PASS invalid clock values and dates rejected
+PASS company timezone independent of browser
+PASS session identity uses employee ID over same names
+PASS shared task duration isolates individual sessions
+PASS receipt does not start task or change presence
+PASS cannot skip receipt
+PASS start switches tasks atomically and preserves history
+PASS break pauses running task and marks break together
+PASS no-work pauses the task without finishing
+PASS work-end pauses but never submits task
+PASS work-start after break never auto-resumes task
+PASS resume closes break and starts task in one transaction
+PASS pause task alone is not break
+PASS finish goes to review but keeps day open
+PASS no execution without matching permission
+PASS no writes without linked employee ID
+PASS returned task needs new receipt while preserving time
+PASS idempotent current workday state generates no write
+PASS many disjoint intervals always partition attendance
+PASS Malformed history invalidates uncovered gaps instead of blaming employee
+PASS Explicit open overnight shift splits after midnight
+PASS Explicit overnight shift also shows previous-day part as provisional
+PASS Conflicting activity within attendance is not reported as outside attendance
+PASS Invalid company timezone is explicitly flagged
+PASS Spring clock change uses actual elapsed duration
+PASS Autumn clock change uses actual elapsed duration
+PASS Documented server response balances an eight-hour day
+TOTAL 42

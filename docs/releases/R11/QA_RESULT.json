@@ -1,0 +1,25 @@
+{
+  "release": "R11-login-feedback",
+  "runtime_changes": [
+    "index.html",
+    "api-map.json",
+    "css/styles.css",
+    "js/43-mosh-auth-v37-js.js"
+  ],
+  "login_browser_check": {
+    "visible_pending_state": true,
+    "duplicate_submit_requests": 1,
+    "failure_restores_form": true,
+    "javascript_page_errors": 0
+  },
+  "r10_preload_regression": {
+    "preload_warnings": 0,
+    "preload_nodes": 0,
+    "manifest_scripts": 60,
+    "requested_once": true,
+    "manifest_order_preserved": true
+  },
+  "node_tests": {"passed": 38, "failed": 0},
+  "javascript_syntax": {"files_checked": 63, "failed": 0},
+  "backend_runtime_changed": false
+}

@@ -1,0 +1,24 @@
+{
+  "success": true,
+  "data": {
+    "workday": {
+      "employeeId": "EMP-EXAMPLE-1",
+      "date": "2026-09-27",
+      "timeZone": "Asia/Damascus",
+      "asOf": "2026-09-27T14:00:00Z",
+      "live": false,
+      "complete": true,
+      "attendance": [
+        {"id":"PUNCH-1","inAt":"2026-09-27T06:00:00Z","outAt":"2026-09-27T14:00:00Z","status":"closed","source":"fingerprint"}
+      ],
+      "activities": [
+        {"id":"ACT-1","kind":"task","taskId":"TASK-A","taskTitle":"تصميم كيس شيبس","startAt":"2026-09-27T06:15:00Z","endAt":"2026-09-27T09:00:00Z"},
+        {"id":"ACT-2","kind":"break","startAt":"2026-09-27T09:00:00Z","endAt":"2026-09-27T09:45:00Z"},
+        {"id":"ACT-3","kind":"no_work","startAt":"2026-09-27T09:45:00Z","endAt":"2026-09-27T10:15:00Z"},
+        {"id":"ACT-4","kind":"task","taskId":"TASK-B","taskTitle":"تعديل بوستر","startAt":"2026-09-27T10:15:00Z","endAt":"2026-09-27T13:15:00Z"}
+      ],
+      "coverage": [],
+      "issues": []
+    }
+  }
+}

@@ -1,0 +1,724 @@
+{
+  "javascript": [
+    {
+      "file": "js/30-mosh-manager-approvals-v28-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/31-mosh-request-results-v28b-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/02-mosh-core-runtime-14.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/61-mosh-zkteco-admin.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/34-mosh-marketing-v29-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/19-mosh-v15-runtime.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/24-mosh-finance22-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/53-mosh-task-receipts-model.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/api-boot.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/09-work-evidence-v2161-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/03-inline.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/62-mosh-r16-field-fixes.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/59-mosh-home-notices.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/04-v206-hr-enterprise-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/40-mosh-marketing-v33-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/38-mosh-v32c-runtime-safety.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/49-mosh-v46-employee-task-open-nav-marker.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/44-mosh-v38-my-tasks-enforcement-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/05-v207-safe-dashboard-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/45-mosh-v41-employee-task-sync-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/33-mosh-v28e-request-actions-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/61-mosh-r14-system-polish.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/21-mosh-handbook-v17-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/41-mosh-marketing-v34-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/18-mosh-hr14-complete.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/29-v27e-wisdom-layout-fix-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/13-mosh-department-dashboards-v9-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/api-client.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/27-mosh-sidebar-order-v27a.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/26-mosh-wisdom-v26-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/63-mosh-mini-workdesk.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/48-mosh-v45-employee-tasks-unified-marker.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/01-mosh-auth-v37-prelock.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/16-mosh-hr13-runtime.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/52-mosh-v48-marker.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/54-mosh-task-inbox.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/58-mosh-activity-reminder.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/57-mosh-reminder-model.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/28-v27d-wisdom-merge.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/23-mosh-calm19-runtime.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/08-v211-employee-daily-hub-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/42-mosh-v36-prebeta-stability-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/51-mosh-v48-employee-task-workflow-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/43-mosh-auth-v37-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/39-mosh-v32e-manager-inline-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/55-mosh-workday-model.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/15-employee-space-v11-js-transport.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/17-mosh-documents-14-runtime.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/25-mosh-v25-dark-controls-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/11-step3-department-exec-report-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/47-mosh-v44-task-assignment-account-fix.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/10-step2-exec-reports-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/36-mosh-v30c-field-admin-sync-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/20-mosh-v16-runtime.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/56-mosh-workdesk.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/06-v208-employee-portal-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/37-mosh-v32-systematic-shared-distribution-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/46-mosh-v42-employee-link-reconcile-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/07-v209-hr-unified-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/50-mosh-v47-employee-task-overlay-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/22-mosh-ops18-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/35-mosh-field-work-v30b-js.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/12-design-work-report-safe-v8a.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/60-mosh-task-presentation-r6.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/32-mosh-v28c-request-routing-repair.js",
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "file": "js/14-hr-notices-v10-js.js",
+      "ok": true,
+      "stderr": ""
+    }
+  ],
+  "php": [
+    {
+      "file": "app/Support/Money.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/RecordAccess.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/Records.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/BusinessRules.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/TaskExecutionClock.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/WorkdayHistory.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/JournalRules.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/StockRules.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/WorkdayReport.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/FinanceRules.php",
+      "ok": true
+    },
+    {
+      "file": "app/Support/Audit.php",
+      "ok": true
+    },
+    {
+      "file": "app/Providers/AppServiceProvider.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Announcement.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Wisdom.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/ZktecoAttendanceEvent.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/ZktecoDevice.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/ServiceContract.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Invoice.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/SalesTeam.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Employee.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Supplier.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Quotation.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/ExecutiveReport.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/HrRequest.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Recognition.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Salesperson.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/QuotationTemplate.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/FinancialDocument.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/FieldWork.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Role.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Payment.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Warehouse.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/StockItem.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Requisition.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/AdminDecision.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/PrintLayout.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/OffboardingCase.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/FileLink.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Reservation.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Setting.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Service.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/PayrollHours.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Task.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/HrApproval.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/PayrollRun.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/User.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/Customer.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/EmploymentContract.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/FieldTemplate.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/ZktecoEmployeeMapping.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/WorkPresence.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/DataRecord.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/CashAccount.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/StoredFile.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/SupportRequest.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/AuditEvent.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/AdminMeeting.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/JournalEntry.php",
+      "ok": true
+    },
+    {
+      "file": "app/Models/StockMovement.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/AuthController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/ResourceController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/TransactionController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/BootstrapController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/ZktecoBridgeController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/AccountController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/ZktecoAdminController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/FileController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/ReportController.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Controllers/Controller.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Middleware/ApiSession.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Middleware/ZktecoBridgeAuth.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Middleware/RedirectIfAuthenticated.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Middleware/EncryptCookies.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Middleware/VerifyCsrfToken.php",
+      "ok": true
+    },
+    {
+      "file": "app/Http/Middleware/TrimStrings.php",
+      "ok": true
+    },
+    {
+      "file": "app/Services/ZKTeco/ZktecoService.php",
+      "ok": true
+    },
+    {
+      "file": "routes/api.php",
+      "ok": true
+    },
+    {
+      "file": "routes/console.php",
+      "ok": true
+    },
+    {
+      "file": "routes/web.php",
+      "ok": true
+    },
+    {
+      "file": "config/zkteco.php",
+      "ok": true
+    },
+    {
+      "file": "config/session.php",
+      "ok": true
+    },
+    {
+      "file": "config/mail.php",
+      "ok": true
+    },
+    {
+      "file": "config/queue.php",
+      "ok": true
+    },
+    {
+      "file": "config/cors.php",
+      "ok": true
+    },
+    {
+      "file": "config/auth.php",
+      "ok": true
+    },
+    {
+      "file": "config/database.php",
+      "ok": true
+    },
+    {
+      "file": "config/services.php",
+      "ok": true
+    },
+    {
+      "file": "config/filesystems.php",
+      "ok": true
+    },
+    {
+      "file": "config/cache.php",
+      "ok": true
+    },
+    {
+      "file": "config/logging.php",
+      "ok": true
+    },
+    {
+      "file": "config/mosh.php",
+      "ok": true
+    },
+    {
+      "file": "config/app.php",
+      "ok": true
+    },
+    {
+      "file": "config/hashing.php",
+      "ok": true
+    },
+    {
+      "file": "bootstrap/providers.php",
+      "ok": true
+    },
+    {
+      "file": "bootstrap/app.php",
+      "ok": true
+    },
+    {
+      "file": "bootstrap/cache/packages.php",
+      "ok": true
+    },
+    {
+      "file": "bootstrap/cache/services.php",
+      "ok": true
+    }
+  ]
+}

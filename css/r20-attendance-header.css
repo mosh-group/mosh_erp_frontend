@@ -1,0 +1,73 @@
+
+/* R20.2 production: only fingerprint entry remains in the main header.
+   Physical attendance duration belongs to the employee-file portal. */
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip {
+ display:grid;
+ grid-template-columns:minmax(0,176px);
+ flex:0 0 auto;
+ gap:10px;
+ margin-inline-end:4px;
+}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip[hidden]{display:none!important}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-fact {
+ display:flex;
+ align-items:center;
+ min-width:0;
+ height:var(--r19-header-card-height,60px);
+ box-sizing:border-box;
+ gap:9px;
+ padding:7px 12px;
+ border:1px solid #354047;
+ border-radius:12px;
+ background:#151e23;
+ color:#dbe1e3;
+}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-fact>svg {
+ width:22px;
+ height:22px;
+ flex:0 0 22px;
+ color:#aeb8bd;
+}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-copy {display:flex;flex-direction:column;gap:3px;min-width:0}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-label {display:flex;align-items:center;gap:5px;font-size:12px;line-height:1.35;color:#aeb9bf;white-space:nowrap}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-value {font-size:18px;font-weight:650;line-height:1.35;color:#e6ecef;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-state {width:5px;height:5px;flex:0 0 5px;border-radius:50%;background:#8f9da4}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip[data-state="inside"] .r20-presence-state {background:#aabbb0}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip[data-state="review"] .r20-presence-state {background:#d1b27b}
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip[data-state="missing"] .r20-presence-value,
+.mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip[data-state="review"] #r20PresenceEntry {font-size:16px}
+@media(max-width:1500px) and (min-width:1101px) {
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-header {flex-wrap:wrap!important;gap:12px}
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-meta {flex-basis:calc(100% - 380px)}
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-header-tools {margin-inline-start:auto}
+}
+@media(max-width:1100px) and (min-width:601px) {
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-meta {flex-basis:100%}
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-header-tools {--r19-header-card-width:100%;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));width:100%!important;gap:10px;justify-content:start}
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip {grid-column:1 / -1;grid-template-columns:minmax(0,1fr);margin:0}
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip .r20-presence-copy {flex:1;flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-header-tools #r19MyFile,
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-clock {min-width:0;justify-self:stretch}
+}
+@media(max-width:900px) and (min-width:601px) {
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-fact>svg,
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 #r19MyFile .r19-file-symbol,
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 #r19MyFile .r19-file-chevron,
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-clock>.es11-icon {display:none}
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 .es11-clock {justify-content:center}
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 #r19MyFile {font-size:14px;white-space:normal}
+ .mosh-review19.mosh-review19-1.mosh-presence-review20 #employeeSpaceV11 #dashboardLiveDate {white-space:normal}
+}
+@media(max-width:600px) {
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip {grid-column:1 / -1;grid-template-columns:minmax(0,1fr);gap:8px;margin:0}
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-strip .r20-presence-copy {flex:1;flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-fact {gap:7px;padding:8px 10px}
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-label {font-size:11px;white-space:normal}
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-value {font-size:17px;white-space:normal}
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-fact>svg {width:18px;height:18px;flex-basis:18px}
+}
+@media(max-width:380px) {
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-fact {padding:8px;gap:5px}
+ .mosh-presence-review20 #employeeSpaceV11 .r20-presence-fact>svg {display:none}
+}
+

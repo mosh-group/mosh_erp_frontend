@@ -1,0 +1,21 @@
+PASS 1 Dedicated creation adds one confirmed server task
+PASS 2 Actual receipt button succeeds immediately after creation
+PASS 3 The missing-record error is absent
+PASS 4 Receipt does not start the timer
+PASS 5 Receipt exposes start button
+PASS 6 Receipt is recorded exactly once
+PASS 7 Starting immediately after receipt works
+PASS 8 Break still pauses execution
+PASS 9 Refresh retains the saved receipt
+PASS 10 Workflow has no JavaScript runtime errors
+PASS 11 new: no intermediate app frame is visible
+PASS 12 new: application becomes interactive only at ready
+PASS 13 new: first paint uses final workdesk or login
+PASS 14 new: no runtime errors
+PASS 15 failed: no intermediate app frame is visible
+PASS 16 Failed script leaves retry screen instead of an old interface
+PASS 17 logged-out: no intermediate app frame is visible
+PASS 18 logged-out: application becomes interactive only at ready
+PASS 19 logged-out: first paint uses final workdesk or login
+PASS 20 logged-out: no runtime errors
+

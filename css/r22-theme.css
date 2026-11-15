@@ -1,0 +1,307 @@
+/* MOSH R22 — full light theme overlay. Dark remains the default. */
+html[data-mosh-theme="light"]{
+ color-scheme:light;
+ --bg:#f4f2ed!important;--sidebar:#fbfaf7!important;--panel:#ffffff!important;--panel2:#f0ede6!important;--field:#fbfaf7!important;
+ --line:#d8d1c5!important;--text:#2d2a25!important;--muted:#746f66!important;--shadow:0 14px 36px #3c342518!important;
+ --ui-heading:#26241f!important;--ui-text:#2d2a25!important;--ui-muted:#746f66!important;--ui-bg:#f4f2ed!important;--ui-sidebar:#fbfaf7!important;
+ --ui-panel:#fff!important;--ui-panel2:#f0ede6!important;--ui-field:#fbfaf7!important;--ui-border:#d8d1c5!important;
+}
+html[data-mosh-theme="light"] body{background:var(--bg)!important;color:var(--text)!important}
+html[data-mosh-theme="light"] .sidebar{background:var(--sidebar)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] .topbar{background:#fffdfa!important;border-color:var(--line)!important;color:var(--text)!important;box-shadow:0 1px 0 #d8d1c566}
+html[data-mosh-theme="light"] .logo,html[data-mosh-theme="light"] .breadcrumb b,html[data-mosh-theme="light"] h1,html[data-mosh-theme="light"] h2,html[data-mosh-theme="light"] h3,html[data-mosh-theme="light"] h4{color:var(--ui-heading)!important}
+html[data-mosh-theme="light"] .nav a{color:#5f5b54!important}
+html[data-mosh-theme="light"] .nav a:hover,html[data-mosh-theme="light"] .nav a.active{background:#ece8df!important;color:#26231f!important}
+html[data-mosh-theme="light"] .breadcrumb,html[data-mosh-theme="light"] .muted,html[data-mosh-theme="light"] small{color:var(--muted)}
+html[data-mosh-theme="light"] .sidebar-toggle,html[data-mosh-theme="light"] .search{background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] .avatar{color:#17140d!important}
+
+/* Standard surfaces and navigation. */
+html[data-mosh-theme="light"] :where(.panel,.form-card,.chatter,.notes-panel,.activities-panel,.sales-task-card,.kcol,.metric,.modalbox,.dashboard-user,.dashboard-field,.dashboard-section-btn,.task-attachments-box,.task-attachment-item,.attachment-card,.info-box,.m15-card,.m15-modal,.m15-empty,.m14-fold,.m14-kpi,.m14-asset,.employee-portal-shell,.employee-portal-kpi,.employee-portal-section,.employee-portal-document,.r202-portal-section,.r202-source-card){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(.actionbar,.form-head,.chatter-head,.activity-head,.notes-head,.list-table th,.lines th,.m15-table th,.m14 th){background:#f1eee8!important;color:#625d55!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(.menu>button,.btn,.chatter-toggle,.activity-toggle,.state,.tab,.m15-btn){color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(.btn,.chatter-toggle,.activity-toggle,.state,.m15-btn){background:#f3f0ea!important}
+html[data-mosh-theme="light"] :where(.btn.primary,.m15-btn.primary){background:var(--gold)!important;color:#17140d!important;border-color:var(--gold)!important}
+html[data-mosh-theme="light"] :where(.menu>button:hover,.btn:hover,.dropdown button:hover,.m15-btn:hover){background:#e9e4da!important;color:#201e1a!important}
+html[data-mosh-theme="light"] .dropdown{background:#fff!important;border-color:var(--line)!important;box-shadow:var(--shadow)!important}
+html[data-mosh-theme="light"] .dropdown button{color:var(--text)!important}
+html[data-mosh-theme="light"] :where(.list-table td,.list-table th,.lines td,.lines th,.m14 td,.m14 th,.m15-table td,.m15-table th){border-color:var(--line)!important}
+html[data-mosh-theme="light"] .list-table tr.data:hover{background:#f4f0e8!important}
+
+/* Fields: this rule prevents white-on-white/light-on-light failures across old modules. */
+html[data-mosh-theme="light"] body :where(input:not([type="color"]):not([type="range"]),select,textarea){background:#fffdfa!important;color:#28251f!important;border-color:#cfc7ba!important;color-scheme:light!important}
+html[data-mosh-theme="light"] body :where(input,select,textarea)::placeholder{color:#969087!important;opacity:1}
+html[data-mosh-theme="light"] body :where(input,select,textarea):disabled{background:#eeebe5!important;color:#8a847b!important}
+html[data-mosh-theme="light"] .field label,html[data-mosh-theme="light"] .r19-hr-grid label,html[data-mosh-theme="light"] .m14-grid label{color:#5f5a52!important}
+html[data-mosh-theme="light"] .customer-info-box{background:#fffdfa!important;color:#4f4a43!important;border-color:var(--line)!important}
+
+/* Dialogs and overlays. */
+html[data-mosh-theme="light"] .r19-dialog{background:#fff!important;color:var(--text)!important;border-color:#cec6b9!important;box-shadow:0 25px 80px #4c44372b!important}
+html[data-mosh-theme="light"] .r19-dialog::backdrop{background:#312d2759!important}
+html[data-mosh-theme="light"] .r19-dialog-head{background:#f5f2ec!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] .r19-dialog h2{color:#26231f!important}
+html[data-mosh-theme="light"] .r19-dialog button:not(.primary){background:#f1eee8!important;color:#2d2a25!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] .r19-dialog button.primary{background:var(--gold)!important;color:#17140d!important}
+html[data-mosh-theme="light"] .r19-dialog-close{background:#ede9e1!important;color:#413d36!important;border-color:#d2cabd!important}
+html[data-mosh-theme="light"] :where(.modal,.m14-modal-back,.m15-modal-back,.auth37-editorback,.fw30-overlay,.o18-overlay,#emp47TaskOverlay){--overlay-light:#312d2759}
+html[data-mosh-theme="light"] :where(.m14-modal,.m15-modal,.auth37-editor,.fw30-panel,.o18-dialog){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+
+/* Notification center. Keep semantic urgency colors, but make normal surfaces light. */
+html[data-mosh-theme="light"] :where(.r19-alerts-center,.r19-alert-toolbar,.r19-alert-filters,.r19-alert-detail,.r19-alert-preferences,.r19-alert-row:not(.is-urgent),.r19-notice-feature,.r19-unified-strip){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(.r19-alert-row-meta,.r19-alert-source,.r19-alert-receipt,.r19-alert-message,.r19-alert-read-state){color:#716b62!important}
+html[data-mosh-theme="light"] .r19-alert-tabs button{color:#5e5951!important}
+html[data-mosh-theme="light"] .r19-alert-tabs button.active{background:#ece6d9!important;color:#4b3c18!important;border-color:#cbb36e!important}
+
+/* HR and employee portal. */
+html[data-mosh-theme="light"] :where(.r19-hr-section,.r19-hr-summary,.r19-hr-review-summary,.r19-hr-file-item,.r19-hr-table-wrap,.r19-hr-timeline,.r19-hr-form,.r19-hr-report-tabs,.employee-portal-card-head,.employee-portal-row,.employee-portal-list,.r202-section-body,.r202-portal-actions,.r202-portal-punches){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(.r19-hr-muted,.r19-hr-note,.r19-hr-small-action,.employee-portal-statline,.r202-section-hint){color:#716b62!important}
+html[data-mosh-theme="light"] :where(.r202-portal-section>summary,.r19-hr-report-tabs button){background:#f4f1eb!important;color:#35312c!important;border-color:var(--line)!important}
+
+/* Task inbox/workdesk: ordinary cards become readable light surfaces; semantic urgent/revision accents remain. */
+html[data-mosh-theme="light"] :where(.wd51-home,.wd51-home-card,.wd51-task-card,.wd51-panel,.wd50-panel,.wd50-card,.workdesk-card,.workdesk-panel,.task-inbox-card,.task-inbox-panel){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(.wd51-home-empty,.wd51-meta,.wd51-sub,.workdesk-muted){color:#756f66!important}
+
+/* Older HR/admin modules that carry literal dark colors. */
+html[data-mosh-theme="light"] .m14{color:var(--text)!important}
+html[data-mosh-theme="light"] .m14 p,html[data-mosh-theme="light"] .m14 .muted,html[data-mosh-theme="light"] .m14 small{color:#716b62!important}
+html[data-mosh-theme="light"] .m14-fold>div{border-color:var(--line)!important}
+html[data-mosh-theme="light"] .m14-empty{background:#f4f1eb!important;color:#746f66!important}
+html[data-mosh-theme="light"] .m14-note.info{background:#edf4f7!important;color:#4b6673!important;border-color:#bdd0d9!important}
+html[data-mosh-theme="light"] .m14-note:not(.error):not(.info){background:#eef4e9!important;color:#506047!important;border-color:#c8d3bf!important}
+
+/* Quick theme control. */
+.r22-theme-toggle{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;min-width:70px}
+.r22-theme-toggle .r22-theme-label{font-size:12px;font-weight:700}
+html[data-mosh-theme="light"] .r22-theme-toggle{background:#f1eee8!important;color:#2d2a25!important;border-color:#d4ccbf!important}
+.r22-theme-setting{grid-column:1/-1}
+
+/* Preserve document/print previews as intentional white paper with dark ink. */
+html[data-mosh-theme="light"] :where(.preview-paper,.m14-preview,.print-paper,[data-print-paper]){background:#fff!important;color:#222!important}
+html[data-mosh-theme="light"] :where(.preview-paper,.m14-preview,.print-paper,[data-print-paper]) *{color:inherit}
+
+/* MINI was explicitly designed as a black translucent work tool; keep it black in both modes. */
+html.mosh-mini-window18[data-mosh-theme="light"]{--bg:#080a0b!important;--panel:#111a1f!important;--panel2:#19292f!important;--line:#35454b!important;--text:#f6f3e9!important;--muted:#bdbeb5!important;color-scheme:dark}
+
+@media(max-width:700px){.r22-theme-toggle{min-width:42px}.r22-theme-toggle .r22-theme-label{display:none}}
+
+/* R22 light-mode coverage for legacy/base modules that still carry literal dark colors. */
+html[data-mosh-theme="light"] :where(
+ .message,.followup-note,.builder-box,.kcard,
+ .archive-change-card,.customer-form-section,.secondary-contact-card,
+ .sales-report-metric,.sales-report-group,.app-list-performance-bar,
+ .quote-template-card,.contract-kpi
+){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(
+ .archive-change-head,.sales-report-group-head,.archive-change-table th,
+ .attachment-action .action-icon,.attachment-icon-btn .voice-timer
+){background:#f2efe9!important;color:#3b3731!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(
+ .archive-change-badge,.status,.state,.task-badge,.quote-template-badge
+){background:#eee9e0!important;color:#4a453e!important;border-color:#d4ccbf!important}
+html[data-mosh-theme="light"] :where(
+ .customer-form-grid b,.service-detail-value,.sales-report-metric .value,
+ .archive-new-value,.archive-old-value,.app-pager-page,.attachment-action .action-label
+){color:#2d2a25!important}
+html[data-mosh-theme="light"] :where(.archive-change-table td,.archive-change-table th){border-color:#ddd5c8!important}
+html[data-mosh-theme="light"] :where(.app-list-search,.app-page-size){background:#fffdfa!important;color:#28251f!important;border-color:#cfc7ba!important}
+
+/* Task execution, chat, design, HR, support, billing and archive legacy surfaces. */
+html[data-mosh-theme="light"] :where(
+ .task-manager-controls,.task-manager-chip,.task-running-chat,.task-running-thread,
+ .task-chat-bubble,.task-chat-composer,.task-chat-input,.task-activities,
+ .design-report-card,.design-team-card,.hr-staff-summary-card,.hr-manager-preview,
+ .hr-manager-current,.hr-document-upload,.hr-document-row,.hr-document-icon,
+ .task-support-panel,.task-support-card,.support-summary-card,.support-detail-item,
+ .accounting-packages-kpi,.accounting-packages-toolbar,.accounting-package-card,
+ .accounting-package-services,.accounting-package-service-index,
+ .mosh-action-confirm-card,.mosh-action-confirm-meta,.billing-preview-card,
+ .billing-preview-close,.billing-preview-field,.billing-preview-subtask-index,
+ .billing-preview-history>div,.archive-task-tabs,.archive-finished-hero,
+ .archive-unified-filter
+){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(
+ .task-manager-field select option,.design-distribution-table select option,
+ .design-running-filter select option,.hr-staff-filterbar select option,
+ .hr-manager-table select option
+){background:#fff!important;color:#28251f!important}
+html[data-mosh-theme="light"] :where(
+ .design-distribution-table select,.design-running-filter select,
+ .hr-staff-filterbar select,.hr-manager-table select,.hr-document-upload select,
+ .hr-document-upload input,.support-inbox-filters select,.archive-restore-control select,
+ .archive-unified-filter select
+){background:#fffdfa!important;color:#28251f!important;border-color:#cfc7ba!important}
+html[data-mosh-theme="light"] :where(.task-chat-media){background:#f2efe9!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(.task-chat-media img,.task-chat-thumb,.task-chat-media video){background:#0a0a0b!important}
+html[data-mosh-theme="light"] .accounting-package-progress-track{background:#e3ddd2!important}
+
+/* Embedded MOSH AI panel follows the selected appearance as well. */
+html[data-mosh-theme="light"] :where(
+ .mosh-ai-launcher,.mosh-ai-panel,.mosh-ai-close,.mosh-ai-context,
+ .mosh-ai-context-chip,.mosh-ai-message.user .mosh-ai-bubble,
+ .mosh-ai-message.assistant .mosh-ai-bubble,.mosh-ai-chip,
+ .mosh-ai-compose,.mosh-ai-input,.mosh-ai-footer,.mosh-ai-inline-action
+){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] .mosh-ai-chip:hover{background:#ece7dd!important}
+html[data-mosh-theme="light"] .mosh-ai-preview-badge{background:#f3ead0!important;color:#5a4717!important;border-color:#d7bd77!important}
+
+/* Older navigation/workflow generations (v26-v48). */
+html[data-mosh-theme="light"] :where(
+ .w26-hero,.w26-stat,.w26-row,.w26-order button,
+ .mgr28-modal,.mgr28-modal>header,.mgr28-summary>div,.mgr28-item,.mgr28-note-box,.mgr28-decision-card,
+ .emp-result28b,.emp-result28b-actions button,#requestResults28eModal .rr28e-dialog,#requestResults28eModal .rr28e-head,#requestResults28eModal .rr28e-close,#requestResults28eModal .rr28e-row.head,
+ .mk29-rail,.mk29-btn,.mk29-banner,.mk29-kpi,.mk29-panel,.mk29-table tr[data-id],.mk29-progress,.mk29-chip,.mk29-client-head,.mk29-question,.mk29-note,.mk29-plan-card,.mk29-summary-box,.mk29-task-guide,.mk29-task-guide-item,
+ #fieldWorkCardV30B,.fw30-box,.fw30-status-btn,.fw30-action,.fw30-dialog,.fw30-type,.fwset-side,.fwset-main,.fwset-tpl,.fwset-toggle,.fwset-row,.fwset-row button,.fwset-assigned,#staffFieldTemplateWrap,
+ .sd32-modebar,.sd32-dialog,.sd32-x,.sd32-choice,.sd32-dialog-actions,.sd32-root-panel,.sd32-summary span,.sd32-group,.sd32-child-context,
+ .mk33-rail,.mk33-client-box,.mk33-btn,.mk33-banner,.mk33-kpi,.mk33-panel,.mk33-table th,.mk33-progress,.mk33-chip,.mk33-client-head,.mk33-step,.mk33-pick-card,.mk33-question,.mk33-mini,.mk33-internal,.mk33-guide-section,.mk33-plan-card,.mk33-note,.mk33-task-stat,
+ .mk34-client-results,.mk34-interaction,.mk34-detail,.mk34-kpi,
+ .auth37-head,.auth37-btn,#moshAuthAdmin>.auth37-adminwin,.auth37-adminnav,.auth37-admintop,.auth37-tablewrap,.auth37-table th,.auth37-stat,.auth37-section,.auth37-check,.auth37-matrix th,.auth37-matrix td,.auth37-matrix th:first-child,.auth37-matrix td:first-child,.auth37-audit-row,.auth37-editorbox,.auth37-editorhead,.auth37-tabs button,
+ .auth38-my-head,.auth38-my-toolbar input,.auth38-my-table,.auth38-my-table th,.auth39-head,.auth39-stats>div,.auth39-section-title input,.auth39-permrow,.auth39-app,.auth39-app>summary,.auth40-eye,
+ #emp47TaskDialog,#emp47TaskHead,#emp47TaskClose,#emp47TaskStage .emp48-workflow,#emp47TaskStage .emp48-state,#emp47TaskStage .emp48-btn
+){background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-mosh-theme="light"] :where(
+ .w26 select,.w26 input,.w26 textarea,.mgr28-note textarea,
+ .mk29-input,.mk29-textarea,.mk29-select,.fw30-dialog textarea,.fwset-add input,.fwset-input,
+ .mk33-client-box select,.mk33-input,.mk33-textarea,.mk33-select,.auth37-field input,
+ .auth37-field select,.auth37-field textarea,.auth37-matrix select,.auth38-my-toolbar input,.auth39-section-title input
+){background:#fffdfa!important;color:#28251f!important;border-color:#cfc7ba!important}
+
+/* Keep semantic states distinct in light mode after the legacy-surface conversion. */
+html[data-mosh-theme="light"] :where(.sales-report-status.approved,.contract-status.active,.mgr28-decision-card.ok,.mk29-chip.ok,.mk33-chip.ok,.mk33-step.done,.auth37-status.on,.auth39-toggle.allow,.auth39-access.on){background:#e5f3e9!important;color:#2e6843!important;border-color:#a9cfb5!important}
+html[data-mosh-theme="light"] :where(.sales-report-status.cancelled,.contract-status.cancelled,.mgr28-decision-card.bad,.emp-result28b.rejected,.mk29-chip.bad,.mk33-chip.bad,.mk34-flash.bad,.auth37-status.off,.auth39-toggle.deny,.auth39-access.off){background:#f8e8e8!important;color:#8d3d3d!important;border-color:#dfb4b4!important}
+html[data-mosh-theme="light"] :where(.sales-report-status.open,.contract-status.draft,.mgr28-kind,.mk29-chip.wait,.mk33-chip.wait,.mk33-step.active,.auth37-warn,.auth40-home-note,#emp47TaskStage .emp48-wait){background:#f7f0db!important;color:#6f571e!important;border-color:#d8c58c!important}
+html[data-mosh-theme="light"] :where(.mk33-chip.info){background:#e9f1f7!important;color:#42637a!important;border-color:#bdd0dd!important}
+
+/* Full-screen dimmers stay dim; the surfaces inside them are themed above. */
+html[data-mosh-theme="light"] :where(.modal,.mgr28-backdrop,.fw30-overlay,.sd32-modal,#requestResults28eModal,#emp47TaskOverlay,.billing-preview-modal,.mosh-action-confirm,.task-image-lightbox){background:rgba(34,31,27,.56)!important}
+
+/* Auth gate gets a true light canvas instead of a leftover dark login screen. */
+html[data-mosh-theme="light"] #moshAuthGate{background:radial-gradient(circle at 70% 20%,#fff8e8 0,#f5f2eb 42%,#ece8df 100%)!important;color:var(--text)!important}
+
+/* Common inner rails and their selected state. */
+html[data-mosh-theme="light"] :where(#hrProNav,#m15SalesRail,#m16AdminRail,.o18-rail,.f21-rail,.admin-pure-nav,.mk29-rail,.mk33-rail){background:#f4f1eb!important;border-color:var(--line)!important;color:var(--text)!important}
+html[data-mosh-theme="light"] :where(#hrProNav,#m15SalesRail,#m16AdminRail,.o18-rail,.f21-rail,.admin-pure-nav,.mk29-rail,.mk33-rail)>:where(button,label,.f21-btn){background:transparent!important;color:#5f5a52!important;border-color:transparent!important}
+html[data-mosh-theme="light"] :where(#hrProNav,#m15SalesRail,#m16AdminRail,.o18-rail,.f21-rail,.admin-pure-nav,.mk29-rail,.mk33-rail)>:where(button,label,.f21-btn):hover{background:#ebe6dc!important;color:#2d2a25!important}
+html[data-mosh-theme="light"] :where(#hrProNav,#m15SalesRail,#m16AdminRail,.o18-rail,.f21-rail,.admin-pure-nav,.mk29-rail,.mk33-rail)>:where(button,label,.f21-btn).active{background:#eee5cb!important;color:#5a4514!important;border-color:#d7bd77!important}
+
+/* MINI is intentionally dark/translucent in both modes; protect its literal controls from the light-mode field safety net. */
+html[data-mosh-theme="light"] #moshMini18.mini19-ui{background:rgba(8,10,11,.90)!important;color:#faf8f0!important;border-color:rgba(214,181,96,.48)!important;color-scheme:dark!important}
+html[data-mosh-theme="light"] #moshMini18.mini19-ui .mini18-header{background:rgba(18,19,18,.90)!important;color:#faf8f0!important;border-color:rgba(225,221,205,.21)!important}
+html[data-mosh-theme="light"] #moshMini18.mini19-ui .mini18-search{background:#0005!important;color:#f8f6ed!important;border-color:#d4d8c934!important;color-scheme:dark!important}
+html[data-mosh-theme="light"] #moshMini18.mini19-ui .mini18-search::placeholder{color:#bdbeb5!important}
+html[data-mosh-theme="light"] #moshMini18.mini19-ui .mini18-item{background:#ffffff05!important;color:#f8f6ed!important;border-color:#d4d8c929!important}
+html[data-mosh-theme="light"] #moshMini18.mini19-ui .mini18-item button{background:#d7b45a18!important;color:#f1d992!important;border-color:#7c713e!important}
+html[data-mosh-theme="light"] #moshMini18.mini19-ui .mini18-action{background:#ffffff08!important;color:#f8f6ed!important;border-color:#d4d8c934!important}
+html[data-mosh-theme="light"] #moshMini18.mini19-ui .mini18-primary{background:#dfbe68!important;color:#201b0e!important;border-color:#dfbe68!important}
+html[data-mosh-theme="light"] #moshMini18.mini19-ui .mini18-footer{background:#00000024!important;color:#d0d1ca!important;border-color:rgba(225,221,205,.21)!important}
+
+
+/* R22 coverage pass — the previous light theme left major workspaces dark.
+   These selectors cover the live home/workdesk, department dashboard, admin,
+   marketing, task lists, notification strip and manager bars seen in production. */
+html[data-mosh-theme="light"] :where(.content,.view.active){color:#2d2a25!important}
+html[data-mosh-theme="light"] :where(.m15-dept-tabs,.admin-tabs-only,.h13-layout,.m15-sales-layout){background:#fff!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] .m15-dept-tabs>button,
+html[data-mosh-theme="light"] .m15-dept-tabs>.mgr32e-approval-proxy{background:transparent!important;color:#4f4a42!important;border-color:transparent!important}
+html[data-mosh-theme="light"] .m15-dept-tabs>button:hover,
+html[data-mosh-theme="light"] .m15-dept-tabs>button.active,
+html[data-mosh-theme="light"] .m15-dept-tabs>.mgr32e-approval-proxy:hover,
+html[data-mosh-theme="light"] .m15-dept-tabs>.mgr32e-approval-proxy.has-pending{background:#f1ead9!important;color:#4a3812!important;border-color:#c9ad68!important}
+
+/* Employee home/workdesk */
+html[data-mosh-theme="light"] #employeeSpaceV11,
+html[data-mosh-theme="light"] #employeeSpaceV11 :where(.es11-header,.es11-card,.wd50-card,.es11-task,.wd51-attendance,#wd51TimeSummary,.wd51-inbox,.wd50-task,.wd50-metric,.wd50-log-dialog){color:#2d2a25!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 :where(.es11-header,.es11-card,.wd50-card,.es11-task,.wd51-attendance,#wd51TimeSummary,.wd51-inbox,.wd50-task,.wd50-metric){background:#fff!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 :where(.wd51-attendance-state b,.wd51-punch bdi,.wd50-status,.wd50-task-head b,.wd50-metric bdi,.wd50-summary-title b,.r19-time-toggle){color:#2d2a25!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 :where(.wd51-attendance-state small,.wd51-punch span,.wd50-status small,.wd50-task-head small,.wd50-picker small,.wd50-summary-title small,.wd50-metric span,.wd50-empty,.wd50-rule){color:#777168!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 :where(.wd51-attendance-link,#wd50Panel .wd50-day-controls button,#wd50Panel #wd50PickerToggle,#wd50Panel .wd50-task-btn,.wd50-log-btn,.mr49-task-actions button){background:#f5f2ec!important;color:#302d28!important;border-color:#d4ccbf!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 :where(#wd50Panel .wd50-day-controls button.active,#wd50Panel .wd50-task-btn.primary,.mr49-task-actions button[data-wd50-select]){background:#ead9a9!important;color:#2c2412!important;border-color:#c8aa57!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 :where(#wd50PickerList,#wd50Search){background:#fff!important;color:#2d2a25!important;border-color:#d0c8bb!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 #wd50PickerResults button{color:#2d2a25!important;border-color:#e2ddd4!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 #wd50PickerResults button:hover,
+html[data-mosh-theme="light"] #employeeSpaceV11 #wd50PickerResults button.selected{background:#f1ead9!important;color:#2d2a25!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 .wd50-return{background:#f5eedc!important;color:#5f4a19!important;border-color:#c9ad68!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 .wd50-return p{color:#5f574b!important}
+html[data-mosh-theme="light"] .wd50-log-dialog{background:#fff!important;color:#2d2a25!important;border-color:#d0c8bb!important}
+html[data-mosh-theme="light"] .wd50-log-dialog header{background:#f5f2ec!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] .wd50-log-dialog :where(button,input,.wd50-log-metrics>div){background:#fffdfa!important;color:#2d2a25!important;border-color:#d0c8bb!important}
+html[data-mosh-theme="light"] .wd50-log-dialog th{background:#f1eee8!important;color:#625d55!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] .wd50-log-dialog td{color:#2d2a25!important;border-color:#e0d9cd!important}
+html[data-mosh-theme="light"] .wd50-log-warning{background:#f7efd9!important;color:#69521d!important;border-color:#d8c58c!important}
+html[data-mosh-theme="light"] .wd50-log-valid{background:#edf5eb!important;color:#456044!important;border-color:#bfd0ba!important}
+html[data-mosh-theme="light"] .mosh-review19-1 #wd51TimeSummary>.r19-time-toggle:hover{background:#f2eee6!important}
+html[data-mosh-theme="light"] .mosh-review19-1 #wd51TimeSummary>.r19-time-details{border-color:#e6e0d6!important}
+
+/* Notification strip and detail center */
+html[data-mosh-theme="light"] #moshNoticeStrip52.r19-unified-strip,
+html[data-mosh-theme="light"] #moshNoticeStrip52 :where(.r19-notice-feature,.r19-notice-head,.r19-alert-row){background:#fff!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #moshNoticeStrip52 :where(.r19-notice-head>button,.r19-notice-feature button,.nt52-link){background:#f4f1eb!important;color:#403b34!important;border-color:#d4ccbf!important}
+html[data-mosh-theme="light"] #moshNoticeStrip52 :where(p,small,.r19-notice-meta){color:#716b62!important}
+html[data-mosh-theme="light"] .r19-alert-row.is-read{background:#f7f5f0!important}
+html[data-mosh-theme="light"] .r19-alert-linked-task,
+html[data-mosh-theme="light"] .r19-alert-detail-note,
+html[data-mosh-theme="light"] .r19-task-status-panel,
+html[data-mosh-theme="light"] #mr49ReturnDialog .mr49-return-files,
+html[data-mosh-theme="light"] #mr49ReturnFileList li{background:#fff!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+
+/* Department dashboard / administration */
+html[data-mosh-theme="light"] .db9{color:#2d2a25!important}
+html[data-mosh-theme="light"] .db9 :where(.db9-heading,.db9-controls,.db9-panel,.db9-kpi,.db9-special,.db9-dept,.db9-table-wrap,.db9-team,.db9-note,.db9-follow){background:#fff!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] .db9 :where(h2,h3,b,strong,.mt54-task-name){color:#2d2a25!important}
+html[data-mosh-theme="light"] .db9 :where(p,small,header>span,.mt54-client-name,.db9-meta){color:#756f66!important}
+html[data-mosh-theme="light"] .db9 :where(input,select,textarea,.db9-button){background:#fffdfa!important;color:#2d2a25!important;border-color:#d0c8bb!important}
+html[data-mosh-theme="light"] .db9 .db9-button:hover{background:#eee9df!important;color:#27241f!important}
+html[data-mosh-theme="light"] .db9-table th{background:#f1eee8!important;color:#625d55!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] .db9-table td{background:#fff!important;color:#2d2a25!important;border-color:#e1dbd0!important}
+html[data-mosh-theme="light"] .db9-table tbody tr:hover td{background:#f7f4ee!important}
+html[data-mosh-theme="light"] .db9-track,html[data-mosh-theme="light"] .db9-progress{background:#e4ded3!important}
+html[data-mosh-theme="light"] #adminApp .admin-tabs-only{background:#fff!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #adminApp .admin-pure-pages{background:#fff!important;color:#2d2a25!important}
+html[data-mosh-theme="light"] #adminApp #m16AdminRail{background:#f4f1eb!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #adminApp #m16AdminRail>:where(button,.m16-rail-title,small){color:#5e5951!important}
+html[data-mosh-theme="light"] #adminApp #m16AdminRail>button:hover{background:#ebe6dc!important;color:#2d2a25!important}
+html[data-mosh-theme="light"] #adminApp #m16AdminRail>button.active{background:#eee5cb!important;color:#5a4514!important;border-color:#d7bd77!important}
+html[data-mosh-theme="light"] :where(.m16-card,.m16-stats button){background:#fff!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] .m16-card p,html[data-mosh-theme="light"] .m16-muted,html[data-mosh-theme="light"] .m16-stats small{color:#756f66!important}
+
+/* Marketing workspace */
+html[data-mosh-theme="light"] :where(.mk33-shell,.mk33-main){background:transparent!important;color:#2d2a25!important}
+html[data-mosh-theme="light"] :where(.mk33-rail,.mk33-client-box,.mk33-banner,.mk33-kpi,.mk33-panel,.mk33-client-head,.mk33-step,.mk33-pick-card,.mk33-question,.mk33-guide-section,.mk33-plan-card,.mk33-note,.mk33-task-stat,.mk34-client-results,.mk34-interaction,.mk34-detail,.mk34-kpi){background:#fff!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] :where(.mk33-head h2,.mk33-client-name,.mk33-panel h3,.mk33-pick-card b,.mk33-plan-card b,.mk33-qtop b){color:#2d2a25!important}
+html[data-mosh-theme="light"] :where(.mk33-head p,.mk33-meta,.mk33-label,.mk33-plan-card p,.mk33-note small,.mk33-task-stat span,.mk33-empty){color:#756f66!important}
+html[data-mosh-theme="light"] :where(.mk33-rail button,.mk33-btn,.mk33-mini){background:#f5f2ec!important;color:#403c35!important;border-color:#d4ccbf!important}
+html[data-mosh-theme="light"] .mk33-rail button.active{background:#eee5cb!important;color:#5a4514!important;border-color:#d7bd77!important}
+html[data-mosh-theme="light"] :where(.mk33-input,.mk33-textarea,.mk33-select,.mk33-internal){background:#fffdfa!important;color:#28251f!important;border-color:#cfc7ba!important}
+html[data-mosh-theme="light"] .mk33-table-wrap{background:#fff!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] .mk33-table th{background:#f1eee8!important;color:#625d55!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] .mk33-table td{background:#fff!important;color:#2d2a25!important;border-color:#e1dbd0!important}
+html[data-mosh-theme="light"] .mk33-table tbody tr[data-id]:hover td{background:#f7f4ee!important}
+html[data-mosh-theme="light"] .mk33-progress{background:#e3ddd2!important}
+
+/* Generic legacy cards that live inside an active view. Restrict this to named
+   surface families instead of forcing every div white, preserving semantic badges. */
+html[data-mosh-theme="light"] :where(.hr-pro-shell,.hr-pro-card,.h13-panel,.h13-table-wrap,.support-inbox-head,.support-summary-grid,.support-summary-card,.support-detail-item,.o18-card,.o18-note,.f21-card,.f21-panel,.m15-card,.m15-table,.m16-card,.hb17,.archive-card,.archive-panel){background:#fff!important;color:#2d2a25!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] :where(.h13-table th,.hr-pro-table th,.f21-table th){background:#f1eee8!important;color:#625d55!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] :where(.h13-table td,.hr-pro-table td,.f21-table td){color:#2d2a25!important;border-color:#e1dbd0!important}
+
+/* Semantic accents stay semantic, with light-mode contrast. */
+html[data-mosh-theme="light"] :where(.r19-task-urgent,.r19-urgent-badge,.db9-danger,.task-badge.danger){background:#f8e5e5!important;color:#913d3d!important;border-color:#dfb0b0!important}
+html[data-mosh-theme="light"] :where(.r19-task-revision,.db9-tag.gold,.task-badge.wait){background:#f7efd9!important;color:#6d541c!important;border-color:#d7c183!important}
+
+/* Text safety for known muted literals on converted light surfaces. */
+html[data-mosh-theme="light"] :where(.content,.view.active) :where([style*="color:#eee"],[style*="color: #eee"],[style*="color:#fff"],[style*="color: #fff"]){color:#2d2a25!important}
+
+/* Keep intentional dark media and MINI untouched. */
+html[data-mosh-theme="light"] :where(video,.task-chat-media img,.task-chat-thumb,.task-image-lightbox img){color-scheme:dark}
+
+/* R22 final light-mode coverage: the employee workspace shell itself must also leave the dark canvas. */
+html[data-mosh-theme="light"] #employeeSpaceV11{
+  --es11-gold:#b48b29;
+  --es11-text:#2d2a25;
+  --es11-muted:#777168;
+  --es11-border:#d8d1c5;
+  background:linear-gradient(135deg,#f7f4ee,#f1ede5 64%,#f7f4ee)!important;
+  color:#2d2a25!important;
+  border-color:#d8d1c5!important;
+  box-shadow:inset 0 1px 0 #fff,0 8px 28px rgba(76,64,42,.08)!important;
+}
+html[data-mosh-theme="light"] #employeeSpaceV11 .wd51-grid{background:transparent!important}

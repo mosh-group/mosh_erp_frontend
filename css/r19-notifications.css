@@ -1,0 +1,92 @@
+/* MOSH R19 — extend the original gold/dark interface, preserving its layout. */
+#moshNoticeStrip52.r19-unified-strip > :not(.r19-notice-content){display:none!important}
+#moshNoticeStrip52.r19-unified-strip{background:#151c21!important;border:1px solid #3b484e!important;padding:15px 19px!important;min-width:0}
+#moshNoticeStrip52.r19-has-new{border-inline-start:3px solid #c8ae72!important;background:linear-gradient(105deg,#151d22,#242219)!important}
+.r19-notice-head,.r19-notice-head>div{display:flex;align-items:center;gap:10px;min-width:0}
+.r19-notice-head{justify-content:space-between}.r19-notice-head>div{flex-wrap:wrap}
+.r19-notice-head svg{width:22px;height:22px;color:#c9b077;flex-shrink:0}
+#moshNoticeStrip52 .r19-notice-head h3{font-family:inherit!important;font-weight:700!important;font-size:17px!important;line-height:1.7!important;color:#f3ecda!important;margin:0!important}
+.r19-notice-count{font-size:13px;color:#d8c596;background:#c1a76a17;border:1px solid #9f884544;border-radius:20px;padding:3px 10px;white-space:nowrap}
+#moshNoticeStrip52 .r19-notice-content button{font-family:inherit!important;font-size:14px!important;line-height:1.7!important;border-radius:8px;cursor:pointer}
+.r19-notice-head>button{color:#e6d6ae;background:#10171b;border:1px solid #54616a;padding:6px 12px;white-space:nowrap}
+.r19-notice-feature{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid #beaa702b}
+.r19-notice-feature>div{min-width:0;flex:1}.r19-notice-feature .r19-alert-type{margin-inline-end:8px}
+#moshNoticeStrip52 .r19-notice-title{background:transparent;border:0;color:#f4ecdb;font-weight:700;text-align:start;padding:1px 0;max-width:100%;overflow:hidden;vertical-align:middle;text-overflow:ellipsis;white-space:nowrap}
+#moshNoticeStrip52 .r19-notice-feature p{font-family:inherit!important;font-size:14px!important;line-height:1.85!important;color:#cbd0ca;margin:5px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r19-notice-open{border:1px solid #bba062!important;color:#1a1d1d!important;background:#c8ae71!important;padding:7px 14px;white-space:nowrap;flex-shrink:0}
+.top-actions [data-r19-bell]{position:relative;overflow:visible!important;min-width:42px}
+.r19-bell-count{position:absolute;inset-block-start:-5px;inset-inline-start:-7px;background:#c1a262;color:#10191f;min-width:21px;height:21px;display:grid;place-items:center;border:2px solid #151d22;border-radius:14px;font:800 11px/1 Arial,sans-serif;padding-inline:3px;box-sizing:border-box;pointer-events:none}
+.r19-bell-count[hidden]{display:none!important}
+#r19Alerts{width:min(860px,calc(100vw - 28px));text-align:start}
+#r19Alerts .r19-dialog-body{padding:22px!important}
+.r19-alerts-center,.r19-alert-detail{font-family:inherit;color:#eae8df;min-width:0}
+#r19Alerts :is(button,input,select){font-family:inherit;font-size:14px}
+#r19Alerts button{cursor:pointer;line-height:1.65;border:1px solid #48575f;background:#182229;color:#e9e5d9;padding:7px 12px;border-radius:8px}
+#r19Alerts button:disabled{opacity:.48;cursor:default}
+#r19Alerts :is(button,input,select):focus-visible,#moshNoticeStrip52 .r19-notice-content button:focus-visible,.r19-urgency-toggle:focus-visible{outline:2px solid #e0c886;outline-offset:3px}
+.r19-alert-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:17px}
+.r19-alert-tabs{display:flex;flex-wrap:wrap;gap:7px}.r19-alert-tabs button{display:flex;align-items:center;gap:9px}
+#r19Alerts .r19-alert-tabs button.active{background:#d0b67b;color:#162026;border-color:#d0b67b;font-weight:700}
+.r19-alert-tabs b{font-size:12px;min-width:20px;background:#0002;border-radius:13px;padding:1px 5px}
+.r19-alert-preferences{display:flex;gap:6px;flex-wrap:wrap}
+#r19Alerts .r19-alert-preferences button{font-size:12px;color:#bbc4c8;padding:6px 9px}
+#r19Alerts .r19-alert-preferences button[aria-pressed=true]{border-color:#73694b;color:#e4d1a4}
+.r19-alert-filters{display:grid;grid-template-columns:minmax(0,1fr) 185px;gap:12px;margin-bottom:16px}
+.r19-alert-filters label{display:grid;gap:6px;color:#b9c5c9;font-size:13px;min-width:0}
+#r19Alerts .r19-alert-filters :is(input,select){width:100%;min-width:0;background:#101920;border:1px solid #49565d;color:#f0eadc;border-radius:9px;padding:9px 12px;box-sizing:border-box;min-height:42px}
+.r19-alert-filters input::placeholder{color:#84939d}
+.r19-alert-row{padding:17px 18px;border:1px solid #38474e;background:#172128;border-radius:11px;margin:11px 0;min-width:0}
+.r19-alert-row.is-unread{border-inline-start:3px solid #cfb579}.r19-alert-row.is-read{background:#131d23}
+.r19-alert-row-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.r19-alert-type,.r19-urgent-badge{display:inline-flex;align-items:center;border:1px solid #7c70504a;border-radius:6px;padding:3px 8px;font-size:12px;line-height:1.6;white-space:nowrap;font-weight:600;color:#dccca5;background:#bf9e5517}
+.r19-alert-type.task{color:#b8d0df;border-color:#607f944f;background:#5383a520}.r19-alert-type.hr{color:#d4c3ea;border-color:#89759d69;background:#9172af1b}.r19-alert-type.announcement{color:#dccca5}
+.r19-urgent-badge{color:#f2bdba;border-color:#af595466;background:#a8423c20}
+.r19-alert-read-state{margin-inline-start:auto;font-size:12px;color:#d8c79f}.is-read .r19-alert-read-state{color:#9babaf}
+.r19-alert-row h3{margin:10px 0 5px;font-size:17px;line-height:1.8}
+#r19Alerts .r19-alert-row h3 button{border:0;padding:0;background:none;color:#f2eada;text-align:start;font-weight:700;font-size:17px;line-height:1.8;overflow-wrap:anywhere}
+.r19-alert-row p{font-size:15px;line-height:1.9;color:#bcc6ca;margin:5px 0 12px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.r19-alert-row-foot{display:flex;align-items:center;justify-content:space-between;gap:12px}.r19-alert-row-foot small{font-size:12px;color:#96a7af;line-height:1.8}
+#r19Alerts .r19-alert-row-foot button{font-size:13px;background:#121b21;white-space:nowrap}
+.r19-alert-pagination{border-top:1px solid #34444c;padding-top:16px;margin-top:16px;display:flex;gap:12px;align-items:center;justify-content:space-between;color:#a5b3b9;font-size:13px}
+.r19-alert-pagination>div{display:flex;gap:6px}.r19-alert-empty{text-align:center;padding:48px 18px;color:#b6c0c4;font-size:16px;line-height:1.9;border:1px dashed #415159;border-radius:10px;margin-top:12px}
+#r19Alerts .r19-alert-back{padding:4px 0;background:none;border:0;color:#d0bd91;margin-bottom:19px}
+.r19-alert-detail-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.r19-alert-detail-meta time{margin-inline-start:auto;font-size:13px;color:#9eafb6}
+.r19-alert-detail h3{font-size:23px;line-height:1.75;margin:15px 0 4px;color:#f4ecdc;overflow-wrap:anywhere}
+.r19-alert-source{font-size:14px;color:#adbbbe;margin:0 0 18px}.r19-alert-message{font-size:17px;line-height:2.1;white-space:pre-wrap;overflow-wrap:anywhere;padding:17px 0;color:#e4e4dc;min-height:56px}
+.r19-alert-detail-note{background:#101b21;border:1px solid #405058;border-radius:9px;padding:12px 15px;color:#c6c9bd;font-size:14px;line-height:1.9;white-space:pre-wrap}
+.r19-alert-linked-task{display:grid;gap:7px;border:1px solid #445761;background:#142128;padding:15px 18px;border-radius:10px;margin:16px 0}
+.r19-alert-linked-task>span:first-child{font-size:12px;color:#a0b4bf}.r19-alert-linked-task b{font-size:17px}.r19-alert-linked-task small{font-size:14px;color:#bac8ca}
+#r19Alerts .r19-alert-linked-task>button{justify-self:start;font-size:14px;margin-top:3px}
+.r19-alert-receipt{padding:13px 16px;border-radius:10px;color:#dbcb9e;background:#b19a5820;border:1px solid #8f7b474d;font-size:14px;line-height:1.9;margin:18px 0}
+.r19-alert-receipt small{display:block;color:#aaa99a;font-size:13px;margin-top:4px}.r19-alert-receipt.is-read{color:#bdd4c5;background:#46694d21;border-color:#56735e66}
+.r19-alert-detail footer{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-top:16px;border-top:1px solid #34444c}
+#r19Alerts .r19-alert-primary{color:#17201f;background:#cbb176;border-color:#cbb176;font-weight:700;padding:9px 20px;font-size:15px}
+.r19-alert-read{font-size:14px;color:#bed3c4;font-weight:700}
+.r19-task-flags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:5px 0 0;max-width:100%}
+.r19-task-flags:empty{display:none}.r19-task-urgent,.r19-task-revision{display:inline-flex;align-items:center;border:1px solid;border-radius:6px;padding:3px 9px;font-family:inherit;font-size:12px;font-weight:700;line-height:1.65;white-space:nowrap}
+.r19-task-urgent{background:#8f29272e;color:#ffbbb4;border-color:#a455516e}.r19-task-revision{background:#70509736;color:#e0c5ff;border-color:#9c78c27d}
+.r19-task-status-panel{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px 16px;background:#111e25;border:1px solid #40525a;border-radius:10px;margin-bottom:18px}
+.r19-task-status-panel>div{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.r19-task-status-panel .r19-task-flags{margin:0}
+.r19-task-status-label{font-weight:700;font-size:14px;color:#cfc8b5}.r19-task-normal{color:#a8bcbf;font-size:13px}
+.r19-task-status-panel small{font-size:12px;color:#94a8b1;line-height:1.8}
+.r19-urgency-toggle{border:1px solid #74664a;background:#c0a36419;color:#e9d4a9;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;line-height:1.6;white-space:nowrap}
+.r19-urgency-toggle.is-urgent{color:#efb2aa;border-color:#995953;background:#983d3022}
+/* Attachments in the original manager return dialog. */
+#mr49ReturnDialog .mr49-return-files{margin-top:18px;border:1px solid #46565e;border-radius:11px;background:#121d23;padding:14px 16px}
+#mr49ReturnDialog .mr49-return-files-head,#mr49ReturnDialog .mr49-return-files-head>div{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#mr49ReturnDialog .mr49-return-files-head{justify-content:space-between}
+#mr49ReturnDialog .mr49-return-files-head b{font-size:16px;color:#ede4cf}
+#mr49ReturnFileCount{font-size:12px;color:#c9ba93;border:1px solid #8d795844;border-radius:15px;padding:2px 8px;white-space:nowrap}
+#mr49ReturnDialog #mr49ReturnFilePick{color:#e7d0a0;border-color:#9c87565c;background:#a28a451b;font-size:14px}
+#mr49ReturnDialog .mr49-return-files-help{font-size:13px;line-height:1.9;color:#afbdc1;margin:10px 0 12px}
+#mr49ReturnFileList{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+#mr49ReturnFileList li{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #344750;border-radius:8px;padding:10px 12px;background:#17232b;min-width:0}
+#mr49ReturnFileList li>div{min-width:0}
+#mr49ReturnFileList b{display:block;font-size:14px;line-height:1.8;color:#e4e5dc;overflow-wrap:anywhere}
+#mr49ReturnFileList small{display:block;font-size:12px;line-height:1.8;color:#a2b5bc}
+#mr49ReturnFileList button{flex-shrink:0;font-size:12px;color:#e4bdb6;border-color:#8c63573d;background:#75473c1b}
+#mr49ReturnFileList li.mr49-return-files-empty{border-style:dashed;color:#98adb6;justify-content:center;font-size:14px;padding:17px}
+#mr49ReturnDialog .mr49-return-progress{border:1px solid #907d505c;background:#ab91491f;padding:11px 14px;border-radius:9px;color:#e4d5b0;font-size:14px;line-height:1.9;overflow-wrap:anywhere}
+#mr49ReturnDialog #mr49ReturnError{white-space:pre-wrap;overflow-wrap:anywhere}
+#mr49ReturnDialog [hidden]{display:none!important}
+@media(max-width:680px){#r19Alerts .r19-dialog-body{padding:15px!important}.r19-alert-filters{grid-template-columns:1fr}.r19-alert-toolbar{align-items:flex-start;gap:10px}.r19-alert-preferences{width:100%}.r19-alert-row{padding:13px}.r19-alert-row-foot{align-items:flex-start;flex-direction:column;gap:8px}.r19-alert-detail h3{font-size:20px}.r19-alert-detail-meta time{width:100%;margin:3px 0 0}.r19-alert-message{font-size:16px}.r19-alert-detail footer{flex-wrap:wrap}.r19-task-status-panel{align-items:flex-start;flex-direction:column}.r19-task-status-panel>button{align-self:flex-end}.r19-notice-feature{align-items:flex-start;flex-direction:column;gap:10px}.r19-notice-open{align-self:flex-end}.r19-notice-head{align-items:flex-start}.r19-notice-head>button{font-size:12px!important;padding:6px 8px}#moshNoticeStrip52.r19-unified-strip{padding:13px!important}}

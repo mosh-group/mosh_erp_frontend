@@ -1,0 +1,6 @@
+/* R33: suppress only superseded shells; no data or feature is removed. */
+.view:not(.active){display:none!important;}
+#itApp.it31-mode > :not(.it31-head):not(#it31Tabs):not(#it31Body):not(#itAppContent):not(#m15Tabs_it){display:none!important;}
+#marketingExecV29{display:none!important;}
+#marketingApp.ig28-open #marketingExecV33,#marketingApp.ig28-open #marketingAppContent{display:none!important;}
+#marketingApp:not(.ig28-open) #marketingSocialHubContent{display:none!important;}

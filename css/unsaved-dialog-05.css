@@ -1,0 +1,34 @@
+/* Approved change 05: presentation of the existing safe-exit dialog. */
+html.mosh-compact01 #r14UnsavedDialog{
+ --exit05-bg:#101719;--exit05-text:#f1f2ee;--exit05-muted:#adb6b8;--exit05-line:#354348;--exit05-gold:#e4bc4b;
+ box-sizing:border-box!important;width:min(530px,calc(100% - 28px))!important;max-width:calc(100% - 28px)!important;
+ max-height:calc(100dvh - 28px)!important;overflow:auto!important;padding:24px!important;
+ background:var(--exit05-bg)!important;color:var(--exit05-text)!important;border:1px solid var(--exit05-line)!important;
+ border-radius:15px!important;direction:rtl;font:400 14px/1.7 Tahoma,Arial,sans-serif!important;
+}
+html.mosh-compact01[data-mosh-theme="light"] #r14UnsavedDialog{--exit05-bg:#fffdf7;--exit05-text:#272820;--exit05-muted:#686b61;--exit05-line:#c5c1b4;--exit05-gold:#d6ad3b}
+html.mosh-compact01 #r14UnsavedDialog .r14-confirm-body{padding:0!important;margin:0!important}
+html.mosh-compact01 #r14UnsavedDialog .r40-exit-heading{display:flex;gap:12px;align-items:flex-start}
+html.mosh-compact01 #r14UnsavedDialog .r40-exit-symbol{display:flex;align-items:center;justify-content:center;width:37px;height:37px;flex:0 0 37px;border-radius:10px;background:#2c2819;color:var(--exit05-gold)}
+html.mosh-compact01 #r14UnsavedDialog .r40-exit-symbol svg{width:21px;height:21px}
+html.mosh-compact01 #r14UnsavedDialog h3{font:500 18px/1.6 Tahoma,Arial,sans-serif!important;margin:0!important;color:var(--exit05-text)!important}
+html.mosh-compact01 #r14UnsavedDialog #r40UnsavedDescription{margin:7px 0 0!important;font:400 13px/1.7 Tahoma,Arial,sans-serif!important;color:var(--exit05-muted)!important}
+html.mosh-compact01 #r14UnsavedDialog [data-r36-exit-status]{margin:14px 0 0!important;max-width:none!important;color:var(--exit05-muted)!important;font:400 13px/1.7 Tahoma,Arial,sans-serif!important;overflow-wrap:anywhere}
+html.mosh-compact01 #r14UnsavedDialog [data-r36-exit-status]:empty{display:none!important}
+html.mosh-compact01 #r14UnsavedDialog footer{display:flex!important;align-items:stretch!important;gap:9px!important;margin:24px 0 0!important;padding:0!important;border:0!important;background:transparent!important;flex-wrap:nowrap!important}
+html.mosh-compact01 #r14UnsavedDialog footer .btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;flex:1 1 0!important;min-width:0!important;min-height:41px!important;height:auto!important;padding:9px 12px!important;border:1px solid var(--exit05-line)!important;border-radius:8px!important;background:transparent!important;color:var(--exit05-text)!important;font:400 13px/1.5 Tahoma,Arial,sans-serif!important;white-space:nowrap!important;box-shadow:none!important}
+html.mosh-compact01 #r14UnsavedDialog footer .btn svg{width:16px;height:16px;flex:0 0 16px}
+html.mosh-compact01 #r14UnsavedDialog footer [data-r14="save"]{background:var(--exit05-gold)!important;border-color:var(--exit05-gold)!important;color:#211b0e!important;font-weight:500!important}
+html.mosh-compact01 #r14UnsavedDialog footer [data-r14="discard"]{border-color:#715350!important;color:#e8b7b0!important}
+html.mosh-compact01[data-mosh-theme="light"] #r14UnsavedDialog footer [data-r14="discard"]{color:#8c3730!important}
+html.mosh-compact01 #r14UnsavedDialog footer [data-r14="cancel"]{border-color:transparent!important;color:var(--exit05-muted)!important}
+html.mosh-compact01 #r14UnsavedDialog footer [disabled]{opacity:.55!important;cursor:not-allowed!important}
+@media(max-width:480px){
+ html.mosh-compact01 #r14UnsavedDialog{padding:20px!important}
+ html.mosh-compact01 #r14UnsavedDialog h3{font-size:17px!important}
+ html.mosh-compact01 #r14UnsavedDialog .r40-exit-heading{gap:10px}
+ html.mosh-compact01 #r14UnsavedDialog footer{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ html.mosh-compact01 #r14UnsavedDialog footer [data-r14="save"]{grid-column:1/-1}
+ html.mosh-compact01 #r14UnsavedDialog footer .btn{padding:10px 8px!important;white-space:normal!important}
+}
+@media(pointer:coarse){html.mosh-compact01 #r14UnsavedDialog footer .btn{min-height:44px!important}}

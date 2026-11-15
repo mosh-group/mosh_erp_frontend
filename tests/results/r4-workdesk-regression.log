@@ -1,0 +1,59 @@
+PASS 1 Complete frontend boots without runtime errors
+PASS 2 Four day controls moved, not duplicated
+PASS 3 Search focus survives timer rendering
+PASS 4 Selecting does not receive or start
+PASS 5 Workday start alone does not run task
+PASS 6 Cannot start before receipt
+PASS 7 Receive button saves without timer
+PASS 8 Start button records task and presence
+PASS 9 Task timer shows confirmed45minutes
+PASS 10 Break pauses task in same transaction
+PASS 11 Execution duration saved once
+PASS 12 Break timer shows15minutes
+PASS 13 Resume ends break atomically
+PASS 14 No-work pauses task
+PASS 15 Start task ends no-work
+PASS 16 Selecting another task leaves current running
+PASS 17 Start second pauses first; one running task
+PASS 18 Task pause is not break
+PASS 19 Resume paused task
+PASS 20 Finish sends to review, day remains open
+PASS 21 End work is not fingerprint exit
+PASS 22 Fingerprint attendance6h30
+PASS 23 Correct130task/15break/20no-work/225waste
+PASS 24 Every attendance minute assigned once
+PASS 25 Per-task total adds multiple sessions
+PASS 26 Personal report shows timeline and totals
+PASS 27 Main flow no runtime exceptions
+PASS 28 Clean application reload reconstructs confirmed report
+PASS 29 Manager return requires new receipt
+PASS 30 New receipt preserves previous timing
+native [{'k': 'start', 'visible': True, 'text': 'بدء المهمة'}]
+PASS 31 Native detail offers start
+PASS 32 Inside details uses same task/workday transaction
+PASS 33 Detail flow no runtime exceptions
+PASS 34 No optimistic state before server confirms
+PASS 35 Double click submits once
+PASS 36 422 rejection never partially changes task/presence
+PASS 37 Lost response reuses same idempotency key
+PASS 38 Repeated server failure flagged uncertain
+PASS 39 Uncertain result freezes actions and offers resolve
+PASS 40 Resolve obtains original transaction result
+PASS 41 409 conflict does not override local state
+PASS 42 Legacy API missing history does not fabricate waste
+PASS 43 Existing task controls work without historical report
+PASS 44 Failure handling has no uncaught exceptions
+PASS 45 Status permission respected in UI and controller
+PASS 46 Cannot select or start others task
+PASS 47 Search excludes other employee
+PASS 48 Escape closes task picker
+PASS 49 Denied actions wrote no records
+PASS 50 Workdesk no internal overflow at1920
+PASS 51 Workdesk no internal overflow at1280
+PASS 52 Workdesk no internal overflow at768
+PASS 53 Workdesk no internal overflow at390
+PASS 54 Empty past day does not invent attendance
+PASS 55 Selected report date survives rendering
+PASS 56 Closing report returns to workdesk
+PASS 57 Final layout tests no exceptions
+TOTAL 57 PASS

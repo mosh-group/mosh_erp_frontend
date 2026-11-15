@@ -1,0 +1,44 @@
+/* R30: light-mode shell corrections. The stored dark palette and semantic statuses are not changed. */
+html[data-mosh-theme="light"] #appShell .sidebar{background:#fbfaf7!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #appShell .sidebar .logo,html[data-mosh-theme="light"] #appShell .sidebar .nav-label{color:#35312b!important}
+html[data-mosh-theme="light"] #appShell .sidebar .nav-icon{background:#f0ede6!important;border-color:#d8d1c5!important;color:#5e584e!important}
+html[data-mosh-theme="light"] #appShell .sidebar .nav a:is(:hover,.active){background:#eee5cb!important;border-color:#c8af6c!important}
+html[data-mosh-theme="light"] #appShell .sidebar .nav a:is(:hover,.active) .nav-icon{background:#dfc577!important;color:#332b18!important}
+html[data-mosh-theme="light"] #appShell .topbar .btn:not(.primary),html[data-mosh-theme="light"] #appShell .menu>button{background:#f3f0ea!important;color:#302b23!important;border-color:#cfc7b7!important}
+html[data-mosh-theme="light"] #appShell .topbar :is(.top-account-name,.auth37-user-name){color:#302b23!important}
+html[data-mosh-theme="light"] #appShell :is(.m15-dept-tabs,.h13-layout,.m15-sales-layout,.o18-layout){background:#fff!important;color:#302b23!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #hrApp #hrProNav,html[data-mosh-theme="light"] #salesApp #m15SalesRail,html[data-mosh-theme="light"] #appShell .o18-rail{background:#f6f3ec!important;color:#302b23!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #hrApp #hrProNav :is(button,b,small),html[data-mosh-theme="light"] #appShell .o18-rail :is(button,b,small){color:#514a3f!important}
+html[data-mosh-theme="light"] #hrApp #hrProNav button,html[data-mosh-theme="light"] #appShell .o18-rail button{background:transparent!important;border-color:transparent!important}
+html[data-mosh-theme="light"] #hrApp #hrProNav button:is(:hover,.active),html[data-mosh-theme="light"] #appShell .o18-rail button:is(:hover,.active){background:#eee5cb!important;color:#4e3c16!important}
+html[data-mosh-theme="light"] #appShell .r23-manager-tools-toggle{color:#40392e!important}
+html[data-mosh-theme="light"] #appShell .r23-manager-tools-menu{background:#fff!important;border-color:#d8d1c5!important;box-shadow:0 10px 24px #30281824!important}
+html[data-mosh-theme="light"] #appShell .r23-manager-tool{background:transparent!important;color:#40392e!important}
+html[data-mosh-theme="light"] #appShell .r23-manager-tool:hover{background:#f1ead9!important}
+html[data-mosh-theme="light"] #appShell .db9{color:#302b23!important}
+html[data-mosh-theme="light"] #appShell .db9 :is(.db9-heading,.db9-controls,.db9-panel,.db9-kpi,.db9-special,.db9-dept,.db9-table-wrap,.db9-team,.db9-follow){background:#fff!important;color:#302b23!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #appShell .db9 :is(h2,h3,b,strong,.mt54-task-name){color:#302b23!important}
+html[data-mosh-theme="light"] #appShell .db9 :is(p,small,.db9-meta,.db9-empty,.c19-page-note){color:#625b50!important}
+html[data-mosh-theme="light"] #appShell .db9 :is(.c19-fold,.c19-scope,.c19-follow-filter,.c19-extra-summary){background:#f6f3ec!important;color:#514a3f!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #appShell .db9 :is(th){background:#eeeae1!important;color:#554d40!important}
+html[data-mosh-theme="light"] #appShell .db9 :is(td){background:#fff!important;color:#302b23!important;border-color:#e1dbd0!important}
+html[data-mosh-theme="light"] #marketingApp :is(.mk33-rail,.mk33-client-box,.mk33-kpi,.mk33-panel,.mk33-banner,.mk34-client-results){background:#fff!important;color:#302b23!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #marketingApp .mk33-rail button,html[data-mosh-theme="light"] #marketingApp .mk33-btn{background:#f7f4ee!important;color:#40392e!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #marketingApp .mk33-rail button:is(:hover,.active){background:#eee5cb!important;color:#4e3c16!important}
+html[data-mosh-theme="light"] #marketingApp .mk33-rail :is(b,label,small,.mk33-rail-group){color:#625b50!important}
+html[data-mosh-theme="light"] #employeeSpaceV11 :is(.es11-header,.es11-card,.wd51-home-card,.wd51-attendance,#wd51TimeSummary){background:#fff!important;color:#302b23!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #appShell #employeeSpaceV11 :is(.wd50-status,.wd50-task,.wd50-metric,.r19-time-toggle){background:#fff!important;color:#302b23!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #appShell #employeeSpaceV11 :is(.wd50-day-controls button,#wd50PickerToggle,.wd50-task-btn,.wd50-log-btn){background:#f6f3ec!important;color:#40392e!important;border-color:#d1c8b8!important}
+html[data-mosh-theme="light"] #appShell #employeeSpaceV11 .wd50-day-controls button.active{background:#e9dba9!important;color:#392f16!important;border-color:#c4a557!important}
+html[data-mosh-theme="light"] #appShell #employeeSpaceV11 :is(.wd50-empty,.wd50-rule,.wd50-status small,.r19-time-toggle b){color:#625b50!important}
+/* Legacy calm styles are injected after boot; use the actual component roots so that they cannot overwrite the light surface. */
+html[data-mosh-theme="light"]{background:var(--bg)!important}
+html[data-mosh-theme="light"] #appShell #hrApp .h13-layout,html[data-mosh-theme="light"] #appShell #salesApp .m15-sales-layout,html[data-mosh-theme="light"] #appShell #adminApp .admin-tabs-only,html[data-mosh-theme="light"] #appShell .o18-layout{background:#fff!important;border-color:#d8d1c5!important}
+html[data-mosh-theme="light"] #appShell #hrApp #hrProNav,html[data-mosh-theme="light"] #appShell #salesApp #m15SalesRail,html[data-mosh-theme="light"] #appShell #adminApp #m16AdminRail,html[data-mosh-theme="light"] #appShell .o18-layout .o18-rail{background:#f6f3ec!important;border-color:#d8d1c5!important;color:#40392e!important}
+html[data-mosh-theme="light"] #appShell #hrProNav :is(.h13-rail-title,.h13-group-title),html[data-mosh-theme="light"] #appShell #m15SalesRail :is(b,small,button){color:#514a3f!important}
+html[data-mosh-theme="light"] #appShell .m15-dept-tabs > button{background:transparent!important;color:#514a3f!important;border-color:transparent!important}
+html[data-mosh-theme="light"] #appShell .m15-dept-tabs > button:is(.active,:hover){background:#f1ead9!important;color:#4a3812!important;border-color:#c9ad68!important}
+html[data-mosh-theme="light"] #appShell .db9 :is(.db9-kpi>span,.c19-title,.c19-context,.c19-fold>summary){color:#625b50!important}
+html[data-mosh-theme="light"] #appShell #o18QuickNew .o18-btn{background:#f3f0ea!important;color:#40392e!important;border-color:#cfc7b7!important}
+html[data-mosh-theme="light"] #appShell #topUserAvatar{background:#eee5cb!important;color:#4a3812!important;border-color:#c9ad68!important}
+html[data-mosh-theme="light"] #appShell #marketingExecV33 .mk33-kpi :is(b,strong){color:#514321!important}

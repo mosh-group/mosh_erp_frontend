@@ -1,0 +1,133 @@
+--- R17/index.html
++++ R18/index.html
+@@ -86,6 +86,8 @@
+ <link rel="stylesheet" href="css/r14-system-polish.css?v=r14">
+ <link rel="stylesheet" href="css/r17-permissions.css?v=r17">
+ <link rel="stylesheet" href="css/r16-field-fixes.css?v=r16">
++<link rel="stylesheet" href="css/r18-mini-workdesk.css?v=r18-mini1">
++<script>if(new URLSearchParams(location.search).get("moshMini")==="1")document.documentElement.classList.add("mosh-mini-window18");</script>
+ </head>
+ <body>
+ <div id="moshBootScreen9" role="status" aria-live="polite" dir="rtl"><div class="mosh-boot-box"><strong>MOSH ERP</strong><p id="moshBootMessage9">جاري فتح مساحة العمل…</p><a id="moshBootRetry9" href="" hidden>إعادة المحاولة</a></div></div>
+@@ -1282,6 +1284,6 @@
+ 
+ <script src="config.js"></script>
+ <script src="js/api-client.js?v=workdesk-r9"></script>
+-<script src="js/api-boot.js?v=loader-r16"></script>
++<script src="js/api-boot.js?v=loader-r18"></script>
+ </body>
+ </html>--- R17/api-map.json
++++ R18/api-map.json
+@@ -209,7 +209,7 @@
+     "js/40-mosh-marketing-v33-js.js?v=workdesk-r9",
+     "js/41-mosh-marketing-v34-js.js?v=workdesk-r9",
+     "js/42-mosh-v36-prebeta-stability-js.js?v=workdesk-r9",
+-    "js/43-mosh-auth-v37-js.js?v=r17",
++    "js/43-mosh-auth-v37-js.js?v=r18-mini1",
+     "js/44-mosh-v38-my-tasks-enforcement-js.js?v=workdesk-r9",
+     "js/45-mosh-v41-employee-task-sync-js.js?v=workdesk-r9",
+     "js/46-mosh-v42-employee-link-reconcile-js.js?v=workdesk-r9",
+@@ -221,12 +221,13 @@
+     "js/52-mosh-v48-marker.js?v=workdesk-r9",
+     "js/53-mosh-task-receipts-model.js?v=workdesk-r9",
+     "js/54-mosh-task-inbox.js?v=workdesk-r9",
+-    "js/56-mosh-workdesk.js?v=workdesk-r9",
++    "js/56-mosh-workdesk.js?v=r18-mini1",
+     "js/57-mosh-reminder-model.js?v=workdesk-r9",
+     "js/58-mosh-activity-reminder.js?v=workdesk-r9",
+     "js/59-mosh-home-notices.js?v=workdesk-r9",
+     "js/61-mosh-zkteco-admin.js?v=zkteco-r5",
+     "js/61-mosh-r14-system-polish.js?v=r16",
+-    "js/62-mosh-r16-field-fixes.js?v=r16"
++    "js/62-mosh-r16-field-fixes.js?v=r16",
++    "js/63-mosh-mini-workdesk.js?v=r18-mini1"
+   ]
+ }
+--- R17/js/api-boot.js
++++ R18/js/api-boot.js
+@@ -2,7 +2,7 @@
+  try {
+   const api = window.MoshApi;
+   if (!api) throw new Error('تعذر تحميل الاتصال بالتطبيق.');
+-  const response = await fetch('api-map.json?v=loader-r10', {cache:'no-cache'});
++  const response = await fetch('api-map.json?v=loader-r18', {cache:'no-cache'});
+   if (!response.ok) throw new Error('تعذر تحميل قائمة ملفات التطبيق.');
+   const manifest = await response.json();
+   if (!manifest.resources || !manifest.settings || !Array.isArray(manifest.scripts) || !manifest.scripts.length) throw new Error('قائمة ملفات التطبيق غير مكتملة.');
+--- R17/js/43-mosh-auth-v37-js.js
++++ R18/js/43-mosh-auth-v37-js.js
+@@ -101,8 +101,9 @@
+  const dn=$('#dashboardUserName');if(dn)dn.textContent=n;const av=$('#topUserAvatar');if(av){av.textContent=n.trim().charAt(0)||'م';av.title='حسابي';av.style.cursor='pointer';av.onclick=openMyAccount;}
+  const sc=$('#settingsCurrentAccount');if(sc)sc.textContent=n+' — '+role;
+  let bar=$('#auth37UserBar');if(!bar){bar=document.createElement('div');bar.id='auth37UserBar';bar.className='auth37-userbar';const host=$('.top-actions');if(host)host.appendChild(bar)}
+- if(bar)bar.innerHTML='<div class="who"><b>'+esc(n)+'</b><small>'+esc(role)+'</small></div><button class="btn ghost auth37-logout" type="button" id="auth37LogoutBtn">خروج</button>';
++ if(bar)bar.innerHTML='<div class="who"><b>'+esc(n)+'</b><small>'+esc(role)+'</small></div><button class="btn ghost mini18-top-button" type="button" id="moshMiniToggle18" title="لوحة عملي المصغّرة" aria-label="فتح لوحة عملي المصغّرة" aria-controls="moshMini18" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 8h18"/><rect x="12" y="11" width="6" height="6" rx="1"/></svg></button><button class="btn ghost auth37-logout" type="button" id="auth37LogoutBtn">خروج</button>';
+  $('#auth37LogoutBtn')?.addEventListener('click',logout);
++ $('#moshMiniToggle18')?.addEventListener('click',()=>window.MoshMini18?.toggle());
+ }
+ function buildGate(){
+  if($('#moshAuthGate'))return;const e=document.createElement('div');e.id='moshAuthGate';e.innerHTML='<div class="auth37-card"><div class="auth37-head"><div class="auth37-brand">MOSH ERP · SECURE ACCESS</div><h1 id="auth37GateTitle">تسجيل الدخول</h1><p id="auth37GateSub">الدخول إلى نظام الشركة</p></div><div class="auth37-body"><div id="auth37GateMsg" class="auth37-msg" hidden></div><div id="auth37Setup" hidden></div><div id="auth37Login" hidden></div></div></div>';document.body.appendChild(e);
+@@ -131,7 +132,7 @@
+  try{if(typeof goApp==='function')goApp('dashboard')}catch(e){console.warn('auth home dashboard',e)}
+  if(u.mustChange)setTimeout(()=>openMyAccount(true),100);
+ }
+-async function logout(){const name=(typeof currentUserDisplayName==='function'?currentUserDisplayName():(activeUser?.name||activeUser?.username||''));if(!confirm('هل أنت متأكد أنك تريد تسجيل الخروج؟'))return;const button=$('#auth37LogoutBtn');if(button)button.disabled=true;const farewell=document.createElement('div');farewell.className='r14-farewell';farewell.innerHTML='<div><b>الله ييسّر أمرك يا '+esc(name||'صديقنا')+'</b><span>جاري إنهاء الجلسة…</span></div>';document.body.appendChild(farewell);try{await MoshApi.flush();await MoshApi.request('/auth/logout',{method:'POST',body:{}});activeUser=null;MoshApi.user=null;clearSession();const sub=farewell.querySelector('span');if(sub)sub.textContent='نشوفك على خير';setTimeout(()=>location.reload(),220);}catch(error){farewell.remove();if(button)button.disabled=false;safeToast(error.message,true);}}
++async function logout(){const name=(typeof currentUserDisplayName==='function'?currentUserDisplayName():(activeUser?.name||activeUser?.username||''));if(!confirm('هل أنت متأكد أنك تريد تسجيل الخروج؟'))return;const button=$('#auth37LogoutBtn');if(button)button.disabled=true;const farewell=document.createElement('div');farewell.className='r14-farewell';farewell.innerHTML='<div><b>الله ييسّر أمرك يا '+esc(name||'صديقنا')+'</b><span>جاري إنهاء الجلسة…</span></div>';document.body.appendChild(farewell);try{await MoshApi.flush();await MoshApi.request('/auth/logout',{method:'POST',body:{}});activeUser=null;MoshApi.user=null;clearSession();document.dispatchEvent(new CustomEvent('mosh:logout-complete'));const sub=farewell.querySelector('span');if(sub)sub.textContent='نشوفك على خير';setTimeout(()=>location.reload(),220);}catch(error){farewell.remove();if(button)button.disabled=false;safeToast(error.message,true);}}
+ function installAdminEntry(){
+  const modal=$('#systemSettingsModal');if(modal&&!$('#auth37SettingsPanel')){const p=document.createElement('div');p.id='auth37SettingsPanel';p.className='settings-section';p.innerHTML='<div class="settings-section-title"><div><b>الحسابات والصلاحيات</b><div class="muted">تسجيل الدخول، المستخدمون، ما يظهر لكل حساب، وصلاحيات الإضافة والتعديل والحذف والاعتماد.</div></div><button class="btn primary" type="button" id="auth37OpenAdminBtn">فتح لوحة الصلاحيات</button></div>';const anchor=modal.querySelector('.settings-account-panel');(anchor||modal.querySelector('.system-settings-head'))?.after(p);$('#auth37OpenAdminBtn').onclick=openAdmin;}
+ }
+--- R17/js/56-mosh-workdesk.js
++++ R18/js/56-mosh-workdesk.js
+@@ -263,7 +263,16 @@
+ }
+ async function refresh(){if(busy)return;busy=true;lastError='';render();try{if(A.workdeskUncertain())await A.resolveWorkdesk();await A.refresh();revision++;observePresence();await loadReport(today(),true);info='تم تحديث حالة العمل من الخادم.';infoUntil=Date.now()+4000;}catch(e){lastError=e.message;}finally{busy=false;taskSig='';render(true);}}
+ async function resolve(){if(busy)return;busy=true;render();try{await A.resolveWorkdesk();lastError='';revision++;observePresence();info='تأكد حفظ العملية السابقة. تم تحديث حالتك.';infoUntil=Date.now()+4000;await loadReport(today(),true);}catch(e){lastError=e.message;}finally{busy=false;taskSig='';render(true);window.MoshEmployeeTaskWorkflow48?.render?.(true);}}
+-let channel=null;try{channel=new BroadcastChannel('mosh-workdesk-r2');channel.onmessage=()=>{if(!busy&&!document.hidden)refresh();};}catch(_){}
++let remoteRefreshNeeded=false;
++function hasUnsavedEditor(){try{return typeof appIsDirty!=='undefined'&&!!appIsDirty;}catch(_){return document.body.dataset.r14Dirty==='1';}}
++function refreshFromSibling(){
++ if(!remoteRefreshNeeded||busy||A.isSaving?.()||document.hidden||hasUnsavedEditor())return;
++ remoteRefreshNeeded=false;refresh();
++}
++let channel=null;try{channel=new BroadcastChannel('mosh-workdesk-r2');channel.onmessage=()=>{remoteRefreshNeeded=true;refreshFromSibling();};}catch(_){}
++document.addEventListener('visibilitychange',refreshFromSibling);
++window.addEventListener('focus',refreshFromSibling);
++setInterval(refreshFromSibling,1500);
+ function install(){
+  if(!window.MoshTaskInbox49)return;
+  const inbox=window.MoshTaskInbox49;
+@@ -306,7 +315,33 @@
+   verifiedAt:dayVerifiedAt,account:daySnapshot?report(today()):null};
+ }
+ function openPicker(){if(typeof goApp==='function')goApp('dashboard');mount();showPicker(true);$('wd50PickerToggle')?.scrollIntoView({block:'center',behavior:'smooth'});}
+-window.MoshWorkdesk50={version:'workdesk-r8',perform,taskAction,select,showLog,report,loadReport,refresh,render,employee,allowed,reminderContext,openPicker,isBusy:()=>busy};
++/* R18: read-only projection for Mini; all writes still go through perform(). */
++function miniSnapshot(){
++ resetOwner();
++ const u=user(),e=employee(),at=now(),status=checkedStatus(currentStatus());
++ const ownRows=rows();
++ const current=running()[0]||find(selected)||find(presence().record?.pausedTaskId);
++ const picked=current&&own(current)?current:null;
++ const day=report();
++ return {
++  userId:String(u?.id||''),employee:e?{...e}:null,now:at,timeZone:zone(),
++  kind:status.kind,label:status.label,note:status.note,
++  selectedId:picked?String(picked.id):'',activeId:status.task?String(status.task.id):'',
++  busy:busy||!!A.isSaving?.(),uncertain:A.workdeskUncertain(),error:lastError,
++  info:Date.now()<infoUntil?info:'',clockConfirmed:A.serverClockConfirmed===true,
++  reportLoaded,reportError,reportComplete:daySnapshot?.complete===true,
++  totals:{...day.totals},
++  tasks:ownRows.map(t=>{const timing=M.taskTiming(t,at);return {
++    id:String(t.id),title:txt(t.title)||'مهمة',customer:txt(t.customer),
++    category:R.category(t),label:R.label(t),employeeState:t.employeeState,
++    status:t.status,allowed:allowed(t),totalMs:timing.totalElapsedMs,
++    timingValid:timing.valid,timingIssues:timing.issues,
++    incomplete:!!t.workTiming?.historyIncomplete,returned:!!t.returnedForRevision,
++    returnReason:R.reason(t)||''
++  };})
++ };
++}
++window.MoshWorkdesk50={version:'workdesk-r8',miniSnapshot,perform,taskAction,select,showLog,report,loadReport,refresh,render,employee,allowed,reminderContext,openPicker,isBusy:()=>busy};
+ install();setTimeout(install,400);
+ setInterval(()=>{if(!$('wd50Panel')&&user())install();if(user()&&$('dashboardApp')?.classList.contains('active')){render();if(!reportLoaded&&!reportBusy&&!busy)loadReport(today());}},1000);
+ setInterval(()=>{if(!busy&&!reportBusy&&user()&&!document.hidden&&!$('wd50LogDialog')?.open)loadReport(today());},60000);

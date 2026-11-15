@@ -1,0 +1,29 @@
+{
+  "checks": 24,
+  "passed": [
+    "appearance permission shows settings button",
+    "appearance-only settings mode",
+    "font controls visible",
+    "system identity hidden",
+    "HR policies hidden",
+    "permissions panel absent for appearance-only account",
+    "no JS errors in appearance mode",
+    "accounts-only mode opens without appearance rights",
+    "accounts panel visible",
+    "appearance controls hidden for accounts-only",
+    "clear appearance permission exists",
+    "permission description says it does not open permissions",
+    "view-only shortcut exists per section",
+    "ZKTeco permissions are grouped",
+    "real section explanation is visible",
+    "no JS errors in permissions UI",
+    "login authenticates without full page reload",
+    "login sends one login request",
+    "login needs one bootstrap after authentication",
+    "login does not repeat auth status after submit",
+    "dashboard visible after in-place login",
+    "no JS errors after in-place login",
+    "logout gives immediate visual feedback",
+    "logout sends one server request"
+  ]
+}

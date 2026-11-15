@@ -1,0 +1,36 @@
+{
+  "javascript_files_syntax_checked": 63,
+  "syntax_errors": [],
+  "static_duplicate_ids": [],
+  "manifest_scripts": 58,
+  "config_sha256": "89406420f132fc645b01fc5acabdd25ab5e31ccfcc83103d0e4fc7ed67add610",
+  "api_config_unchanged": true,
+  "api_transport_unchanged": true,
+  "base_css_unchanged": true,
+  "preserved_baseline_files": 80,
+  "changed_existing_files": [
+    "index.html",
+    "api-map.json",
+    "js/56-mosh-workdesk.js",
+    "js/54-mosh-task-inbox.js",
+    "js/api-boot.js"
+  ],
+  "new_files": [
+    "WORKDESK_R3_BACKEND_CONTRACT.md",
+    "WORKDESK_R3_README_AR.md",
+    "tests/reminder-model.test.cjs",
+    "css/workdesk-compact.css",
+    "css/activity-reminder.css",
+    "js/57-mosh-reminder-model.js",
+    "js/58-mosh-activity-reminder.js",
+    "tests/results/r3-browser-results.json",
+    "tests/results/r3-workday-model.log",
+    "tests/results/r3-preview-results.json",
+    "tests/results/r3-reminder-model.log",
+    "tests/results/r3-advanced-results.json",
+    "tests/browser/reminder_r3.py",
+    "tests/browser/reminder_advanced.py",
+    "tests/browser/results/browser-results.json",
+    "tests/browser/results/daily-log.png"
+  ]
+}

@@ -1,0 +1,22 @@
+/* R19 home: remove repeated cards, preserve the original right sidebar and grid. */
+.mosh-review19 #dashboardDepartments,
+.mosh-review19 #employeeSpaceV11>.es11-tiles,
+.mosh-review19 #employeeSpaceV11>.es11-bottom-grid,
+.mosh-review19 #employeeSpaceV11 .wd51-grid>.es11-attendance,
+.mosh-review19 #employeeSpaceV11 .es11-main-grid>.es11-attendance{display:none!important}
+.mosh-review19 #employeeSpaceV11 .wd51-grid{grid-template-areas:"work tasks" "summary summary"!important}
+.mosh-review19 .r19-my-file{display:inline-flex;align-items:center;gap:7px;margin-top:9px;padding:7px 11px;background:#242723;border:1px solid #5b5440;border-radius:8px;color:#e8d6a1;font:700 14px/1.6 Arial,Tahoma,sans-serif;cursor:pointer}
+.mosh-review19 .r19-my-file:hover{background:#302e23;border-color:#b79a4f}
+.mosh-review19 .r19-my-file svg{width:17px;height:17px}
+.mosh-review19 #employeeSpaceV11 .es11-header{margin-bottom:16px}
+.mosh-review19 #dashboardApp .dashboard-mood-panel{margin-top:22px;padding:25px 29px;min-height:150px}
+.mosh-review19 #dashboardApp .dashboard-mood-copy h3{font-size:17px!important;line-height:1.7!important;color:#d2b768!important;margin:7px 0!important}
+.mosh-review19 #dashboardApp .dashboard-mood-copy p{font-family:Arial,Tahoma,sans-serif!important;font-size:23px!important;line-height:1.9!important;font-weight:600!important;letter-spacing:0!important;color:#f4f1e7!important;margin:0!important;max-width:930px;overflow:visible;white-space:normal}
+.mosh-review19 #dashboardApp .dashboard-mood-copy .eyebrow{color:#d2b768!important;font-size:13px!important;letter-spacing:1.1px}
+.mosh-review19 #dashboardApp .dashboard-mood-quote{color:#d2b768}
+.mosh-review19 #dashboardMoodCopyright{font-size:12px!important;opacity:.8}
+.mosh-review19 #employeePortalApp .employee-portal-services button{min-height:72px}
+.mosh-review19 #employeePortalApp .employee-portal-services b{font-size:15px!important}
+.mosh-review19 #employeePortalApp .employee-portal-services small{font-size:13px!important;line-height:1.7}
+.mosh-review19 #employeePortalApp .employee-portal-head p{font-size:15px!important;line-height:1.8}
+@media(max-width:730px){.mosh-review19 #employeeSpaceV11 .wd51-grid{grid-template-areas:"work" "tasks" "summary"!important}.mosh-review19 #dashboardApp .dashboard-mood-panel{padding:19px 18px;gap:15px}.mosh-review19 #dashboardApp .dashboard-mood-copy p{font-size:20px!important}.mosh-review19 .r19-my-file{font-size:13px}}

@@ -1,0 +1,36 @@
+/* MOSH R37.1 — scoped presentation only; no auth, storage or API changes. */
+html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-host{
+ flex:0 0 auto!important;min-width:0!important;width:auto!important;
+ margin:0!important;padding:0!important;border:0!important;
+}
+html.mosh-meta #appShell .view .m15-dept-tabs .pv-menu-trigger{
+ flex:0 0 auto!important;width:auto!important;min-width:0!important;
+ padding:4px 12px!important;white-space:nowrap!important;max-width:100%;
+}
+/* Remove only dashboard summary/workload cards, not the actionable task table or filters. */
+#appShell .db9-kpis,
+#appShell .db9-strip,
+#appShell .db9-panel:has(>.db9-team),
+#appShell .db9-panel:has(>.db9-outcomes),
+#appShell #marketingApp .mk33-kpis,
+#appShell #marketingApp .mk33-task-cards{display:none!important}
+/* Customer state next to search, in both marketing and the advanced customer list. */
+#marketingApp .r371-customer-toolbar{display:flex!important;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+#marketingApp .r371-customer-toolbar>.mk33-input{flex:1 1 200px;min-width:160px;max-width:300px}
+#marketingApp .r371-customer-toolbar .r34-archive-controls{display:flex;flex-wrap:wrap;gap:5px;margin:0!important;align-items:center}
+.r29-head .r371-r29-customer-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;min-width:0}
+.r29-head .r371-r29-customer-toolbar .r29-search{min-width:190px;max-width:310px;margin:0}
+.r29-head .r371-r29-customer-toolbar .r29-nav{display:flex;flex-wrap:wrap;gap:5px;margin:0;padding:0;border:0;align-items:center}
+/* One marketing task list, with explicit filters and no alternative duplicate actions. */
+#marketingApp .r371-marketing-task-toolbar{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:0 0 14px}
+#marketingApp .r371-marketing-task-toolbar label{display:flex;flex:1 1 175px;min-width:150px;max-width:300px;flex-direction:column;gap:6px;font-size:12px}
+#marketingApp .r371-marketing-task-toolbar input,#marketingApp .r371-marketing-task-toolbar select{width:100%!important;max-width:none}
+#marketingApp .r371-marketing-task-count{font-size:12px;align-self:center;white-space:nowrap}
+/* Time metrics are initially collapsed; assignment and manager decisions remain visible. */
+#appShell .r371-task-time-details{border:1px solid var(--mx-border,var(--line,#4b4b4b));border-radius:10px;margin:10px 0 14px;overflow:hidden}
+#appShell .r371-task-time-details>summary{cursor:pointer;padding:12px 14px;color:var(--mx-text,var(--text));font-weight:700;display:flex;gap:8px;align-items:center;justify-content:space-between;list-style:none}
+#appShell .r371-task-time-details>summary::-webkit-details-marker{display:none}
+#appShell .r371-task-time-details[open]>summary{border-bottom:1px solid var(--mx-border,var(--line,#4b4b4b))}
+#appShell .r371-task-time-details[open]>summary span{transform:rotate(180deg)}
+#appShell .r371-task-time-details .time-overview,#appShell .r371-task-time-details .time-employees{margin:12px}
+@media(max-width:720px){.r29-head .r371-r29-customer-toolbar{width:100%}.r29-head .r371-r29-customer-toolbar .r29-search{max-width:none;width:100%}}

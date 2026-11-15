@@ -1,0 +1,117 @@
+{
+  "base": "MOSH_VANILLA_FRONTEND_WORKDESK_R5.zip",
+  "release": "R6",
+  "configUnchanged": true,
+  "changedFiles": [
+    {
+      "path": "index.html",
+      "status": "modified",
+      "sha256": "f2e965974003c2215abd3dec2b68a713f7a933eeafd0909413d5e65311fa17a8"
+    },
+    {
+      "path": "WORKDESK_R6_README_AR.md",
+      "status": "added",
+      "sha256": "f15903700daa8ee15a030e059e2a749215dea5c980d8bce91d267f24aed9f4b8"
+    },
+    {
+      "path": "WORKDESK_R6_QA.md",
+      "status": "added",
+      "sha256": "52cb923f2a0abee9ace4e4a125e5eb12ef5e7432477a2c8ddf7a2adf3fafac48"
+    },
+    {
+      "path": "api-map.json",
+      "status": "modified",
+      "sha256": "a05ce6ce25b35b9e4c889798b20bf3bddf0748c4f0c45f0311eebd628cc8c30b"
+    },
+    {
+      "path": "js/44-mosh-v38-my-tasks-enforcement-js.js",
+      "status": "modified",
+      "sha256": "d167315e44b4d5e332dcf2ed32ebc69f2462b4ac39c1e672e3cac90a2170098e"
+    },
+    {
+      "path": "js/22-mosh-ops18-js.js",
+      "status": "modified",
+      "sha256": "66631a1789b0fc4d7754b73b1a149795d2ddddff521d89f7804dc8a600472e01"
+    },
+    {
+      "path": "js/40-mosh-marketing-v33-js.js",
+      "status": "modified",
+      "sha256": "821b3437c56d1e336ae9c82be61424f0cb9cf5a34409ac368a415de8f99f3d47"
+    },
+    {
+      "path": "js/18-mosh-hr14-complete.js",
+      "status": "modified",
+      "sha256": "745706dfcd879b16082015ac6ab8215bcbffc5e4a8b93392fc6ff655af29e539"
+    },
+    {
+      "path": "js/api-boot.js",
+      "status": "modified",
+      "sha256": "1b0182ea05569c7ba1bf61bf168e46b2fd29f4e5356df9d7677f40ec342ce39f"
+    },
+    {
+      "path": "js/30-mosh-manager-approvals-v28-js.js",
+      "status": "modified",
+      "sha256": "b08155d301ffa03e22b75f0be1b5272f24147071200a402cd2c3bf1d1da0aac8"
+    },
+    {
+      "path": "js/api-client.js",
+      "status": "modified",
+      "sha256": "65ac8b8f0b16d267da2bc4e320dfb77fd22b046bcf7248943ddbb95eb471e5d8"
+    },
+    {
+      "path": "js/02-mosh-core-runtime-14.js",
+      "status": "modified",
+      "sha256": "192075acc021cc9f8ef29179495f985905ad3f5b4807b188ed12e299b06e53af"
+    },
+    {
+      "path": "js/51-mosh-v48-employee-task-workflow-js.js",
+      "status": "modified",
+      "sha256": "61920692dcfc385d7d4de3ce943dc78b176e5d641cb11c16a34c32f9940c09e7"
+    },
+    {
+      "path": "js/55-mosh-workday-model.js",
+      "status": "modified",
+      "sha256": "2bc7a051885c2a6fc3a38952d9d31fb0b46bc8daa47ba3c0ee04a561a2342bea"
+    },
+    {
+      "path": "js/24-mosh-finance22-js.js",
+      "status": "modified",
+      "sha256": "7a81e1ab4bbcd2b27909f5d712ee8f584b6e7cef5cdec27ea468bd0cc272cf81"
+    },
+    {
+      "path": "js/13-mosh-department-dashboards-v9-js.js",
+      "status": "modified",
+      "sha256": "0fdcc0d5a253c0aa82286ced9f50121c2367791fbb4590691d75ea19091bc2b3"
+    },
+    {
+      "path": "js/45-mosh-v41-employee-task-sync-js.js",
+      "status": "modified",
+      "sha256": "a8313f3c4f3da15583c5eec20f547fdb7835d5d0bdb739ce972175ad146499f0"
+    },
+    {
+      "path": "js/37-mosh-v32-systematic-shared-distribution-js.js",
+      "status": "modified",
+      "sha256": "fe0f064abe1e8918a6715643e0379572a646f769fff1bf51f2294def96960b92"
+    },
+    {
+      "path": "js/60-mosh-task-presentation-r6.js",
+      "status": "added",
+      "sha256": "3da0750ec2a350dc2cc82287ef523df901ebb3eeb084d3477935551b1f31cb0f"
+    },
+    {
+      "path": "js/56-mosh-workdesk.js",
+      "status": "modified",
+      "sha256": "8f75bfa0f4d2a43d68a322ab70901e528e4d602551b8401bd1beede47f69dc49"
+    },
+    {
+      "path": "js/15-employee-space-v11-js-transport.js",
+      "status": "modified",
+      "sha256": "3bba76c01559438736d1de6ca75b7b9332de5c4f13441d6a7fd92e5821c13d45"
+    },
+    {
+      "path": "css/task-labels-r6.css",
+      "status": "added",
+      "sha256": "ac4e1acd0a9aaac60abc3226cffb42228ca0882b4d043f6800d01de84fd58f70"
+    }
+  ]
+}

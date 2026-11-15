@@ -1,0 +1,53 @@
+/* MOSH R25: A scrollable task editor with persistent actions, even with many attachments. */
+.modal.show{min-height:0;}
+.modal .modalbox{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;}
+#standaloneTaskModal{padding:clamp(6px,2vh,16px);}
+#standaloneTaskModal .modalbox{
+  display:flex;flex-direction:column;
+  width:min(760px,100%);max-height:calc(100dvh - 18px);height:auto;
+  overflow:hidden;overscroll-behavior:contain;
+  padding:0!important;
+}
+#standaloneTaskModal .r25-task-header{
+  flex:0 0 auto;min-height:62px;margin:0;padding:12px 18px;
+  border-bottom:1px solid var(--line);background:var(--panel);
+}
+#standaloneTaskModal .r25-task-scroll-area{
+  flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;
+  padding:16px 18px 20px;
+  scrollbar-gutter:stable;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+#standaloneTaskModal .r25-task-footer{
+  flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;
+  gap:10px;padding:12px 18px;
+  border-top:1px solid var(--line);background:var(--panel);
+}
+#standaloneTaskModal .r25-task-footer .btn{min-height:40px;}
+#standaloneTaskModal .r25-task-scroll-area:focus-visible{outline:2px solid var(--gold);outline-offset:-3px;}
+@media(max-width:640px){
+  #standaloneTaskModal .modalbox{max-height:calc(100dvh - 10px);}
+  #standaloneTaskModal .r25-task-header{padding:10px 12px;min-height:50px;}
+  #standaloneTaskModal .r25-task-scroll-area{padding:12px;}
+  #standaloneTaskModal .r25-task-footer{padding:10px 12px;}
+  #standaloneTaskModal .r25-task-footer .btn{flex:1 1 110px;}
+}
+/* Customer create form belongs to Marketing; the same server Customer model backs Sales. */
+.r25-customer-back{position:fixed;inset:0;z-index:160;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:clamp(6px,2vh,18px)}
+.r25-customer-dialog{width:min(760px,100%);max-height:calc(100dvh - 18px);border:1px solid var(--line);border-radius:15px;background:var(--panel);color:var(--text);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;}
+.r25-customer-head,.r25-customer-actions{flex:0 0 auto;background:var(--panel);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line)}
+#r25CustomerForm{display:flex;flex:1 1 auto;flex-direction:column;min-height:0;overflow:hidden}
+.r25-customer-head h2{font-size:20px;margin:0;color:var(--text)}
+.r25-customer-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.r25-customer-body{flex:1 1 auto;padding:16px 18px;overflow:auto;min-height:0;scrollbar-gutter:stable;overscroll-behavior:contain}
+.r25-customer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.r25-customer-field{display:flex;flex-direction:column;gap:7px;min-width:0;color:var(--text)}
+.r25-customer-field.r25-wide{grid-column:1/-1}
+.r25-customer-field input,.r25-customer-field select,.r25-customer-field textarea{width:100%;min-height:42px;min-width:0;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px 11px;}
+.r25-customer-field textarea{resize:vertical;min-height:70px}
+.r25-customer-field input:focus,.r25-customer-field select:focus,.r25-customer-field textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.r25-customer-actions{border-top:1px solid var(--line);border-bottom:0;justify-content:flex-end}
+.r25-customer-actions .mk33-btn{min-height:40px}
+.r25-customer-error{color:var(--red);font-weight:600;font-size:13px;white-space:pre-wrap;min-height:0;}
+.r25-customer-back [disabled]{cursor:wait;opacity:.65}
+@media(max-width:600px){.r25-customer-grid{grid-template-columns:1fr}.r25-customer-head,.r25-customer-actions{padding:11px 12px}.r25-customer-body{padding:12px}}

@@ -1,0 +1,19 @@
+/* R39 compact headers and Marketing navigation; retaining original MOSH black/gold visuals. */
+#appShell .db9-heading.r39-heading{min-height:0!important;padding:8px 2px 12px!important;margin-bottom:8px!important;gap:12px!important}
+#appShell .db9-heading.r39-heading h2{font-size:clamp(18px,1.5vw,24px)!important;margin:0!important;line-height:1.35!important}
+#appShell .db9-heading.r39-heading .r38-help{margin:0!important}
+#appShell .db9-heading.r39-heading .r38-help .r39-meta{display:block!important;padding:8px 0 2px!important;font-size:12px!important;font-weight:400!important;color:var(--muted,#a9a9af)!important}
+#appShell .db9-heading.r39-heading .db9-head-actions{gap:7px!important;justify-content:flex-start!important}
+#appShell .db9-heading.r39-heading .db9-head-actions .r38-refresh{width:38px;min-width:38px;min-height:34px;line-height:1}
+#appShell .r39-simple-head{margin-block:8px 10px!important;padding:0!important;min-height:0!important}
+#appShell .r39-simple-head h2{margin:0!important;font-size:clamp(17px,1.5vw,23px)!important}
+#appShell #marketingApp.r39-marketing-nav .menu:has(>#marketingCustomersTab){position:absolute!important;inset:auto auto auto -10000px!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0!important;pointer-events:none!important;clip-path:inset(100%)!important}
+#appShell #marketingApp.r39-marketing-nav #marketingAppContent{min-height:100px}
+#r39MarketingCustomerModal{position:fixed;inset:0;z-index:50000;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.76);backdrop-filter:blur(3px)}
+#r39MarketingCustomerModal .r39-customer-card{width:min(990px,100%);max-height:min(94vh,1020px);display:flex;flex-direction:column;background:#151619;color:#eee8df;border:1px solid #45403b;border-radius:14px;box-shadow:0 22px 70px rgba(0,0,0,.5);overflow:hidden}
+#r39MarketingCustomerModal .r39-customer-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #3a3b3f;gap:12px}
+#r39MarketingCustomerModal .r39-customer-form{overflow:auto;min-height:0;overscroll-behavior:contain;padding:5px 12px 16px}
+#r39MarketingCustomerModal .panel{padding:0 8px 6px;margin:0;border:0;box-shadow:none;background:transparent}
+#r39MarketingCustomerModal .customer-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#r39MarketingCustomerModal .customer-form-actions{position:sticky;bottom:-16px;padding:13px;background:#151619;border-top:1px solid #363638;z-index:2}
+@media(max-width:700px){#r39MarketingCustomerModal .r39-customer-form{padding:4px 6px 16px}#r39MarketingCustomerModal .customer-form-grid{grid-template-columns:minmax(0,1fr)}#appShell .db9-heading.r39-heading{flex-wrap:wrap}}

@@ -1,0 +1,4 @@
+/* R32: only active section is rendered visually; prevent stray legacy workspaces. */
+#adminApp.r24-admin-mode > :not(#r24AdminRoot){display:none!important;}
+#itApp:not(.active) .it31-head,#itApp:not(.active) #it31Body{display:none!important;}
+#itApp.active #itTaskList:empty{display:none!important;}

@@ -1,0 +1,49 @@
+{
+  "base": "MOSH_VANILLA_FRONTEND_WORKDESK_R4.zip",
+  "changed": [
+    "README.md",
+    "api-map.json",
+    "index.html",
+    "js/02-mosh-core-runtime-14.js",
+    "js/50-mosh-v47-employee-task-overlay-js.js",
+    "js/51-mosh-v48-employee-task-workflow-js.js",
+    "js/54-mosh-task-inbox.js",
+    "js/55-mosh-workday-model.js",
+    "js/56-mosh-workdesk.js",
+    "js/api-boot.js"
+  ],
+  "added": [
+    "WORKDESK_R5_README_AR.md",
+    "css/task-labels-r5.css",
+    "tests/browser/results/daily-log.png",
+    "tests/browser/timer_labels_r5.py",
+    "tests/results/r5-notices-browser.json",
+    "tests/results/r5-notices-browser.log",
+    "tests/results/r5-preview.json",
+    "tests/results/r5-reminder-model.log",
+    "tests/results/r5-static.json",
+    "tests/results/r5-timer-labels-browser.json",
+    "tests/results/r5-timer-labels-browser.log",
+    "tests/results/r5-timer-model.log",
+    "tests/results/r5-workday-model.log",
+    "tests/results/r5-workdesk-browser.json",
+    "tests/results/r5-workdesk-browser.log",
+    "tests/timer-r5.test.cjs"
+  ],
+  "hashes": {
+    "README.md": "25167fd52c9d61a1b4ba26dbc51efa926294cfb802e98b100bd7fef74028ccbd",
+    "WORKDESK_R5_README_AR.md": "0a9285e03bbc2be4f6a1d1178658fef007635a9447f6c0e28e1db2ddfed8cc5e",
+    "api-map.json": "84dd13969be2e70f20ad699c54e91726cac242d5e74c956058f7379943edfa2d",
+    "css/task-labels-r5.css": "69083f148b2f8a52b335ebe2d35a3cb4eae1f2b51f3674257bc40ec07e3ab918",
+    "index.html": "81dc76567b991d4982a0a8a0bd92ac60c1409a5263e4df3fb7eb6aba9939e5f1",
+    "js/02-mosh-core-runtime-14.js": "32d7fa1661d9f7f251f7345f541781258a87220c51cb1495ac84006ade6a9126",
+    "js/50-mosh-v47-employee-task-overlay-js.js": "cba0eac25a1a576c9372440c20a72a85a09fa8da825ac52e294d352793e268db",
+    "js/51-mosh-v48-employee-task-workflow-js.js": "e84f4480204ae86284716d552802f752c736a4b9a21009b38ec86b3bdbdc2188",
+    "js/54-mosh-task-inbox.js": "18a002b6f0f1d69ba9cbd35ccbe0631af102be56fdd1e9452ce5aa321bf5badd",
+    "js/55-mosh-workday-model.js": "9f3086ffe5a86cf39aeef210ebacbcbfc84f25b57684d40f3ae435c493c5f4f0",
+    "js/56-mosh-workdesk.js": "257c8acc80c1b5d84b3d7bb26c7ae16083ef6eeb1019fdfbde41e1a055f4e1d4",
+    "js/api-boot.js": "d42bf849dcfbd0eab1e093739058d6311e36d4b6e80a723e5c9d23aaa781b6f7"
+  },
+  "configUnchanged": true,
+  "serverAccessed": false
+}

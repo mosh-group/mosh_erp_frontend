@@ -1,0 +1,75 @@
+/* Workdesk R2. Scoped; preserves all unrelated sections. */
+#employeeSpaceV11 .wd50-card{display:block!important;text-align:right!important;padding:20px!important;min-width:0!important;overflow:visible!important;align-self:stretch}
+#wd50Panel{direction:rtl;font:14px/1.7 Arial,Tahoma,sans-serif;color:var(--text,#f0ece3);min-width:0;width:100%}
+#wd50Panel *,.wd50-log-dialog *{box-sizing:border-box}
+#wd50Panel svg{width:18px;height:18px;flex:0 0 18px;vertical-align:middle}
+#wd50Panel button{font:700 13px/1.6 Arial,Tahoma,sans-serif;cursor:pointer;transition:background .12s,border-color .12s;color:inherit}
+#wd50Panel button:disabled{opacity:.52;cursor:not-allowed}
+#wd50Panel button:focus-visible,.wd50-log-dialog button:focus-visible,#wd50Search:focus-visible{outline:2px solid #dbc47f;outline-offset:3px}
+.wd50-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.wd50-head small{font-size:10px;color:#baae8c;display:block}
+#wd50Panel .wd50-head h3{display:flex;align-items:center;gap:9px;font-size:23px!important;margin:0;line-height:1.5}
+#wd50Panel .wd50-head h3 svg{color:#d6b65b;width:23px;height:23px;flex-basis:23px}
+#wd50Panel .wd50-icon-btn{border:1px solid #37454c;background:transparent;border-radius:9px;width:34px;height:34px;font-size:22px}
+.wd50-day-controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding-bottom:14px;border-bottom:1px solid #303b41}
+#wd50Panel .wd50-day-controls button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:43px;padding:8px 5px;border:1px solid #435159;border-radius:9px;background:#11191d;white-space:normal;font-size:12px}
+#wd50Panel .wd50-day-controls button.active{background:#bca66e;border-color:#d7c58f;color:#111819;opacity:1}
+.wd50-status{display:flex;align-items:center;gap:8px;min-height:68px;padding:12px 0;color:#dfdcd3}
+.wd50-status>div{flex:1;min-width:0}.wd50-status strong{display:block;font-size:13px;font-weight:700;overflow-wrap:anywhere}.wd50-status small{display:block;color:#aab3b7;font-size:10px;line-height:1.8}
+.wd50-status bdi{font:700 20px/1.2 Arial,sans-serif;color:#decb93;white-space:nowrap;font-variant-numeric:tabular-nums}
+.wd50-dot{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:#838c92}.wd50-status[data-kind="task"] .wd50-dot{background:#d6b85c}.wd50-status[data-kind="break"] .wd50-dot{background:#bdaa75}.wd50-status[data-kind="no_work"] .wd50-dot{background:#d69f64}
+.wd50-notice,.wd50-error,.wd50-review{font-size:11px;line-height:1.9;padding:8px 10px;border-radius:8px;margin:4px 0 10px;background:#22231e;border:1px solid #585239;color:#e0d4b0;white-space:pre-wrap;overflow-wrap:anywhere}
+.wd50-error{background:#2e201b;border-color:#895e49;color:#f4d2bc}.wd50-notice[hidden],.wd50-error[hidden],.wd50-review[hidden],#wd50Resolve[hidden],#wd50PickerList[hidden]{display:none!important}
+#wd50Panel .wd50-resolve{padding:8px 12px;background:#352e1c;border:1px solid #8c7742;border-radius:8px;margin-bottom:10px;color:#ead293}
+.wd50-picker{position:relative;margin:0 0 11px}.wd50-picker>label{display:block;font-size:11px;color:#b5bec1;margin-bottom:5px}
+#wd50Panel #wd50PickerToggle{width:100%;display:flex;align-items:center;gap:9px;border:1px solid #4a575e;border-radius:9px;background:#10171b;padding:11px 10px;text-align:right;min-height:44px}
+#wd50PickedLabel{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#wd50PickerList{position:absolute;top:100%;right:0;left:0;z-index:100;background:#10181c;border:1px solid #8e7d49;border-radius:10px;padding:9px;box-shadow:0 12px 32px #0009}
+#wd50Panel #wd50Search{width:100%;min-height:38px;background:#090f12;border:1px solid #4c585e;border-radius:7px;color:#eee9dd;padding:8px;font:13px Arial,Tahoma,sans-serif}
+#wd50PickerResults{max-height:250px;overflow:auto;scrollbar-width:thin;margin-top:5px}
+#wd50Panel #wd50PickerResults button{width:100%;display:block;background:transparent;border:0;border-bottom:1px solid #2c363b;border-radius:4px;text-align:right;padding:9px 8px}
+#wd50PickerResults button:hover,#wd50PickerResults button.selected{background:#282619!important}.wd50-picker b{display:block;font-size:13px}.wd50-picker small{display:block;font-size:10px;color:#acb6ba}.wd50-picker input{margin:0}
+.wd50-task{border:1px solid #3a474d;border-radius:11px;background:#121a1e;padding:12px;min-height:95px}
+.wd50-task-head{display:flex;justify-content:space-between;gap:9px;align-items:start}.wd50-task-head>div{min-width:0}.wd50-task-head b{font-size:15px;line-height:1.8;display:block;overflow-wrap:anywhere}.wd50-task-head small{font-size:11px;color:#aeb6b9;display:block}
+#wd50Panel .wd50-details{padding:3px 0;flex-shrink:0;color:#d9c68e;border:0;background:transparent;font-size:11px}
+.wd50-task-state{display:inline-block;font-size:11px;color:#d6caa8;margin:7px 0 9px}
+.wd50-task-actions{display:flex;flex-wrap:wrap;gap:7px}
+#wd50Panel .wd50-task-btn{display:flex;justify-content:center;align-items:center;gap:6px;flex:1;min-width:115px;min-height:40px;padding:8px;border:1px solid #657071;border-radius:8px;background:#1b252a;font-size:12px}
+#wd50Panel .wd50-task-btn.primary{background:#b8a16a;color:#11181a;border-color:#d1bd82}
+.wd50-return{background:#272419;border-inline-start:2px solid #bca569;padding:7px 9px;font-size:11px;margin:6px 0}.wd50-return p{margin:2px 0 0;white-space:pre-wrap;color:#d6cdba;font-size:11px;max-height:80px;overflow:auto}
+.wd50-rule{display:block;font-size:10px;line-height:1.9;color:#a2adb2;margin-top:9px}
+.wd50-summary{border-top:1px solid #354046;padding-top:13px;margin-top:14px}.wd50-summary-title{display:flex;justify-content:space-between;align-items:center;gap:9px;margin-bottom:9px}.wd50-summary-title b{font-size:12px}.wd50-summary-title small{font-size:10px;color:#a6b0b5}
+.wd50-metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px}.wd50-metric{background:#11191d;border:1px solid #344147;border-radius:9px;padding:8px 11px;display:flex;justify-content:space-between;gap:6px;align-items:center}.wd50-metric span{font-size:10px;color:#c3c6bf}.wd50-metric bdi{font:700 16px/1.4 Arial,sans-serif;font-variant-numeric:tabular-nums}.wd50-metric[data-kind="waste"]{border-color:#69553b}.wd50-metric[data-kind="waste"] bdi{color:#e6b678}
+#wd50Panel .wd50-log-btn{width:100%;display:flex;gap:9px;align-items:center;justify-content:center;border:1px solid #566067;background:transparent;border-radius:9px;margin-top:10px;padding:9px;font-size:12px}
+.wd50-empty{font-size:12px!important;color:#aeb7bb!important;line-height:1.9;margin:6px 0}
+.mr49-task-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.mr49-task-actions button{padding:6px 9px;border:1px solid #43515a;background:#141e23;color:#e8e3d7;border-radius:8px;font:700 11px/1.5 Arial,Tahoma,sans-serif;cursor:pointer;white-space:nowrap}
+.mr49-task-actions button[data-wd50-select]{background:#2b271a;color:#dccc97;border-color:#76633a}
+.mr49-task-actions button:disabled{opacity:.5;cursor:not-allowed}
+/* Keep desktop cards aligned without stretching the attendance content unnecessarily. */
+#employeeSpaceV11 .es11-main-grid{align-items:stretch}
+#employeeSpaceV11 .es11-card.es11-attendance .es11-attendance-times{margin:auto 0}
+#employeeSpaceV11 .wd50-card .es11-work-actions{display:none!important}
+.wd50-log-dialog{width:900px;max-width:calc(100vw - 24px);max-height:90vh;padding:0;background:#11191d;border:1px solid #566168;border-radius:16px;color:#f0e9dc;box-shadow:0 25px 90px #0009;font:14px/1.7 Arial,Tahoma,sans-serif;direction:rtl;z-index:2147483000}
+.wd50-log-dialog::backdrop{background:#000b}
+.wd50-log-dialog header{display:flex;align-items:center;justify-content:space-between;padding:17px 22px;border-bottom:1px solid #3c484f;position:sticky;top:0;background:#11191d;z-index:2}
+.wd50-log-dialog header small{font-size:11px;color:#ccb57a}.wd50-log-dialog h3{margin:2px 0;font-size:23px}.wd50-log-dialog h4{margin:18px 0 9px;font-size:15px}
+.wd50-log-dialog button{background:#1a252b;border:1px solid #46535a;border-radius:8px;padding:7px 12px;color:inherit;cursor:pointer;font:13px Arial,Tahoma,sans-serif}
+.wd50-log-dialog header button{font-size:24px}.wd50-log-body{padding:18px 22px}.wd50-log-filter{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.wd50-log-filter label{display:flex;align-items:center;gap:7px}.wd50-log-filter input{padding:7px;background:#0c1215;border:1px solid #516069;border-radius:7px;color:#eee5d3;font:14px Arial,sans-serif}.wd50-log-filter span{margin-inline-start:auto;color:#d9c488}
+.wd50-log-warning,.wd50-log-valid{padding:9px 12px;border:1px solid #6c5b3a;border-radius:8px;background:#29251a;font-size:12px;color:#dfcfad}
+.wd50-log-valid{border-color:#5b6852;background:#1c251c}
+.wd50-log-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.wd50-log-metrics>div{border:1px solid #3e4b51;background:#151f23;padding:10px;border-radius:9px}.wd50-log-metrics span{display:block;font-size:11px;color:#b5bcb8}.wd50-log-metrics bdi{font:700 18px/1.8 Arial,sans-serif}
+.wd50-log-task{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #344147;padding:8px 3px;gap:10px}.wd50-log-task b{font-size:13px}.wd50-log-task bdi{color:#e1ce9a;font-family:Arial,sans-serif}
+.wd50-table-wrap{overflow:auto;max-height:340px}.wd50-log-dialog table{width:100%;border-collapse:collapse;font-size:12px}.wd50-log-dialog th,.wd50-log-dialog td{padding:10px 9px;text-align:right;border-bottom:1px solid #344047}.wd50-log-dialog th{color:#b3babb;background:#19242a;position:sticky;top:0}.wd50-log-dialog td[dir="ltr"]{font-family:Arial,sans-serif;white-space:nowrap}.wd50-log-dialog tr[data-kind="waste"] td,.wd50-log-dialog tr[data-kind="review"] td{color:#e5bf85}
+.wd50-log-dialog footer{padding:13px 22px;border-top:1px solid #3b494f;display:flex;justify-content:flex-end}
+@media(max-width:1250px){#employeeSpaceV11 .es11-main-grid{grid-template-columns:1fr 1fr!important}#employeeSpaceV11 .wd50-card{grid-column:1/-1;grid-row:1}#employeeSpaceV11 .wd50-day-controls{grid-template-columns:repeat(4,1fr)}#employeeSpaceV11 .wd50-metrics{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:650px){#employeeSpaceV11 .es11-main-grid{grid-template-columns:1fr!important}#employeeSpaceV11 .wd50-card{grid-column:auto}#employeeSpaceV11 .wd50-day-controls,#employeeSpaceV11 .wd50-metrics{grid-template-columns:1fr 1fr}.wd50-log-metrics{grid-template-columns:1fr 1fr}.wd50-log-body{padding:14px}.wd50-summary-title{align-items:start;flex-direction:column}.wd50-status bdi{font-size:17px}}
+
+/* Minimum-content widths must not push the central card out of small screens. */
+.wd50-metrics,.wd50-day-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wd50-metric{min-width:0;flex-wrap:wrap;column-gap:5px;row-gap:2px}
+.wd50-metric bdi{max-width:100%}
+.wd50-status{flex-wrap:wrap}.wd50-status>div{flex-basis:105px}
+.wd50-task-head{flex-wrap:wrap}
+@media(min-width:651px) and (max-width:1250px){#employeeSpaceV11 .wd50-day-controls,#employeeSpaceV11 .wd50-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:650px){#employeeSpaceV11 .wd50-card{padding:14px!important}#wd50Panel .wd50-day-controls button{font-size:11px}.wd50-metric{padding:7px}.wd50-metric bdi{font-size:15px}}

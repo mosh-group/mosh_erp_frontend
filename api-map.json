@@ -1,0 +1,271 @@
+{
+  "resources": {
+    "customers": {
+      "statePath": "customers",
+      "mode": "array"
+    },
+    "services": {
+      "statePath": "services",
+      "mode": "array"
+    },
+    "salespeople": {
+      "statePath": "salespeople",
+      "mode": "array"
+    },
+    "sales-teams": {
+      "statePath": "salesTeamsCfg",
+      "mode": "array"
+    },
+    "quotation-templates": {
+      "statePath": "quoteTemplates",
+      "mode": "array"
+    },
+    "service-contracts": {
+      "statePath": "serviceContracts",
+      "mode": "array"
+    },
+    "quotations": {
+      "statePath": "quotations",
+      "mode": "array"
+    },
+    "tasks": {
+      "statePath": "salesTasks",
+      "mode": "array"
+    },
+    "employees": {
+      "statePath": "staffProfiles",
+      "mode": "array"
+    },
+    "hr-requests": {
+      "statePath": "hrProRequests",
+      "mode": "array"
+    },
+    "hr-approvals": {
+      "statePath": "hrApprovals",
+      "mode": "array"
+    },
+    "requisitions": {
+      "statePath": "hrRecruitmentRequisitions",
+      "mode": "array"
+    },
+    "offboarding": {
+      "statePath": "hrOffboardingCases",
+      "mode": "array"
+    },
+    "recognition": {
+      "statePath": "hrRecognition",
+      "mode": "array"
+    },
+    "announcements": {
+      "statePath": "hrAnnouncements",
+      "mode": "array"
+    },
+    "employment-contracts": {
+      "statePath": "employeeContracts",
+      "mode": "array"
+    },
+    "executive-reports": {
+      "statePath": "executiveReports",
+      "mode": "array"
+    },
+    "admin-decisions": {
+      "statePath": "adminDecisions16",
+      "mode": "array"
+    },
+    "admin-meetings": {
+      "statePath": "adminMeetings16",
+      "mode": "array"
+    },
+    "work-presence": {
+      "statePath": "workEvidence",
+      "mode": "map"
+    },
+    "field-work": {
+      "statePath": "fieldWorkV30B.employees",
+      "mode": "map"
+    },
+    "field-templates": {
+      "statePath": "fieldWorkSettingsV30B.templates",
+      "mode": "array"
+    },
+    "wisdom": {
+      "statePath": "wisdom.items",
+      "mode": "array"
+    },
+    "support-requests": {
+      "statePath": "supportRequests",
+      "mode": "array"
+    },
+    "warehouses": {
+      "statePath": "operations18.warehouses",
+      "mode": "array"
+    },
+    "stock-items": {
+      "statePath": "operations18.items",
+      "mode": "array"
+    },
+    "stock-movements": {
+      "statePath": "operations18.movements",
+      "mode": "array"
+    },
+    "reservations": {
+      "statePath": "operations18.reservations",
+      "mode": "array"
+    },
+    "suppliers": {
+      "statePath": "operations18.suppliers",
+      "mode": "array"
+    },
+    "invoices": {
+      "statePath": "invoices",
+      "mode": "array"
+    },
+    "financial-documents": {
+      "statePath": "finance21.documents",
+      "mode": "array"
+    },
+    "cash-accounts": {
+      "statePath": "finance21.accounts",
+      "mode": "array"
+    },
+    "payments": {
+      "statePath": "finance21.payments",
+      "mode": "array"
+    },
+    "journal-entries": {
+      "statePath": "finance22.journal",
+      "mode": "array"
+    },
+    "payroll-hours": {
+      "statePath": "finance23.hours",
+      "mode": "array"
+    },
+    "payroll-runs": {
+      "statePath": "finance23.runs",
+      "mode": "array"
+    },
+    "print-layouts": {
+      "statePath": "finance23.layouts",
+      "mode": "array"
+    }
+  },
+  "settings": {
+    "system": "systemSettings",
+    "department-managers": "departmentManagers",
+    "hr": "hrSettings",
+    "hr-policies": "hrProSettings",
+    "employment-contract-templates": "hrContractTemplates15",
+    "executive-report-reviews": "adminReportReviews16",
+    "wisdom": "wisdomSettings",
+    "purchasing": "operations18.approvers",
+    "finance": "finance21.settings",
+    "finance-links": "finance22.links",
+    "print-defaults": "finance23.defaults",
+    "ui-controls": "uiControls",
+    "finance-chart": "finance22.chart"
+  },
+  "scripts": [
+    "js/r29-model.js?v=076b95283170",
+    "js/r19-common.js?v=2a79defd73f3",
+    "js/60-mosh-task-presentation-r6.js?v=3da0750ec2a3",
+    "js/55-mosh-workday-model.js?v=a490bdbe4a27",
+    "js/01-mosh-auth-v37-prelock.js?v=86a9815e4783",
+    "js/r36-customer-names.js?v=2df12746525a",
+    "js/02-mosh-core-runtime-14.js?v=cdf68bae96f4",
+    "js/03-inline.js?v=4b0841864441",
+    "js/04-v206-hr-enterprise-js.js?v=34f61660b73c",
+    "js/05-v207-safe-dashboard-js.js?v=3ae92e2f4239",
+    "js/06-v208-employee-portal-js.js?v=ab1b60522580",
+    "js/07-v209-hr-unified-js.js?v=746d818ae378",
+    "js/08-v211-employee-daily-hub-js.js?v=c4461eb6b5b7",
+    "js/09-work-evidence-v2161-js.js?v=201fc108b8b9",
+    "js/10-step2-exec-reports-js.js?v=aee7b5b99c2d",
+    "js/11-step3-department-exec-report-js.js?v=3a4885a9595e",
+    "js/12-design-work-report-safe-v8a.js?v=f2882c9134dc",
+    "js/13-mosh-department-dashboards-v9-js.js?v=3ba0b63566e8",
+    "js/14-hr-notices-v10-js.js?v=b4e17e85703f",
+    "js/15-employee-space-v11-js-transport.js?v=08cffaeed3af",
+    "js/16-mosh-hr13-runtime.js?v=912f9efba9db",
+    "js/17-mosh-documents-14-runtime.js?v=d68adc3bfe1c",
+    "js/18-mosh-hr14-complete.js?v=8d72bb974d99",
+    "js/19-mosh-v15-runtime.js?v=0462404706df",
+    "js/20-mosh-v16-runtime.js?v=b9ebc5ec393e",
+    "js/21-mosh-handbook-v17-js.js?v=38380d7b134d",
+    "js/22-mosh-ops18-js.js?v=e4a2ddb71cbd",
+    "js/23-mosh-calm19-runtime.js?v=be7591164400",
+    "js/24-mosh-finance22-js.js?v=fc981cd22547",
+    "js/25-mosh-v25-dark-controls-js.js?v=96fe346176a9",
+    "js/26-mosh-wisdom-v26-js.js?v=bceabe49d92d",
+    "js/27-mosh-sidebar-order-v27a.js?v=d2f0377f452d",
+    "js/28-v27d-wisdom-merge.js?v=67939ece7664",
+    "js/29-v27e-wisdom-layout-fix-js.js?v=d7f74ba24ccd",
+    "js/30-mosh-manager-approvals-v28-js.js?v=6d342fe5020d",
+    "js/31-mosh-request-results-v28b-js.js?v=8a20f77bd63e",
+    "js/32-mosh-v28c-request-routing-repair.js?v=aa5eb1e12d51",
+    "js/33-mosh-v28e-request-actions-js.js?v=805b3d4f6cd8",
+    "js/34-mosh-marketing-v29-js.js?v=29bc439a2499",
+    "js/35-mosh-field-work-v30b-js.js?v=8a6ed8587e88",
+    "js/36-mosh-v30c-field-admin-sync-js.js?v=12ab52156d2a",
+    "js/37-mosh-v32-systematic-shared-distribution-js.js?v=183dc8ff99a5",
+    "js/38-mosh-v32c-runtime-safety.js?v=6379d689d32b",
+    "js/39-mosh-v32e-manager-inline-js.js?v=c51d9fda9d6c",
+    "js/40-mosh-marketing-v33-js.js?v=47340fd58735",
+    "js/41-mosh-marketing-v34-js.js?v=b14d1c2e01a7",
+    "js/42-mosh-v36-prebeta-stability-js.js?v=3d78ee8eb519",
+    "js/43-mosh-auth-v37-js.js?v=aafc55c9356d",
+    "js/44-mosh-v38-my-tasks-enforcement-js.js?v=c6b1d4b62e30",
+    "js/45-mosh-v41-employee-task-sync-js.js?v=3ff20996d64b",
+    "js/46-mosh-v42-employee-link-reconcile-js.js?v=1dad9319ef17",
+    "js/47-mosh-v44-task-assignment-account-fix.js?v=c57e5faa461b",
+    "js/48-mosh-v45-employee-tasks-unified-marker.js?v=2053f3b4fbc2",
+    "js/49-mosh-v46-employee-task-open-nav-marker.js?v=42f4e4a484cc",
+    "js/50-mosh-v47-employee-task-overlay-js.js?v=7ee061b6651f",
+    "js/51-mosh-v48-employee-task-workflow-js.js?v=bcbe0a0bce3c",
+    "js/52-mosh-v48-marker.js?v=12f80cb362a0",
+    "js/53-mosh-task-receipts-model.js?v=1d8b8d6c6857",
+    "js/54-mosh-task-inbox.js?v=d2d311558e51",
+    "js/56-mosh-workdesk.js?v=8a330969c37a",
+    "js/57-mosh-reminder-model.js?v=2039489c101e",
+    "js/58-mosh-activity-reminder.js?v=0abfd18a9a5f",
+    "js/59-mosh-home-notices.js?v=fcf3001a5edc",
+    "js/61-mosh-zkteco-admin.js?v=8c26b01459e1",
+    "js/61-mosh-r14-system-polish.js?v=38238e9304b4",
+    "js/62-mosh-r16-field-fixes.js?v=dbf68dfe5bb2",
+    "js/63-mosh-mini-workdesk.js?v=fb8f1dd364ce",
+    "js/r19-home.js?v=b78cdb9a4572",
+    "js/r19-hr.js?v=5b7f8fa5411d",
+    "js/r19-notifications.js?v=43d97894ca09",
+    "js/r19-mini.js?v=24e725e05bfa",
+    "js/r19-review-ui.js?v=84b77cb21f83",
+    "js/r19-review-overdue.js?v=06f0bf2ad076",
+    "js/r19-review-dashboard.js?v=71963a304d46",
+    "js/r19-review-nav.js?v=7d666c0a38b9",
+    "js/r20-attendance-header.js?v=c8527bede82e",
+    "js/r20-employee-portal.js?v=130203b1d3ac",
+    "js/r21-theme.js?v=dabb3c9fa617",
+    "js/r24-admin.js?v=f9c02f6db089",
+    "js/r24-purchase-portal.js?v=fbc2270b8f9f",
+    "js/r25-marketing-customers.js?v=c5dcf9c85290",
+    "js/r28-instagram.js?v=8d835f3022e7",
+    "js/r29-workflows.js?v=22729d2a5ae5",
+    "js/r31-upload.js?v=f2064257bcec",
+    "js/r31-it.js?v=c26415a3e570",
+    "js/r33-navigation.js?v=41f6b54348bb",
+    "js/r34-ui.js?v=1bfc609f7029",
+    "js/r34-chat.js?v=2b2b9a7bcac1",
+    "js/r34-customers-deadline.js?v=fa6a0a78fcff",
+    "js/r34-governance.js?v=a1a3708dc47b",
+    "js/r34-social.js?v=1c4ff1b27838",
+    "js/r35-navigation.js?v=b5163cae72df",
+    "js/r35-density.js?v=6488ac073c57",
+    "js/r35-workspace.js?v=3ce2719205b8",
+    "js/r35-branding.js?v=9177a1a6a972",
+    "js/r36-social-department.js?v=433750b3450b",
+    "js/r38-compact.js?v=aa0d285b4dda",
+    "js/r39-layout-and-marketing.js?v=9fafb5d3fcf8",
+    "js/task-workspace-08.js?v=21ea77b75028",
+    "js/ui09-interface.js?v=e9d10e957364",
+    "js/ui09-communication.js?v=cc44e15c462e"
+  ],
+  "release": "R40-UI09"
+}

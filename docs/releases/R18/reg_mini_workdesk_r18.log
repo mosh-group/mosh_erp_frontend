@@ -1,0 +1,13 @@
+PASS Shortcut adjacent to Logout
+PASS Panel closed by default
+PASS Shortcut opens panel
+PASS Compact bar not full panel
+PASS Expand restores actions
+PASS Display changes never write task state
+PASS Search narrows own tasks
+PASS Escape closes picker only
+PASS Escape compacts focused panel
+PASS Blocked popup has usable feedback
+PASS Panel fits a narrow screen
+PASS No uncaught browser errors
+ALL 12 checks passed

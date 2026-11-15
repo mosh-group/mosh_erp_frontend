@@ -1,0 +1,2 @@
+PASS: generic task attachment picker; common image/video/document/archive/design formats accepted; unsafe HTML and >25MB rejected; chat uses one attachment input; no page errors.
+

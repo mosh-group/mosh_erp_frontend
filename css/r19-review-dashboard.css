@@ -1,0 +1,20 @@
+/* Only nodes identified by the semantic dashboard overlay are suppressed. */
+.mosh-review19 .view .db9[data-department] [data-r19-dashboard-hidden] {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Calm19 can create a new wrapper around an already-marked panel later in startup.
+   The marked child suppresses its own summary row immediately, before JS resyncs. */
+.mosh-review19 .view .db9[data-department] > details[data-c19-key$="-overview"]:has(> .c19-body > .db9-panel[data-r19-dashboard-hidden="overview"]),
+.mosh-review19 .view .db9[data-department] > details[data-c19-key$="-team"]:has(> .c19-body > .db9-panel[data-r19-dashboard-hidden="team"]) {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* With the title strip gone, the original search disclosure becomes the panel's first row. */
+.mosh-review19 .view .db9[data-department] > .db9-follow[data-r19-follow-trimmed="1"] > .c19-follow-filter {
+  border-top: 0 !important;
+}

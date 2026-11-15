@@ -1,0 +1,31 @@
+(function(){var reportTypes ={sales:['ملخص مبيعات تنفيذي','صفقات وعروض مهمة','العملاء والفرص','أداء فريق المبيعات','التحصيل وملاحظات العملاء','تقرير مخصص'],hr:['ملخص موارد بشرية','الحضور والغياب والإجازات','التوظيف والشواغر','الأداء والإجراءات','العقود والوثائق','تقرير مخصص'],marketing:['ملخص تسويق تنفيذي','الحملات والنتائج','خطة المحتوى','الأداء الرقمي','الميزانية والصرف','تقرير مخصص'],design:['ملخص قسم التصميم','الأعمال المنجزة والمتأخرة','ضغط العمل والطاقة الاستيعابية','المراجعات والجودة','احتياجات القسم','تقرير مخصص'],photo:['ملخص قسم التصوير','جدول التصوير والمشاريع','التسليمات والتأخير','المعدات والاحتياجات','ضغط العمل','تقرير مخصص'],editing:['ملخص قسم المونتاج','المشاريع والتسليمات','المراجعات والتعديلات','ضغط العمل','الاحتياجات التقنية','تقرير مخصص'],promotion:['ملخص قسم الترويج','خطة الترويج','الحجوزات والمنصات','النتائج','التأخير والاحتياجات','تقرير مخصص'],purchases:['ملخص المشتريات','مشتريات مهمة','الموردون','المشتريات الكبيرة','مشاكل التوريد','تقرير مخصص'],logistics:['ملخص اللوجستيات','التوصيلات والحركة','السيارات والسائقون','الأصول والعهد','مشاكل تشغيلية','تقرير مخصص'],accounting:['ملخص مالي تنفيذي','المقبوضات والمدفوعات','الذمم المدينة والدائنة','السيولة والالتزامات','ملاحظات مالية','تقرير مخصص'],platform:['ملخص منصة MOSH MEDIA','المهام والأعمال الجارية','المحتوى والتسليمات','المراجعات والاعتمادات','الاحتياجات والملاحظات','تقرير مخصص']
+};function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function loadReports(){return state.executiveReports||[];}
+function saveReports(rows){state.executiveReports=rows;return MoshApi.save();}
+function nextNo(rows){var year = new Date().getFullYear();var max = 0;rows.forEach(function(r){var m = String(r.id||'').match(/RPT\/\d{4}\/(\d+)/);if(m)max = Math.max(max,parseInt(m[1],10)||0);});return 'RPT/'+year+'/'+String(max+1).padStart(4,'0');}
+function ensureModal(){var old=document.getElementById('execReportModalStep3');if(old)return old;var root=document.createElement('div');root.id='execReportModalStep3';root.className='hr-pro-modal-backdrop';root.style.display='none';root.innerHTML=
+'<div class="hr-pro-modal" role="dialog" aria-modal="true">'+
+'<div class="hr-pro-modal-head">'+
+'<div><h3>إرسال تقرير للمدير التنفيذي</h3><p id="execReportDeptStep3"></p></div>'+
+'<button type="button" class="hr-pro-modal-close" onclick="closeDeptExecReportStep3()">×</button>'+
+'</div>'+
+'<div class="hr-pro-modal-body">'+
+'<div class="hr-pro-form-grid">'+
+'<div class="hr-pro-form-field"><label>نوع التقرير</label><select id="execReportTypeStep3"></select></div>'+
+'<div class="hr-pro-form-field"><label>الأولوية</label><select id="execReportPriorityStep3"><option>للاطلاع فقط</option><option>يحتاج توجيه</option><option>عاجل</option></select></div>'+
+'<div class="hr-pro-form-field full"><label>عنوان التقرير</label><input id="execReportTitleStep3" placeholder="عنوان واضح ومختصر"></div>'+
+'<div class="hr-pro-form-field"><label>الفترة</label><input id="execReportPeriodStep3" placeholder="مثال: هذا الأسبوع"></div>'+
+'<div class="hr-pro-form-field"><label>اسم المرسل</label><input id="execReportSenderStep3" placeholder="مدير القسم"></div>'+
+'<div class="hr-pro-form-field full"><label>الملخص التنفيذي</label><textarea id="execReportSummaryStep3" rows="5" placeholder="أهم ما يجب أن يعرفه المدير التنفيذي"></textarea></div>'+
+'<div class="hr-pro-form-field full"><label>المطلوب من المدير التنفيذي</label><textarea id="execReportNeedStep3" rows="3" placeholder="اتركه فارغاً إذا كان التقرير للاطلاع فقط"></textarea></div>'+
+'</div>'+
+'</div>'+
+'<div class="hr-pro-modal-foot">'+
+'<button type="button" class="btn" onclick="closeDeptExecReportStep3()">إلغاء</button>'+
+'<button type="button" class="btn primary" onclick="submitDeptExecReportStep3()">إرسال التقرير</button>'+
+'</div>'+
+'</div>';root.addEventListener('click',function(e){if(e.target===root)window.closeDeptExecReportStep3()});document.body.appendChild(root);return root;}
+window.openDeptExecReportStep3=function(key,department){var modal=ensureModal();modal.dataset.key=key;modal.dataset.department=department;document.getElementById('execReportDeptStep3').textContent='القسم: '+department;var select=document.getElementById('execReportTypeStep3');select.innerHTML=(reportTypes[key]||['تقرير تنفيذي','تقرير مخصص']).map(function(x){return '<option>'+esc(x)+'</option>'}).join('');document.getElementById('execReportTitleStep3').value='';document.getElementById('execReportPriorityStep3').value='للاطلاع فقط';document.getElementById('execReportPeriodStep3').value='';document.getElementById('execReportSenderStep3').value='';document.getElementById('execReportSummaryStep3').value='';document.getElementById('execReportNeedStep3').value='';modal.style.display='flex';setTimeout(function(){document.getElementById('execReportTitleStep3').focus()},0);};window.closeDeptExecReportStep3=function(){var modal=document.getElementById('execReportModalStep3');if(modal)modal.style.display='none';};window.submitDeptExecReportStep3=async function(){var modal=document.getElementById('execReportModalStep3');if(!modal)return;var title=document.getElementById('execReportTitleStep3').value.trim();var summary=document.getElementById('execReportSummaryStep3').value.trim();if(!title){alert('اكتب عنوان التقرير');return;}
+if(!summary){alert('اكتب الملخص التنفيذي');return;}
+var rows=loadReports();var now=new Date();rows.unshift({id:nextNo(rows),department:modal.dataset.department||'—',departmentKey:modal.dataset.key||'',type:document.getElementById('execReportTypeStep3').value,title:title,priority:document.getElementById('execReportPriorityStep3').value,period:document.getElementById('execReportPeriodStep3').value.trim(),sender:document.getElementById('execReportSenderStep3').value.trim(),summary:summary,executiveNeed:document.getElementById('execReportNeedStep3').value.trim(),status:'جديد',createdAt:now.toLocaleString('ar-SY')
+});try{await saveReports(rows);}catch(error){MoshApi.showError(error);return;}closeDeptExecReportStep3();if(typeof showToast==='function')showToast('تم إرسال التقرير للمدير التنفيذي');else alert('تم إرسال التقرير للمدير التنفيذي');};document.addEventListener('keydown',function(e){if(e.key==='Escape')window.closeDeptExecReportStep3();});})();

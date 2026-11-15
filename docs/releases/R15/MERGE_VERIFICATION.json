@@ -1,0 +1,60 @@
+{
+  "release": "R15_ZKTECO_R14_MERGE",
+  "date": "2026-10-01",
+  "it_source_zip_sha256": "5fc85e749732a9a35af89322087a4355e96ea2d5c60b1254bd3c625265344a19",
+  "zkteco_bridge_original_zip_sha256": "598036513d7ea7aedd832bd62ba6676aeef500536af8ff5df5ef7456897aedc1",
+  "backend": {
+    "it_source_file_count": 8721,
+    "merged_file_count": 8721,
+    "changed_from_it": 0,
+    "added": 0,
+    "missing": 0
+  },
+  "frontend": {
+    "it_source_file_count": 180,
+    "merged_file_count_before_this_report": 197,
+    "changed_from_it": [
+      "api-map.json",
+      "index.html",
+      "js/02-mosh-core-runtime-14.js",
+      "js/18-mosh-hr14-complete.js",
+      "js/20-mosh-v16-runtime.js",
+      "js/22-mosh-ops18-js.js",
+      "js/24-mosh-finance22-js.js",
+      "js/43-mosh-auth-v37-js.js"
+    ],
+    "added_from_it": [
+      "00_READ_ME_R14_AR.txt",
+      "css/r14-system-polish.css",
+      "docs/releases/R14/QA_REPORT_AR.md",
+      "docs/releases/R14/REPACKAGE_VERIFICATION.json",
+      "js/61-mosh-r14-system-polish.js",
+      "tests/browser/__pycache__/browser_test.cpython-313.pyc",
+      "tests/browser/system_polish_r14.py",
+      "tests/results/r10-preload/RESULTS.json",
+      "tests/results/r13-sidebar/RESULTS.json",
+      "tests/results/r14-system/RESULTS.json",
+      "tests/results/r9/RESULTS.json",
+      "tests/results/r9/failed-boot.json",
+      "tests/results/r9/logged-out-boot.json",
+      "tests/results/r9/logged-out-ready.png",
+      "tests/results/r9/new-boot.json",
+      "tests/results/r9/new-ready.png",
+      "tests/results/r9/receipt-confirmed.png"
+    ],
+    "missing_from_it": []
+  },
+  "checks": {
+    "node_tests": "38/38 passed",
+    "browser_r14": "passed",
+    "browser_r13_sidebar": "passed",
+    "browser_r12_attachments": "passed",
+    "browser_r10_preload": "passed; 0 warnings; 62 scripts once in order",
+    "browser_r9_receipt_boot": "20 checks passed",
+    "zkteco_frontend_marker": "MoshZktecoAdmin loaded; enrollment/exempt fields present with R14 photo control",
+    "javascript_syntax": "64 files passed node --check",
+    "php_lint": "103 project PHP files passed php -l",
+    "sqlite_quick_check": "4/4 ok",
+    "phpunit_zkteco": "not run: lab PHP 8.4.23; project requires PHP >=8.5"
+  }
+}

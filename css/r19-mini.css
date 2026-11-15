@@ -1,0 +1,82 @@
+/* R19 appearance layer, loaded after the original R18 Mini stylesheet. */
+#moshMini18.mini19-ui {
+ --mini-bg:rgba(8,10,11,.90);
+ --mini-top:rgba(18,19,18,.90);
+ --mini-border:rgba(225,221,205,.21);
+ --mini-gold:#dfbe68;
+ --mini-text:#faf8f0;
+ --mini-muted:#d0d1ca;
+ color:var(--mini-text);
+ box-sizing:border-box;
+ background:var(--mini-bg);
+ border-color:rgba(214,181,96,.48);
+ border-radius:17px;
+ box-shadow:0 20px 60px #0008,0 1px 0 #ffffff12 inset;
+ -webkit-backdrop-filter:blur(18px);
+ backdrop-filter:blur(18px);
+ max-height:calc(100dvh - 16px);
+ font-size:15px;
+ contain:layout style;
+}
+#moshMini18.mini19-ui .mini18-header { background:var(--mini-top); padding:13px 16px; }
+#moshMini18.mini19-ui .mini18-heading small { font-size:12px; line-height:1.6; color:#d0d1ca; }
+#moshMini18.mini19-ui .mini18-body { flex:1 1 auto; min-height:0; scrollbar-color:#77715b transparent; padding:16px; }
+#moshMini18.mini19-ui .mini18-person { font-size:14px; color:#e1e1db; }
+#moshMini18.mini19-ui .mini18-title { font-size:22px; line-height:1.55; color:#fffdf7; }
+#moshMini18.mini19-ui .mini18-client { font-size:15px; color:#d2d2ca; }
+#moshMini18.mini19-ui .mini18-badge { font-size:13px; color:#f1d992; background:#d7b45a18; }
+#moshMini18.mini19-ui .mini18-clock { margin:17px 0; }
+#moshMini18.mini19-ui .mini18-clock small { font-size:14px; color:#d2d2ca; }
+#moshMini18.mini19-ui .mini18-timer { color:#f7dc9b; font-size:46px; }
+#moshMini18.mini19-ui .mini18-icon { border-color:#b9bcb033; background:#ffffff06; color:#f6f3e9; }
+#moshMini18.mini19-ui .mini18-icon:hover { background:#ffffff12; border-color:#d8b45e99; }
+#moshMini18.mini19-ui .mini18-action { font-size:15px; color:#f8f6ed!important; min-height:46px; background:#ffffff08; border-color:#d4d8c934; }
+#moshMini18.mini19-ui .mini18-action:hover:not(:disabled) { background:#ffffff13; }
+#moshMini18.mini19-ui .mini18-primary { color:#201b0e!important; background:#dfbe68; border-color:#dfbe68; }
+#moshMini18.mini19-ui .mini18-primary:hover:not(:disabled) { background:#ecd086; }
+#moshMini18.mini19-ui .mini18-action[aria-pressed=true] { border-color:#dfbe68; color:#f1d992!important; background:#d7b45a16; }
+#moshMini18.mini19-ui .mini18-link { font-size:14px; color:#e7c777!important; }
+#moshMini18.mini19-ui .mini18-stats { gap:8px; margin-top:12px; padding-top:12px; }
+#moshMini18.mini19-ui .mini18-stats small { font-size:13px; color:#d2d2ca; }
+#moshMini18.mini19-ui .mini18-stats bdi { font-size:16px; color:#f8f5eb; }
+#moshMini18.mini19-ui .mini18-footer { padding:9px 24px 9px 13px; color:#d0d1ca; font-size:12px; background:#00000024; }
+#moshMini18.mini19-ui .mini18-footer .mini18-link { font-size:12px!important; }
+#moshMini18.mini19-ui .mini18-picker-head { font-size:15px; color:#f8f6ed; }
+#moshMini18.mini19-ui .mini18-search { font-size:15px; color:#f8f6ed; background:#0005; border-color:#d4d8c934; }
+#moshMini18.mini19-ui .mini18-search::placeholder { color:#bdbeb5; opacity:1; }
+#moshMini18.mini19-ui .mini18-item { background:#ffffff05; border-color:#d4d8c929; }
+#moshMini18.mini19-ui .mini18-item b { font-size:15px; color:#f8f6ed; }
+#moshMini18.mini19-ui .mini18-item small { font-size:13px; color:#d0d1ca; }
+#moshMini18.mini19-ui .mini18-item button { font-size:13px; color:#f1d992; background:#d7b45a18; }
+#moshMini18.mini19-ui .mini18-empty { color:#d0d1ca; font-size:14px; }
+#moshMini18.mini19-ui .mini18-message { font-size:14px; }
+#moshMini18.mini19-ui .mini18-return { margin-top:10px; }
+#moshMini18.mini19-ui.mini18-is-compact { background:rgba(8,10,11,.88); height:auto!important; border-color:rgba(223,190,104,.75); }
+#moshMini18.mini19-ui .mini18-compact { padding:10px 13px; min-height:68px; }
+#moshMini18.mini19-ui .mini18-compact-info small { font-size:13px; color:#dedfd7; max-width:100%; }
+#moshMini18.mini19-ui .mini18-compact-timer { color:#f7dc9b; font-size:23px; flex-shrink:0; }
+#moshMini18.mini19-ui .mini19-resize {
+ position:absolute;right:1px;bottom:1px;z-index:2;
+ display:grid;place-items:center;
+ width:24px;height:24px;min-height:24px;
+ padding:2px;border:0;border-radius:0 0 14px 0;
+ background:transparent;color:#d9bb6d!important;
+ cursor:se-resize;touch-action:none;
+}
+#moshMini18.mini19-ui .mini19-resize:hover { background:#dfbe6820; }
+#moshMini18.mini19-ui .mini19-resize:focus-visible { outline:2px solid #dfbe68; outline-offset:-3px; }
+#moshMini18.mini19-ui.mini18-is-compact .mini19-resize { display:none; }
+#moshMini18.mini19-dragging,#moshMini18.mini19-dragging .mini18-header,#moshMini18.mini19-dragging .mini18-compact { cursor:grabbing; }
+#moshMini18.mini19-resizing { user-select:none; }
+@media(max-width:440px) {
+ #moshMini18.mini19-ui .mini18-body { padding:13px; }
+ #moshMini18.mini19-ui .mini18-title { font-size:20px; }
+ #moshMini18.mini19-ui .mini18-heading small { max-width:170px; }
+ #moshMini18.mini19-ui .mini18-compact { gap:9px; }
+ #moshMini18.mini19-ui .mini18-compact-timer { font-size:21px; }
+}
+
+/* A separate MINI window uses the browser's existing native resize control. */
+html.mosh-mini-window18,html.mosh-mini-window18 body{background:#080a0b!important}
+html.mosh-mini-window18 #moshMini18.mini19-ui{border-radius:0;box-shadow:none}
+html.mosh-mini-window18 #moshMini18.mini19-ui .mini19-resize{display:none}

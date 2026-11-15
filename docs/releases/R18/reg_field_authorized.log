@@ -1,0 +1,13 @@
+PASS R16 runtime loaded
+PASS Enter sends task chat
+PASS paperclip opens the real task attachment input
+PASS HTTP voice opens audio picker
+PASS HTTP voice limits picker to audio
+PASS standalone HTTP voice opens audio picker
+PASS design dashboard has three primary KPIs
+PASS design dashboard KPI labels simplified
+PASS admin transfer targets selected executive
+PASS Social Hub opens for customer
+PASS Social Hub has no task workflow action
+PASS opening Social Hub does not mutate tasks
+PASS no JavaScript runtime errors

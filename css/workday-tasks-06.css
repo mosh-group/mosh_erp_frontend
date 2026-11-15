@@ -1,0 +1,97 @@
+/* Change 06: approved workday-first panels. Structural gaps share one scale;
+   compact related controls retain the smaller step. No timer/attendance rules. */
+html.mosh-compact01 { --mosh-section-gap:20px; --mosh-control-gap:8px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .es11-header,
+html.mosh-compact01 #appShell #employeeSpaceV11 #moshNoticeStrip52 { margin-bottom:var(--mosh-section-gap)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .es11-header { gap:var(--mosh-section-gap)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-grid { gap:var(--mosh-section-gap)!important; }
+html.mosh-compact01 #appShell #dashboardApp .dashboard-mood-panel { margin-top:var(--mosh-section-gap)!important; padding:var(--mosh-section-gap)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-grid>.wd50-card,
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-grid>.es11-task { display:flex!important; padding:var(--mosh-section-gap)!important; min-height:0!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Panel,
+html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox { display:flex; flex-direction:column; gap:var(--mosh-section-gap); width:100%; min-width:0; flex:1; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-head,
+html.mosh-compact01 #appShell #employeeSpaceV11 .es11-task .es11-card-head { margin:0!important; min-height:34px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-head h3,
+html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox h3 { font-size:22px!important; gap:8px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-head h3 svg { width:22px!important; height:22px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-icon-btn,
+html.mosh-compact01 #appShell #employeeSpaceV11 .mr49-refresh { display:inline-flex!important; align-items:center; justify-content:center; gap:6px; width:auto!important; height:auto!important; padding:6px 9px!important; font-size:12px!important; white-space:nowrap; color:var(--compact-muted)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-refresh-icon { font:20px/1 Arial,sans-serif; }
+
+/* Real day status and timer stay above the four original actions. */
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-day { display:flex; flex-direction:column; gap:12px; min-width:0; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-day-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-day-heading h4 { margin:0!important; font:500 13px/1.6 Tahoma,Arial,sans-serif!important; color:var(--compact-muted)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-status { flex:1; justify-content:flex-end; flex-wrap:wrap!important; min-width:0; min-height:0!important; margin:0!important; padding:0!important; gap:6px!important; border:0!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-status>div { flex:0 1 auto!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-status strong { font-size:12px!important; font-weight:500!important; overflow-wrap:anywhere; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-status bdi { font-size:16px!important; font-variant-numeric:tabular-nums; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-dot { width:6px; height:6px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls { gap:var(--mosh-control-gap)!important; padding:0!important; border:0!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls button { min-height:42px!important; padding:8px 6px!important; font-size:13px!important; font-weight:500!important; gap:6px!important; white-space:normal; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls button[aria-pressed="true"]:disabled { opacity:1!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls svg { width:16px!important; height:16px!important; flex-shrink:0; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd06TimeDisclosure { margin:0; border:1px solid #77612e; background:#282416; border-radius:8px; color:#e5cd94; font-size:12px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd06TimeDisclosure summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:8px; padding:9px 10px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd06TimeDisclosure summary::-webkit-details-marker { display:none; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd06TimeDisclosure summary svg { width:16px; height:16px; flex-shrink:0; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-warning-toggle { margin-inline-start:auto; white-space:nowrap; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-warning-toggle::after { content:' ⌄'; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd06TimeDisclosure[open] .wd06-warning-toggle::after { content:' ⌃'; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50TimeWarning { margin:0!important; padding:0 10px 10px!important; border:0!important; background:none!important; color:inherit!important; font-size:12px!important; line-height:1.8!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 :is(#wd50Notice,#wd50Error,#wd50Resolve) { margin:0!important; }
+
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-current { display:flex; flex-direction:column; flex:1; gap:12px; border-top:1px solid var(--compact-soft-line); padding-top:var(--mosh-section-gap); min-width:0; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-picker { margin:0!important; gap:8px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-picker>label { margin:0!important; font-size:14px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50PickerToggle { min-height:32px!important; font-size:12px!important; padding:4px 7px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task { display:flex; flex-direction:column; gap:8px; flex:1; min-height:137px!important; padding:16px!important; background:var(--compact-control)!important; border-color:#796631!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task[data-empty="true"] { justify-content:center; border:1px dashed var(--compact-line)!important; background:transparent!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-empty { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-empty svg { width:23px; height:23px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-empty strong { font-size:14px; color:var(--compact-text); font-weight:500; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-empty small { font-size:12px; line-height:1.8; max-width:300px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task .wd50-task-head { margin:0!important; align-items:flex-start; flex-wrap:wrap; gap:8px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task .wd50-task-head>div { min-width:0; flex:1 1 140px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task .wd50-task-head b { font-size:17px!important; overflow-wrap:anywhere; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task .wd53-task-client { font-size:13px!important; color:var(--compact-muted); }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task .wd50-task-state { margin:0!important; font-size:12px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-task-actions { margin:0!important; padding-top:8px; gap:var(--mosh-control-gap)!important; flex-wrap:wrap; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-task-btn { flex:1 1 150px; min-width:0; white-space:normal; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-task-btn.primary { background:#e6bb43!important; border-color:#e6bb43!important; color:#231d0f!important; }
+
+/* Counts, search and selection use their real inbox handlers. */
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-tabs { gap:var(--mosh-control-gap)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-tabs button { position:relative; flex-direction:column; min-height:58px!important; gap:4px!important; font-size:12px!important; line-height:1.4!important; font-weight:400!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-tabs button.has-new::before { position:absolute; top:6px; inset-inline-end:6px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-search { position:relative; margin:0!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd51HomeSearch { height:42px!important; background:var(--compact-control)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-rows { display:flex; flex-direction:column; gap:12px; flex:1; min-height:0!important; border:0!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-task { display:flex!important; flex-direction:column; align-items:stretch!important; min-height:0!important; padding:14px!important; gap:8px!important; border:1px solid var(--compact-soft-line)!important; border-radius:9px; background:var(--compact-control); }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-task[data-selected="true"] { border-color:#a18437!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-task-title { font-size:16px!important; text-align:start; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-task .wd53-task-client { font-size:13px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-row-footer { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-task-tag { margin:0!important; font-size:12px!important; flex:1 1 130px; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-task-pick { margin:0!important; min-height:35px!important; font-size:12px!important; padding:7px 10px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-task-pick[aria-pressed="true"] { background:transparent!important; color:var(--compact-muted)!important; border-color:var(--compact-line)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .mr49-home-footer { margin:0!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .mr49-all { min-height:38px!important; font-size:13px!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd51HomeError { margin:0!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 :is(#wd06TimeDisclosure,#wd50TimeWarning,#wd50Notice,#wd50Error,#wd50Resolve,#wd51HomeError)[hidden] { display:none!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 :is(button,summary,input):focus-visible { outline:2px solid var(--compact-gold)!important; outline-offset:3px; }
+
+/* Apply the same structural rhythm to the reviewed task form and time summary. */
+html.mosh-compact01 #standaloneTaskModal .r25-task-scroll-area,
+html.mosh-compact01 #standaloneTaskModal .r38-task-grid { gap:var(--mosh-section-gap)!important; }
+html.mosh-compact01 #standaloneTaskModal .r38-task-grid>.r38-deadline-field { column-gap:var(--mosh-section-gap)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #r19TimeDetails { padding:var(--mosh-section-gap)!important; gap:var(--mosh-section-gap)!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-metrics { gap:var(--mosh-section-gap)!important; }
+
+@media(max-width:420px) {
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd06-day-heading { align-items:flex-start; }
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-status { flex-basis:100%; justify-content:flex-start; }
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls button { font-size:12px!important; }
+ html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-tabs button { font-size:11px!important; }
+}

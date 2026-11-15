@@ -1,0 +1,278 @@
+/* MOSH R19 production: compact the existing employee header.
+ * Load last, after r19-home.css. The DOM wrapper is supplied by the review JS:
+ * .r19-review-name-row contains #dashboardUserName; metadata follows the profile.
+ * The original #r19MyFile sits immediately before the clock inside header-tools.
+ * Employee fields, clock content and portal actions remain original.
+ */
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 {
+ padding-top:16px!important;
+ padding-bottom:20px!important;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header {
+ display:flex!important;
+ flex-wrap:nowrap!important;
+ justify-content:space-between;
+ align-items:center!important;
+ gap:18px;
+ min-height:0!important;
+ padding:0!important;
+ margin-bottom:12px!important;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-profile {
+ flex:0 1 auto;
+ min-width:0;
+ max-width:none!important;
+ align-items:center;
+ gap:12px;
+ padding-top:0;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-person {
+ flex:1 1 auto;
+ min-width:0;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-avatar {
+ width:56px;
+ height:56px;
+ flex:0 0 56px;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-avatar .es11-icon {
+ width:32px;
+ height:32px;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-kicker {
+ margin:0 0 2px;
+ font-size:13px;
+ line-height:1.4;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .r19-review-name-row {
+ display:flex;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:5px 12px;
+ min-width:0;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardUserName {
+ flex:0 1 auto;
+ min-width:0;
+ margin:0!important;
+ font-size:29px!important;
+ line-height:1.38!important;
+ overflow-wrap:anywhere;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile {
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ flex:0 0 var(--r19-header-card-width)!important;
+ width:var(--r19-header-card-width)!important;
+ height:var(--r19-header-card-height)!important;
+ min-height:var(--r19-header-card-height)!important;
+ box-sizing:border-box;
+ gap:7px;
+ margin:0!important;
+ padding:8px 12px;
+ border:1px solid #414b50;
+ border-radius:12px;
+ background:#192228;
+ box-shadow:none;
+ color:#dbe1e3;
+ font-size:15px;
+ font-weight:600;
+ line-height:1.5;
+ white-space:nowrap;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile .r19-file-symbol {
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ flex:0 0 18px;
+ width:18px;
+ height:18px;
+ border:0;
+ border-radius:0;
+ background:transparent;
+ color:inherit;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile .r19-file-symbol svg {
+ width:18px;
+ height:18px;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile .r19-file-chevron {
+ flex:0 0 16px;
+ width:16px;
+ height:16px;
+ opacity:.72;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-meta {
+ display:flex;
+ flex:1 1 300px;
+ flex-wrap:wrap;
+ /* Lower only the metadata to the name row's bottom edge. */
+ align-self:flex-end;
+ align-items:center;
+ justify-content:flex-start;
+ min-width:0;
+ gap:6px;
+ margin:0;
+ font-size:13px;
+ line-height:1.45;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-meta>span {
+ min-width:0;
+ max-width:100%;
+ padding:3px 10px;
+ overflow-wrap:anywhere;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools {
+ --r19-header-card-width:224px;
+ --r19-header-card-height:60px;
+ flex:0 0 auto;
+ width:auto!important;
+ max-width:100%;
+ flex-direction:row;
+ flex-wrap:nowrap;
+ align-items:center;
+ gap:10px;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-clock {
+ flex:0 0 var(--r19-header-card-width)!important;
+ width:var(--r19-header-card-width)!important;
+ height:var(--r19-header-card-height)!important;
+ min-height:var(--r19-header-card-height)!important;
+ max-width:100%;
+ box-sizing:border-box;
+ padding:6px 12px;
+ gap:10px;
+ border-radius:12px;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-clock>.es11-icon {
+ width:28px;
+ height:28px;
+ flex:0 0 28px;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardLiveTime {
+ font-size:23px;
+ line-height:1.15;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardLiveDate {
+ margin-top:2px;
+ font-size:11px;
+ line-height:1.25;
+}
+@media(max-width:1100px) {
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header {
+  flex-wrap:wrap!important;
+  gap:10px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-profile {
+  flex-basis:100%;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-meta {
+  flex-basis:250px;
+  align-self:center;
+  justify-content:flex-start;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools {
+  --r19-header-card-width:208px;
+  --r19-header-card-height:54px;
+  margin-inline-start:auto;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile {
+  padding:7px 10px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-clock {
+  min-width:var(--r19-header-card-width);
+  padding:5px 10px;
+  justify-content:flex-start;
+ }
+}
+@media(max-width:600px) {
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 {
+  padding-top:13px!important;
+  padding-bottom:16px!important;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-profile {
+  gap:10px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-avatar {
+  width:48px;
+  height:48px;
+  flex-basis:48px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-avatar .es11-icon {
+  width:28px;
+  height:28px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardUserName {
+  font-size:25px!important;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .r19-review-name-row {
+  gap:5px 9px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-meta {
+  flex-basis:100%;
+  gap:5px;
+  font-size:12px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-meta>span {
+  padding:3px 8px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools {
+  --r19-header-card-width:100%;
+  --r19-header-card-height:72px;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  flex:1 1 100%;
+  width:100%!important;
+  min-width:0;
+  max-width:100%;
+  flex-wrap:wrap;
+  gap:8px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile {
+  min-width:0;
+  gap:7px;
+  padding:7px 9px;
+  font-size:14px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-clock {
+  min-width:0;
+  gap:8px;
+  padding:5px 10px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardLiveTime {
+  font-size:21px;
+ }
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardLiveDate {
+  white-space:normal;
+ }
+}
+@media(prefers-reduced-motion:reduce) {
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile {
+  transition:none;
+ }
+}
+
+/* Both controls share their dimensions, including borders, at every breakpoint. */
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile:hover {
+ background:#242e34;
+ border-color:#606b72;
+ color:#edf1f3;
+}
+.mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile:focus-visible {
+ outline:2px solid #9ba7af;
+ outline-offset:3px;
+}
+@media(max-width:1100px) {
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardLiveTime{font-size:22px}
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardLiveDate{margin-top:1px;line-height:1.2}
+}
+@media(max-width:600px) {
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 #dashboardLiveTime{font-size:21px}
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile .r19-file-chevron{display:none}
+}
+@media(max-width:460px) {
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-header-tools #r19MyFile .r19-file-symbol,
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-clock>.es11-icon{display:none}
+ .mosh-review19.mosh-review19-1 #employeeSpaceV11 .es11-clock{justify-content:center}
+}

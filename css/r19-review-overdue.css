@@ -1,0 +1,48 @@
+/* Same cards and typography; only the overdue statistic is hidden. */
+body .view .db9[data-department] .db9-kpi[data-action="filter"][data-value="overdue"],
+body .view .db9 .db9-kpi[data-r19-overdue-hidden="1"] {
+  display:none!important;
+}
+body .view .db9 .r19-overdue-reflow {
+  display:grid!important;
+  grid-template-columns:repeat(12,minmax(0,1fr))!important;
+  grid-auto-flow:row dense;
+}
+body .view .db9 .r19-overdue-reflow > .db9-kpi[data-r19-overdue-position] {
+  grid-column:span 4;
+}
+body .view .db9 .r19-overdue-reflow[data-r19-visible-count="5"] > [data-r19-overdue-position="4"],
+body .view .db9 .r19-overdue-reflow[data-r19-visible-count="5"] > [data-r19-overdue-position="5"],
+body .view .db9 .r19-overdue-reflow[data-r19-visible-count="2"] > [data-r19-overdue-position] {
+  grid-column:span 6;
+}
+/* The four task indicators from the design dashboard share one desktop row. */
+body .view .db9 .r19-overdue-reflow[data-r19-visible-count="4"] > .db9-kpi[data-r19-overdue-position] {
+  grid-column:span 3;
+}
+body .view .db9 .r19-overdue-reflow[data-r19-visible-count="1"] > [data-r19-overdue-position] {
+  grid-column:span 12;
+}
+body .view .db9 .r19-overdue-reflow[data-r19-visible-count="0"] {
+  display:none!important;
+}
+@media(max-width:980px) {
+  body .view .db9 .r19-overdue-reflow > .db9-kpi[data-r19-overdue-position] {
+    grid-column:span 6;
+  }
+  body .view .db9 .r19-overdue-reflow[data-r19-visible-count="5"] > [data-r19-overdue-position="5"],
+  body .view .db9 .r19-overdue-reflow[data-r19-visible-count="3"] > [data-r19-overdue-position="3"],
+  body .view .db9 .r19-overdue-reflow[data-r19-visible-count="1"] > [data-r19-overdue-position="1"] {
+    grid-column:span 12;
+  }
+}
+@media(max-width:800px) {
+  body .view .db9 .r19-overdue-reflow[data-r19-visible-count="4"] > .db9-kpi[data-r19-overdue-position] {
+    grid-column:span 6;
+  }
+}
+@media(max-width:620px) {
+  body .view .db9 .r19-overdue-reflow > .db9-kpi[data-r19-overdue-position] {
+    grid-column:1/-1!important;
+  }
+}

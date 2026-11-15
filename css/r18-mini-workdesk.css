@@ -1,0 +1,78 @@
+/* MOSH R18 Mini: scoped to this feature; the existing application layout is unchanged. */
+#moshMiniToggle18.mini18-top-button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:38px;min-height:38px;padding:8px;color:var(--gold,#d6b13e)}
+#moshMiniToggle18[aria-expanded=true]{border-color:var(--gold,#d6b13e);background:#d6b13e18}
+#moshMini18{--mini-bg:#111c21;--mini-top:#1a2a30;--mini-border:#3b4c52;--mini-gold:#d7b45a;--mini-text:#f1efe5;--mini-muted:#b6c1c4;position:fixed;z-index:950;top:90px;left:24px;width:390px;max-width:calc(100vw - 20px);max-height:calc(100dvh - 110px);display:flex;flex-direction:column;border:1px solid #697368;border-radius:18px;background:var(--mini-bg);color:var(--mini-text);box-shadow:0 16px 45px #0008;overflow:hidden;direction:rtl;font-family:Arial,Tahoma,sans-serif;font-size:15px;line-height:1.55;isolation:isolate}
+#moshMini18[hidden],#moshMini18 [hidden]{display:none!important}
+#moshMini18 *{box-sizing:border-box}
+#moshMini18 button,#moshMini18 input{font:inherit}
+#moshMini18 button{cursor:pointer}
+#moshMini18 button:disabled{opacity:.55;cursor:not-allowed}
+#moshMini18 button:focus-visible,#moshMini18 input:focus-visible{outline:2px solid var(--mini-gold);outline-offset:2px}
+#moshMini18 .mini18-header{flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 16px;background:var(--mini-top);border-bottom:1px solid var(--mini-border);cursor:grab;user-select:none;touch-action:none}
+#moshMini18 .mini18-heading strong{font-size:20px;letter-spacing:1px;display:block;white-space:nowrap;direction:ltr}
+#moshMini18 .mini18-heading strong span{color:var(--mini-gold)}
+#moshMini18 .mini18-heading small{font-size:12px;color:var(--mini-muted);display:block;margin-top:2px}
+#moshMini18 .mini18-header-actions{display:flex;gap:6px;align-items:center;direction:ltr}
+#moshMini18 .mini18-icon{width:32px;min-height:32px;padding:0;display:grid;place-items:center;border:1px solid var(--mini-border);border-radius:9px;background:transparent;color:var(--mini-text);font-size:23px;line-height:1}
+#moshMini18 .mini18-body{padding:17px;overflow:auto;overscroll-behavior:contain;min-height:0;scrollbar-width:thin;scrollbar-color:#586a70 transparent}
+#moshMini18 .mini18-person{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;color:var(--mini-muted);font-size:13px}
+#moshMini18 .mini18-badge{color:#ebcf88;background:#d7b45a15;border:1px solid #b39b5450;border-radius:24px;padding:4px 9px;font-size:12px;white-space:nowrap}
+#moshMini18 .mini18-title{font-size:22px;line-height:1.5;margin:0 0 5px;font-weight:700;overflow-wrap:anywhere}
+#moshMini18 .mini18-client{font-size:14px;color:var(--mini-muted);overflow-wrap:anywhere;margin:0}
+#moshMini18 .mini18-clock{text-align:center;margin:20px 0 18px}
+#moshMini18 .mini18-clock small{display:block;color:var(--mini-muted);font-size:13px}
+#moshMini18 .mini18-timer{display:block;direction:ltr;font-family:Arial,Tahoma,sans-serif;font-size:46px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.4;letter-spacing:1px;color:#f0d38b}
+#moshMini18 .mini18-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#moshMini18 .mini18-action{min-height:44px;border:1px solid var(--mini-border);background:#19292f;border-radius:10px;color:var(--mini-text);padding:9px 8px;font-size:14px;font-weight:700;line-height:1.4}
+#moshMini18 .mini18-action:hover:not(:disabled){background:#26393f}
+#moshMini18 .mini18-primary{background:var(--mini-gold);border-color:var(--mini-gold);color:#231c0f}
+#moshMini18 .mini18-primary:hover:not(:disabled){background:#e4c577}
+#moshMini18 .mini18-action[aria-pressed=true]{border-color:var(--mini-gold);color:#f1d68c}
+#moshMini18 .mini18-links{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0 0}
+#moshMini18 .mini18-link{background:transparent;border:0;color:#e2be67;padding:7px 2px;font-size:14px;line-height:1.5}
+#moshMini18 .mini18-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center;border-top:1px solid var(--mini-border);margin-top:15px;padding-top:15px}
+#moshMini18 .mini18-stats small{display:block;font-size:12px;color:var(--mini-muted)}
+#moshMini18 .mini18-stats bdi{display:block;font-size:15px;font-weight:700;margin-top:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#moshMini18 .mini18-return{display:block;text-align:right;margin-top:13px}
+#moshMini18 .mini18-footer{flex:0 0 auto;padding:9px 13px;border-top:1px solid var(--mini-border);color:var(--mini-muted);font-size:11px;text-align:center;background:#111a1f}
+#moshMini18 .mini18-message{font-size:13px;line-height:1.7;margin-top:13px;border:1px solid #577966;border-radius:10px;background:#20403355;color:#c5e5d4;padding:10px 12px;overflow-wrap:anywhere}
+#moshMini18 .mini18-message.error{border-color:#ba7864;background:#512c2155;color:#f0c2b3}
+#moshMini18 .mini18-picker{border-top:1px solid var(--mini-border);margin-top:14px;padding-top:14px}
+#moshMini18 .mini18-picker-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;font-size:14px}
+#moshMini18 .mini18-search{width:100%;border:1px solid var(--mini-border);border-radius:9px;color:var(--mini-text);background:#0e171c;padding:10px 12px;min-height:42px;outline:none;font-size:14px}
+#moshMini18 .mini18-list{display:grid;gap:8px;margin-top:10px;max-height:220px;overflow:auto}
+#moshMini18 .mini18-item{border:1px solid var(--mini-border);border-radius:10px;background:#17262c;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px}
+#moshMini18 .mini18-item b{font-size:14px;display:block;overflow-wrap:anywhere}
+#moshMini18 .mini18-item small{font-size:12px;color:var(--mini-muted);display:block;margin-top:3px}
+#moshMini18 .mini18-item button{padding:7px 9px;min-height:36px;font-size:12px;border:1px solid #7c713e;background:#39311b;color:#f2d282;border-radius:8px;white-space:nowrap}
+#moshMini18 .mini18-empty{color:var(--mini-muted);font-size:13px;line-height:1.8;margin:8px 0}
+#moshMini18 .mini18-compact{display:none}
+#moshMini18.mini18-is-compact{width:390px;max-height:none;border-color:var(--mini-gold);background:var(--mini-top)}
+#moshMini18.mini18-is-compact>.mini18-header,#moshMini18.mini18-is-compact>.mini18-body,#moshMini18.mini18-is-compact>.mini18-footer{display:none}
+#moshMini18.mini18-is-compact .mini18-compact{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;min-height:66px;cursor:grab;touch-action:none;user-select:none}
+#moshMini18 .mini18-compact-info{min-width:0;flex:1}
+#moshMini18 .mini18-compact-info strong{font-size:17px;color:var(--mini-gold);display:block;direction:ltr;text-align:right}
+#moshMini18 .mini18-compact-info small{display:block;font-size:12px;color:var(--mini-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+#moshMini18 .mini18-compact-timer{font-size:23px;color:#f0d38b;font-variant-numeric:tabular-nums;white-space:nowrap}
+#moshMini18 .mini18-compact .mini18-icon{border:0}
+html.mosh-mini-window18,html.mosh-mini-window18 body{background:#111c21!important;min-width:0!important;margin:0!important;width:100%!important;height:100%!important;overflow:hidden!important}
+html.mosh-mini-window18 #appShell{display:none!important}
+html.mosh-mini-window18 #moshMini18{position:fixed!important;inset:0!important;width:100%!important;max-width:none!important;height:100dvh!important;max-height:none!important;border-radius:0;border-width:0;box-shadow:none}
+html.mosh-mini-window18 #moshMini18 .mini18-body{flex:1}
+html.mosh-mini-window18 #moshMini18 .mini18-header{cursor:default}
+html.mosh-mini-window18 #moshMini18.mini18-is-compact{justify-content:flex-start}
+html.mosh-mini-window18 #moshMini18 .mini18-compact{width:100%}
+html.mosh-mini-window18 #moshAuthGate{padding:12px;overflow:auto}
+html.mosh-mini-window18 .auth37-card{max-width:100%;padding:18px}
+html.mosh-mini-window18 #wd50LogDialog{max-width:calc(100vw - 12px);max-height:calc(100dvh - 12px);width:100%;font-size:14px}
+html.mosh-mini-window18 #wd50LogDialog .wd50-log-body{padding:12px}
+html.mosh-mini-window18 #wd50LogDialog .wd50-log-metrics{grid-template-columns:1fr 1fr}
+@media(max-width:440px){#moshMini18{left:10px;top:70px;width:calc(100vw - 20px);max-height:calc(100dvh - 80px)}#moshMini18 .mini18-title{font-size:20px}#moshMini18 .mini18-timer{font-size:40px}#moshMini18 .mini18-compact-info small{max-width:135px}}
+@media print{#moshMini18,#moshMiniToggle18{display:none!important}}
+@media(prefers-reduced-motion:reduce){#moshMini18 *{scroll-behavior:auto!important}}
+
+/* Existing R14 system-wide button rules are intentionally overridden only here. */
+#moshMini18 .mini18-primary{color:#231c0f!important}
+#moshMini18 .mini18-link{color:#e2be67!important}
+#moshMini18 .mini18-action,#moshMini18 .mini18-link{font-weight:400!important}
+#moshMini18 .mini18-primary{font-weight:700!important}

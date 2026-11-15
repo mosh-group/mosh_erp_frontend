@@ -1,0 +1,32 @@
+{
+  "javascriptFilesParsed": 64,
+  "manifestScripts": 59,
+  "duplicateStaticIds": 0,
+  "configUnchangedFromR3": true,
+  "indexResourcesExist": true,
+  "base": "MOSH_VANILLA_FRONTEND_WORKDESK_R3.zip",
+  "changedFiles": [
+    "README.md",
+    "api-map.json",
+    "index.html",
+    "js/api-boot.js",
+    "js/56-mosh-workdesk.js",
+    "js/43-mosh-auth-v37-js.js",
+    "js/api-client.js"
+  ],
+  "addedFiles": [
+    "WORKDESK_R4_README_AR.md",
+    "js/59-mosh-home-notices.js",
+    "css/home-notices.css",
+    "tests/results/r4-workdesk-regression-results.json",
+    "tests/results/r4-notices-browser-results.json",
+    "tests/results/r4-reminder-model.log",
+    "tests/results/r4-reminder-browser.log",
+    "tests/results/r4-notices-browser.log",
+    "tests/results/r4-preview-results.json",
+    "tests/results/r4-reminder-browser-results.json",
+    "tests/results/r4-workdesk-regression.log",
+    "tests/results/r4-workday-model.log",
+    "tests/browser/notices_r4.py"
+  ]
+}

@@ -1,0 +1,54 @@
+PASS 1 R4 full application boots with no JavaScript errors
+PASS 2 Notice strip sits directly after employee identity header
+PASS 3 Notice strip is above the attendance bar and work panels
+PASS 4 Only own relevant unread announcements counted
+PASS 5 Urgent unread notice precedes newer normal notice
+PASS 6 Archived, inactive, future and other-recipient notices excluded
+PASS 7 No receipt written on homepage or automatic refresh
+PASS 8 Old lower latest section removed
+PASS 9 Old notice tile hidden, while three other tiles remain
+PASS 10 Legacy binding IDs preserved once
+PASS 11 Receipt operation does not require editing department HR
+PASS 12 Notice opens in a readable dialog
+PASS 13 Opening notice does not mark it as read
+PASS 14 Escape closes dialog without a receipt
+PASS 15 All-notice inbox opens with scoped history
+PASS 16 Search keeps focus across timers and filters full message list
+PASS 17 Detail shows explicit acknowledgement button
+PASS 18 Read count unchanged while server response pending
+PASS 19 Repeated click submits only one receipt
+PASS 20 Server confirms receipt before count decreases
+PASS 21 Server timestamp displayed, not fabricated locally
+PASS 22 Receipt payload is narrow and excludes user files or messages
+PASS 23 Rejected acknowledgement stays unread with useful error
+PASS 24 Lost response retries same key without duplicate receipt
+PASS 25 Empty strip collapses to a single row
+PASS 26 Attendance history still opens from attendance strip
+PASS 27 Daily work-time log is separate and still opens
+PASS 28 New server notice appears without full-page navigation
+PASS 29 Failed refresh retains previous unread count and shows stale warning
+PASS 30 Successful refresh clears stale warning
+PASS 31 Unauthorized notice cannot be opened by direct ID
+PASS 32 HTML in notice text is escaped, not executed
+PASS 33 Inbox paginates long lists at twenty rows
+PASS 34 Next page works with remaining rows
+PASS 35 Filter correctly shows empty category
+PASS 36 Own inbox works from employee department without broad HR access
+PASS 37 Four day-state buttons remain single instances
+PASS 38 Task receiving still works
+PASS 39 Task start still works
+PASS 40 Break pauses executing task
+PASS 41 Task resume works after notice changes
+PASS 42 No-work status still stops execution
+PASS 43 Notification strip has no horizontal clipping at 1920px
+PASS 44 Notice dialog fits 1920px viewport
+PASS 45 Notification strip has no horizontal clipping at 1366px
+PASS 46 Notice dialog fits 1366px viewport
+PASS 47 Notification strip has no horizontal clipping at 800px
+PASS 48 Notice dialog fits 800px viewport
+PASS 49 Notification strip has no horizontal clipping at 390px
+PASS 50 Notice dialog fits 390px viewport
+PASS 51 No duplicate DOM IDs after refresh/navigation
+PASS 52 No JavaScript runtime errors during notification workflow
+PASS 53 Switching account closes old notice detail and clears visibility
+TOTAL 53

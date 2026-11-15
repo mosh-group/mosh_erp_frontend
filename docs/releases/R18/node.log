@@ -1,0 +1,374 @@
+TAP version 13
+# Subtest: R9 confirmed creation is immediately receivable using its saved version
+ok 1 - R9 confirmed creation is immediately receivable using its saved version
+  ---
+  duration_ms: 23.584468
+  type: 'test'
+  ...
+# Subtest: R9 direct creation is not repeated by the next global save
+ok 2 - R9 direct creation is not repeated by the next global save
+  ---
+  duration_ms: 1.245515
+  type: 'test'
+  ...
+# Subtest: R9 does not flush or lose unrelated invoice drafts
+ok 3 - R9 does not flush or lose unrelated invoice drafts
+  ---
+  duration_ms: 1.396903
+  type: 'test'
+  ...
+# Subtest: R9 duplicate server response cannot create two tasks or overwrite edits
+ok 4 - R9 duplicate server response cannot create two tasks or overwrite edits
+  ---
+  duration_ms: 0.761717
+  type: 'test'
+  ...
+# Subtest: R9 malformed response cannot manufacture a saved task
+ok 5 - R9 malformed response cannot manufacture a saved task
+  ---
+  duration_ms: 0.887566
+  type: 'test'
+  ...
+# Subtest: R9 changed login cannot receive a response belonging to the previous account
+ok 6 - R9 changed login cannot receive a response belonging to the previous account
+  ---
+  duration_ms: 0.72443
+  type: 'test'
+  ...
+# Subtest: R9 later server version is not replaced by a delayed creation response
+ok 7 - R9 later server version is not replaced by a delayed creation response
+  ---
+  duration_ms: 0.683109
+  type: 'test'
+  ...
+# Subtest: R9 newer confirmed projection preserves existing task editor draft
+ok 8 - R9 newer confirmed projection preserves existing task editor draft
+  ---
+  duration_ms: 0.809709
+  type: 'test'
+  ...
+# Subtest: R9 nonregistered task still cannot bypass the server baseline guard
+ok 9 - R9 nonregistered task still cannot bypass the server baseline guard
+  ---
+  duration_ms: 1.331445
+  type: 'test'
+  ...
+# PASS 1 Not due at 4m59s
+# PASS 2 Due at exactly five minutes
+# PASS 3 Continuous gap retains original start
+# PASS 4 Repeated mouse input is irrelevant
+# PASS 5 No signed-in account
+# PASS 6 No linked employee
+# PASS 7 No reminder in task
+# PASS 8 No reminder in break
+# PASS 9 No reminder in no_work
+# PASS 10 No reminder during busy
+# PASS 11 No reminder during uncertain
+# PASS 12 Known save error suppresses reminder
+# PASS 13 Offline suppresses reminder
+# PASS 14 Unconfirmed server clock
+# PASS 15 Incomplete server history
+# PASS 16 Invalid computed history
+# PASS 17 Historical date is not today
+# PASS 18 Other employee snapshot
+# PASS 19 Clock skew into future rejected
+# PASS 20 Stale snapshot rejected
+# PASS 21 Stale confirmation rejected
+# PASS 22 Known outage rejected
+# PASS 23 Attendance overlap rejected
+# PASS 24 No attendance
+# PASS 25 Fingerprint-out ends eligibility
+# PASS 26 Nonlive snapshot cannot advance
+# PASS 27 Prior gap is not current
+# PASS 28 Unknown gap not classified as waste
+# PASS 29 Recorded activity even with stale UI
+# PASS 30 Separate gaps never accumulate
+# PASS 31 Dismiss postpones five minutes, does not move gap start
+# PASS 32 Work-start without task remains eligible
+# PASS 33 Work-end before fingerprint-out remains eligible
+# PASS 34 Evaluation never mutates the attendance or timeline
+# PASS 35 Different employee gets a different reminder key
+# TOTAL 35
+# Subtest: tests/reminder-model.test.cjs
+ok 2 - tests/reminder-model.test.cjs
+  ---
+  duration_ms: 26.836414
+  type: 'test'
+  ...
+# PASS reject missing/invalid start 0
+# PASS reject missing/invalid start 0
+# PASS reject missing/invalid start null
+# PASS reject missing/invalid start undefined
+# PASS reject missing/invalid start 
+# PASS reject missing/invalid start  
+# PASS reject missing/invalid start false
+# PASS reject missing/invalid start true
+# PASS reject missing/invalid start NaN
+# PASS reject missing/invalid start Infinity
+# PASS reject missing/invalid start -1
+# PASS reject missing/invalid start garbage
+# PASS reject missing/invalid start 1970-01-01T00:00:00Z
+# PASS reject missing/invalid start 1970-01-21T12:00:00Z
+# PASS reject missing/invalid start 
+# PASS reject missing/invalid start [object Object]
+# PASS equivalent timestamp 1790515356000
+# PASS equivalent timestamp 1790515356000
+# PASS equivalent timestamp 1790515356
+# PASS equivalent timestamp 1790515356
+# PASS equivalent timestamp 2026-09-27T13:22:36.000Z
+# PASS equivalent timestamp 2026-09-27T16:22:36+03:00
+# PASS zero start reproduces old displayed 497366:37:36
+# PASS zero start now displays unknown, never epoch age
+# PASS future timestamp flagged
+# PASS 2 second server Date rounding tolerance
+# PASS live session >24h review instead of clipping or resetting
+# PASS cumulative history may exceed 24h
+# PASS pause length not included in resumed session
+# PASS invalid format duration stays unknown
+# PASS invalid activity does not authorize waste
+# PASS seconds and ms produce identical reports
+# PASS render model never alters original data
+# PASS missing working task interval is flagged not omitted
+# TOTAL 34
+# Subtest: tests/timer-r5.test.cjs
+ok 3 - tests/timer-r5.test.cjs
+  ---
+  duration_ms: 59.348573
+  type: 'test'
+  ...
+# PASS Canonical valid start 1790521140000
+# PASS Canonical valid start 1790521140000
+# PASS Canonical valid start 1790521140
+# PASS Canonical valid start 2026-09-27T14:59:00.000Z
+# PASS snake_case same object
+# PASS snake_case resource and explicitly seconds duration
+# PASS Explicit active session
+# PASS Closed session is never revived
+# PASS No fallback to fingerprint, receipt or update date
+# PASS Invalid total preserved null
+# PASS Invalid total preserved undefined
+# PASS Invalid total preserved -1
+# PASS Invalid total preserved bad
+# PASS Invalid total preserved Infinity
+# PASS Contradictory aliases flagged
+# PASS Contradictory duration aliases flagged
+# PASS Paused ignores old live start, keeps saved total
+# PASS Future start rejected
+# PASS Over24h active session flagged, no clamp
+# PASS Over24h saved cumulative valid
+# PASS Adapter is read-only
+# TOTAL 21
+# Subtest: tests/timer-r6.test.cjs
+ok 4 - tests/timer-r6.test.cjs
+  ---
+  duration_ms: 30.65272
+  type: 'test'
+  ...
+# Subtest: Explicit repair sends command, never a browser start or forged total
+ok 13 - Explicit repair sends command, never a browser start or forged total
+  ---
+  duration_ms: 4.066472
+  type: 'test'
+  ...
+# Subtest: A paused task uses normal resume, not recovery
+ok 14 - A paused task uses normal resume, not recovery
+  ---
+  duration_ms: 0.370037
+  type: 'test'
+  ...
+# Subtest: Repair remains subject to status permission
+ok 15 - Repair remains subject to status permission
+  ---
+  duration_ms: 0.16643
+  type: 'test'
+  ...
+# Subtest: No recovery command for another employee
+ok 16 - No recovery command for another employee
+  ---
+  duration_ms: 0.110687
+  type: 'test'
+  ...
+# Subtest: Repair never bypasses unresolved idle classification
+ok 17 - Repair never bypasses unresolved idle classification
+  ---
+  duration_ms: 0.133621
+  type: 'test'
+  ...
+# Subtest: Closed tasks cannot be repaired
+ok 18 - Closed tasks cannot be repaired
+  ---
+  duration_ms: 0.102324
+  type: 'test'
+  ...
+# Subtest: Another active task is paused before a repair in same transaction
+ok 19 - Another active task is paused before a repair in same transaction
+  ---
+  duration_ms: 0.316216
+  type: 'test'
+  ...
+# Subtest: Recovery changes presence from break atomically, no fingerprint requirement
+ok 20 - Recovery changes presence from break atomically, no fingerprint requirement
+  ---
+  duration_ms: 0.194693
+  type: 'test'
+  ...
+# Subtest: Server-confirmed recovery displays known total plus live interval, preserving warning marker
+ok 21 - Server-confirmed recovery displays known total plus live interval, preserving warning marker
+  ---
+  duration_ms: 0.678151
+  type: 'test'
+  ...
+# Subtest: Normal resume still sends only state and event; server owns timestamps
+ok 22 - Normal resume still sends only state and event; server owns timestamps
+  ---
+  duration_ms: 0.373492
+  type: 'test'
+  ...
+# PASS 8h balances into task + breaks + no work + waste
+# PASS attendance gap outside building is not waste
+# PASS overnight shift clips at date boundaries
+# PASS overlapping punches unioned and flagged
+# PASS incomplete historical presence not fake waste
+# PASS partially covered timeline only authorizes covered gaps
+# PASS overlap different tasks flagged not double counted
+# PASS overlap task and break is review
+# PASS duplicate identical events do not double count
+# PASS task time outside attendance never charged to presence
+# PASS old missing checkout needs review, not a 24h fabricated shift
+# PASS today missing checkout is provisional until now
+# PASS missing checkin does not infer presence
+# PASS equal in and out is not 24 hours
+# PASS future date has zero attendance
+# PASS invalid clock values and dates rejected
+# PASS company timezone independent of browser
+# PASS session identity uses employee ID over same names
+# PASS shared task duration isolates individual sessions
+# PASS receipt does not start task or change presence
+# PASS cannot skip receipt
+# PASS start switches tasks atomically and preserves history
+# PASS break pauses running task and marks break together
+# PASS no-work pauses the task without finishing
+# PASS work-end pauses but never submits task
+# PASS work-start after break never auto-resumes task
+# PASS resume closes break and starts task in one transaction
+# PASS pause task alone is not break
+# PASS finish goes to review but keeps day open
+# PASS no execution without matching permission
+# PASS no writes without linked employee ID
+# PASS returned task needs new receipt while preserving time
+# PASS idempotent current workday state generates no write
+# PASS many disjoint intervals always partition attendance
+# PASS Malformed history invalidates uncovered gaps instead of blaming employee
+# PASS Explicit open overnight shift splits after midnight
+# PASS Explicit overnight shift also shows previous-day part as provisional
+# PASS Conflicting activity within attendance is not reported as outside attendance
+# PASS Invalid company timezone is explicitly flagged
+# PASS Spring clock change uses actual elapsed duration
+# PASS Autumn clock change uses actual elapsed duration
+# PASS Documented server response balances an eight-hour day
+# TOTAL 42
+# Subtest: tests/workday-model.test.cjs
+ok 6 - tests/workday-model.test.cjs
+  ---
+  duration_ms: 96.386508
+  type: 'test'
+  ...
+# Subtest: R8: 30 minutes task + 10 break + 5 no-work display without punches
+ok 24 - R8: 30 minutes task + 10 break + 5 no-work display without punches
+  ---
+  duration_ms: 15.69463
+  type: 'test'
+  ...
+# Subtest: R8: same report recomputed after restart has identical totals
+ok 25 - R8: same report recomputed after restart has identical totals
+  ---
+  duration_ms: 1.367209
+  type: 'test'
+  ...
+# Subtest: R8: empty valid day is zero activity, never fabricated attendance
+ok 26 - R8: empty valid day is zero activity, never fabricated attendance
+  ---
+  duration_ms: 0.506172
+  type: 'test'
+  ...
+# Subtest: R8: activity outside attendance counts but does not inflate presence
+ok 27 - R8: activity outside attendance counts but does not inflate presence
+  ---
+  duration_ms: 1.162961
+  type: 'test'
+  ...
+# Subtest: R8: unobserved gaps outside attendance never become waste
+ok 28 - R8: unobserved gaps outside attendance never become waste
+  ---
+  duration_ms: 0.603799
+  type: 'test'
+  ...
+# Subtest: R8: overlap is review, not double counted work
+ok 29 - R8: overlap is review, not double counted work
+  ---
+  duration_ms: 0.563418
+  type: 'test'
+  ...
+# Subtest: R8: repeated same sessions and intervals do not duplicate totals
+ok 30 - R8: repeated same sessions and intervals do not duplicate totals
+  ---
+  duration_ms: 0.579812
+  type: 'test'
+  ...
+# Subtest: R8: live open intervals advance past last snapshot without resetting
+ok 31 - R8: live open intervals advance past last snapshot without resetting
+  ---
+  duration_ms: 1.260588
+  type: 'test'
+  ...
+# Subtest: R8: closed intervals stay frozen when current time advances
+ok 32 - R8: closed intervals stay frozen when current time advances
+  ---
+  duration_ms: 0.884171
+  type: 'test'
+  ...
+# Subtest: R8: midnight splits each session into its actual calendar day
+ok 33 - R8: midnight splits each session into its actual calendar day
+  ---
+  duration_ms: 1.034638
+  type: 'test'
+  ...
+# Subtest: R8: total task lifetime is not counted again as daily work
+ok 34 - R8: total task lifetime is not counted again as daily work
+  ---
+  duration_ms: 0.51857
+  type: 'test'
+  ...
+# Subtest: R8: old incomplete history does not certify attended gaps as waste
+ok 35 - R8: old incomplete history does not certify attended gaps as waste
+  ---
+  duration_ms: 0.732633
+  type: 'test'
+  ...
+# Subtest: R8: malformed attendance does not hide legitimate task sessions
+ok 36 - R8: malformed attendance does not hide legitimate task sessions
+  ---
+  duration_ms: 0.659693
+  type: 'test'
+  ...
+# Subtest: R8: per-day DST boundary uses company elapsed time, not 24h assumption
+ok 37 - R8: per-day DST boundary uses company elapsed time, not 24h assumption
+  ---
+  duration_ms: 0.568757
+  type: 'test'
+  ...
+# Subtest: R8: original attendance-only function remains compatible
+ok 38 - R8: original attendance-only function remains compatible
+  ---
+  duration_ms: 0.55789
+  type: 'test'
+  ...
+1..38
+# tests 38
+# suites 0
+# pass 38
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 172.832673

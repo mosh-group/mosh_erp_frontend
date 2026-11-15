@@ -1,0 +1,40 @@
+{
+  "base": "MOSH_VANILLA_FRONTEND_WORKDESK_R3.zip",
+  "changed": [
+    "README.md",
+    "api-map.json",
+    "index.html",
+    "js/api-boot.js",
+    "js/56-mosh-workdesk.js",
+    "js/43-mosh-auth-v37-js.js",
+    "js/api-client.js"
+  ],
+  "added": [
+    "WORKDESK_R4_README_AR.md",
+    "js/59-mosh-home-notices.js",
+    "css/home-notices.css",
+    "tests/results/r4-workdesk-regression-results.json",
+    "tests/results/r4-notices-browser-results.json",
+    "tests/results/r4-reminder-model.log",
+    "tests/results/r4-reminder-browser.log",
+    "tests/results/r4-notices-browser.log",
+    "tests/results/r4-preview-results.json",
+    "tests/results/r4-reminder-browser-results.json",
+    "tests/results/r4-workdesk-regression.log",
+    "tests/results/r4-workday-model.log",
+    "tests/browser/notices_r4.py"
+  ],
+  "configUnchanged": true,
+  "hashes": {
+    "README.md": "b13bb400c56aa082293b9d1e246824c6e2ab856ba76e8ef6f0add12eb5556b48",
+    "api-map.json": "72effd72ac6b83364801b1f645b31e8fdff1e39bb4e106659d185160b9b71907",
+    "index.html": "ec94b786a782eecbdb17f941a3a47f9f6c10099bdfa05a894b94cc4ff7322a66",
+    "WORKDESK_R4_README_AR.md": "b095159997e4d5c13c85a4b3d8e74c15e0e678186cd2b6c9a8711bcc140f7845",
+    "js/api-boot.js": "0aa95fada577338b6f29a5373283c2189677641d5bcc75e933f267c980264b37",
+    "js/59-mosh-home-notices.js": "fcf3001a5edcfb97d7a2045d1c82bc271c296a60701ad1c1a522988aa00853b6",
+    "js/56-mosh-workdesk.js": "73b32c83b9796face150b36d84bfbbfc34e6b53051f873f3b763c0a4a7cc6cdf",
+    "js/43-mosh-auth-v37-js.js": "bafc49eeab87bea451789638f4ea08ccdac06c88f6ba6d6a2e0a02cd3b05b3b0",
+    "js/api-client.js": "8c60bee7e704ef30c3c2f770fabfe0cb65a082ace85c8ea87f0ed3c1668fa19f",
+    "css/home-notices.css": "c161170395f9a68c69717bca02c20c545cbe35c2879be83e9c7f0e5f780a6167"
+  }
+}

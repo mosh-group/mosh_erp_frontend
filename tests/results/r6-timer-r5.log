@@ -1,0 +1,35 @@
+PASS reject missing/invalid start 0
+PASS reject missing/invalid start 0
+PASS reject missing/invalid start null
+PASS reject missing/invalid start undefined
+PASS reject missing/invalid start 
+PASS reject missing/invalid start  
+PASS reject missing/invalid start false
+PASS reject missing/invalid start true
+PASS reject missing/invalid start NaN
+PASS reject missing/invalid start Infinity
+PASS reject missing/invalid start -1
+PASS reject missing/invalid start garbage
+PASS reject missing/invalid start 1970-01-01T00:00:00Z
+PASS reject missing/invalid start 1970-01-21T12:00:00Z
+PASS reject missing/invalid start 
+PASS reject missing/invalid start [object Object]
+PASS equivalent timestamp 1790515356000
+PASS equivalent timestamp 1790515356000
+PASS equivalent timestamp 1790515356
+PASS equivalent timestamp 1790515356
+PASS equivalent timestamp 2026-09-27T13:22:36.000Z
+PASS equivalent timestamp 2026-09-27T16:22:36+03:00
+PASS zero start reproduces old displayed 497366:37:36
+PASS zero start now displays unknown, never epoch age
+PASS future timestamp flagged
+PASS 2 second server Date rounding tolerance
+PASS live session >24h review instead of clipping or resetting
+PASS cumulative history may exceed 24h
+PASS pause length not included in resumed session
+PASS invalid format duration stays unknown
+PASS invalid activity does not authorize waste
+PASS seconds and ms produce identical reports
+PASS render model never alters original data
+PASS missing working task interval is flagged not omitted
+TOTAL 34

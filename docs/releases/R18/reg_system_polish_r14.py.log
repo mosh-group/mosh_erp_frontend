@@ -1,0 +1,20 @@
+PASS R14 runtime loaded
+PASS global handbook nav hidden
+PASS HR handbook button exists
+PASS handbook removed from administration rail
+PASS full task details label
+PASS mandatory-read notes label
+PASS creator is automatic
+PASS administration assignment mode hidden
+PASS administration direct assignee visible
+PASS administration list contains executive
+PASS Escape opens unsaved dialog
+PASS discard closes task modal
+PASS task link initially disabled
+PASS task link enabled after customer
+PASS Rolana tasks present
+PASS other customer task filtered out
+PASS task option includes distinguishing metadata
+PASS no JavaScript runtime errors
+PASS: R14 core UI/system regression complete.
+

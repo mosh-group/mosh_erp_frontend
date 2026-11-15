@@ -1,0 +1,21 @@
+{
+  "passed": 15,
+  "checks": [
+    "Shared-origin storage lease avoids concurrent duplicate reminders",
+    "Dismissal snoozes both contexts",
+    "Reload preserves shared snooze until deadline",
+    "After snooze expires only one context opens",
+    "Hidden context does not keep a visible reminder",
+    "Elapsed background time does not spawn hidden popups",
+    "Return to visible context rechecks condition once",
+    "Task-selection path never writes a work state",
+    "Confirmed response emits one change at response time",
+    "No response backdates the uncovered period",
+    "Recorded activity closes reminders in both contexts",
+    "Reminder and actual response events exist",
+    "Switching users clears prior reminder UI",
+    "Different user cannot see prior user session journal",
+    "Isolated concurrency tests no runtime errors"
+  ],
+  "scope": "Two isolated same-origin iframe contexts; mocked shared storage and clock. Native HTTP tests blocked by browser policy."
+}
