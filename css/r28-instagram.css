@@ -10,3 +10,11 @@ html[data-mosh-theme="light"] .ig28{--ig-bg:#f3f5f8;--ig-panel:#fff;--ig-line:#d
 html[data-mosh-theme="light"] .ig28 .ig28-btn.primary{color:#fff!important}
 
 .ig28 label{color:var(--ig-text)!important}
+
+/* Local media selection controls in Instagram and Facebook compose forms. */
+:is(#ig28Compose,#r34FacebookCompose) .r34-file-selection{display:flex;align-items:center;gap:.65rem;min-width:0;margin-block:.4rem}
+:is(#ig28Compose,#r34FacebookCompose) .r34-file-selection> :first-child{min-width:0;overflow-wrap:anywhere}
+:is(#ig28Compose,#r34FacebookCompose) .r34-file-clear{display:inline-flex;align-items:center;justify-content:center;flex:0 0 2rem;width:2rem;height:2rem;padding:0;border:1px solid #b66c6c;border-radius:.5rem;background:#332025;color:#ffd6d6;font:700 1.4rem/1 sans-serif;cursor:pointer}
+:is(#ig28Compose,#r34FacebookCompose) .r34-file-clear:hover{background:#5b2932}
+:is(#ig28Compose,#r34FacebookCompose) .r34-file-clear:focus-visible{outline:2px solid #efc34c;outline-offset:2px}
+:is(#ig28Compose,#r34FacebookCompose) .r34-file-clear[hidden]{display:none!important}

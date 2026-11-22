@@ -12,6 +12,59 @@
   for(let p=el;p&&p!==document.body;p=p.parentElement){if(p.hidden||p.classList.contains('mosh-auth-hidden')||p.style.display==='none')return false;}
   return true;
  }
+ // Top actions delegate to the existing controls; they never change task data themselves.
+ const workflowHandlers={employeeReceiveTask:'receive',employeeStartTask:'start',employeePauseTask:'pause',employeeSubmitTask:'finish',managerFinishAndInvoice:'approve',managerFinishPackageSubTask:'approve',managerReturnTask:'return'};
+ function workflowApp(t){
+  try{const entry=Object.entries(PRODUCTIVE_DEPARTMENTS).find(([,v])=>v.department===(t.sharedDepartment||t.department));if(entry)return entry[0];}catch(_){}
+  return ({'المستودعات العامة':'warehouses','المستودعات':'warehouses','السوشل ميديا':'social','الخدمات الإدارية':'logistics'})[t.sharedDepartment||t.department]||'';
+ }
+ function workflowActions(r){
+  const t=task(r.id),auth=window.MoshAuth37,app=t&&workflowApp(t);
+  if(!t||t.status!=='in_progress'||!app||!auth?.current?.()||!auth.canModule?.(app,'view')||!auth.canModule?.(app,'details'))return [];
+  const model=window.MoshReceiptModel49,group=model?.category(t)||({new:'new',received:'active',working:'active',paused:'active',submitted:'review'})[t.employeeState||'new'];
+  const mine=!!window.MoshEmployeeTasks41?.isMine?.(t),state=t.employeeState||'new',waiting=model?.label(t)?.includes('بانتظار البدء');
+  const eligible=kind=>['approve','return'].includes(kind)?group==='review'&&auth.canModule(app,'approve'):mine&&auth.canModule(app,'status')&&(group==='new'?kind==='receive':group==='active'&&(state==='working'?['pause','finish'].includes(kind):kind==='start'||kind==='finish'&&state==='paused'&&!waiting));
+  const result=[],seen=new Set();
+  // Employee-overlay controls use delegated listeners. Clicking their native button preserves them.
+  const sources=[...all('[data-emp48-action]',r.execution),...all('button[onclick]',r.card)];
+  for(const source of sources){
+   if(source.closest('.mw08-workspace')!==r.root||!permitted(source))continue;
+   let kind=source.dataset.emp48Action;
+   if(kind){if(String(source.closest('.emp48-workflow')?.dataset.taskId)!==String(r.id))continue;}
+   else{
+    const match=(source.getAttribute('onclick')||'').match(/^\s*(?:return\s+)?(?:window\.)?(\w+)\(\s*(?:(["'])(.*?)\2|(\d+))\s*[,)]/);
+    if(!match||String(match[3]??match[4])!==String(r.id))continue;
+    kind=workflowHandlers[match[1]];
+   }
+   if(!kind||seen.has(kind)||!eligible(kind))continue;
+   seen.add(kind);
+   const labels={receive:'استلام المهمة',start:state==='paused'&&!waiting?'استئناف التنفيذ':'بدء التنفيذ',pause:'إيقاف مؤقت',finish:'إنهاء المهمة وإرسالها للمراجعة',return:'إعادة للتعديل'};
+   result.push({kind,source,label:labels[kind]||source.textContent.trim(),primary:kind!=='pause'&&kind!=='return',disabled:!!source.disabled||source.getAttribute('aria-disabled')==='true'||!!window.MoshTaskInbox49?.isBusy?.(r.id)});
+  }
+  return result.sort((a,b)=>Number(b.primary)-Number(a.primary));
+ }
+ function syncWorkflowActions(r){
+  const items=workflowActions(r);r.workflowButtons=r.workflowButtons||new Map();
+  for(const [kind,b]of r.workflowButtons)if(!items.some(item=>item.kind===kind)){b.remove();r.workflowButtons.delete(kind);}
+  for(const item of items){
+   let b=r.workflowButtons.get(item.kind);
+   if(!b){
+    b=button(item.label,()=>{
+     // Re-resolve after every state/permission/render change; never click a stale control.
+     const current=workflowActions(r).find(action=>action.kind===item.kind);
+     if(!current||current.disabled){syncWorkflowActions(r);return;}
+     current.source.click();schedule();
+    });
+    b.classList.add('mw08-workflow-button');b.dataset.workflowAction=item.kind;
+    r.workflowButtons.set(item.kind,b);r.workflowActions.append(b);
+   }
+   set(b,item.label);b.classList.toggle('mw08-workflow-primary',item.primary);
+   if(b.disabled!==item.disabled)b.disabled=item.disabled;
+  }
+  // Keep the primary action first when pause/start changes without recreating the whole header.
+  items.forEach((item,i)=>{const b=r.workflowButtons.get(item.kind);if(r.workflowActions.children[i]!==b)r.workflowActions.insertBefore(b,r.workflowActions.children[i]||null);});
+  r.workflowActions.hidden=!items.length;
+ }
  function disclosure(title,cls){const d=make('details',cls),s=make('summary','r35-ui-navigation',title);d.append(s);return d;}
  function taskInput(card,prefix,id){return all('[id]',card).find(n=>n.id===prefix+id);}
  function ensure(card){
@@ -22,7 +75,8 @@
   if(!nativeBack)return null;
   const stage=card.parentElement,overlay=card.closest('#emp47TaskStage'),root=make('section','mw08-workspace');root.dataset.taskId=id;
   const chrome=make('div','mw08-chrome'),crumb=make('span','','تفاصيل المهمة'),header=make('header','mw08-header'),identity=make('div','mw08-identity'),title=make('h2'),meta=make('p','mw08-meta'),status=make('span','mw08-status'),actions=make('div','mw08-head-actions');
-  identity.append(title,meta);header.append(identity,status,actions);
+  const workflowActions=make('div','mw08-workflow-actions');workflowActions.setAttribute('role','group');workflowActions.setAttribute('aria-label','إجراءات تنفيذ المهمة ومراجعتها');workflowActions.hidden=true;
+  identity.append(title,meta);header.append(identity,status,workflowActions,actions);
   const top=make('div','mw08-top'),info=make('section','mw08-info'),readHead=make('div','mw08-section-head'),brief=make('p','mw08-brief'),facts=make('dl','mw08-facts');
   const editor=disclosure('تعديل التفاصيل','mw08-editor'),editorBody=make('div','mw08-editor-body'),saveActions=make('div','mw08-save-actions');editor.append(editorBody,saveActions);
   readHead.append(make('h3','','تفاصيل المهمة'));info.append(readHead,brief,facts,editor);top.append(info);
@@ -35,7 +89,7 @@
   toolbar.classList.add('mw08-original-toolbar');root.append(toolbar);
   const transfer=button('تحويل المهمة',()=>{const select=$('[id^="managerTransferDept_"]',card);if(select&&permitted(select)){management.open=true;select.scrollIntoView({block:'center',behavior:'auto'});select.focus({preventScroll:true});return;}const field=taskInput(card,'taskEditDepartment_',id);if(field&&!field.disabled&&permitted(field)){editor.open=true;const pv=$('.pv-task-info',editor);if(pv)pv.open=true;field.scrollIntoView({block:'center',behavior:'auto'});field.focus({preventScroll:true});}});
   transfer.hidden=true;actions.append(transfer,button('إجراءات المهمة',()=>{management.open=!management.open;if(management.open)management.scrollIntoView({block:'nearest',behavior:'auto'});}));
-  r={id,card,stage,root,chrome,header,title,meta,status,actions,transfer,top,info,brief,facts,editor,editorBody,saveActions,management,nativeActions,execution,overlay,signature:''};records.set(card,r);
+  r={id,card,stage,root,chrome,header,title,meta,status,actions,workflowActions,transfer,top,info,brief,facts,editor,editorBody,saveActions,management,nativeActions,execution,overlay,signature:''};records.set(card,r);
   if(overlay)window.MoshEmployeeTaskOverlay47?.enforce?.(id);
   root.addEventListener('input',e=>{if(e.target.closest('.mw08-editor'))schedule();});
   return r;
@@ -82,9 +136,9 @@
   r.facts.replaceChildren();for(const [key,value]of [['العميل',t.customer],['القسم',t.sharedDepartment||t.department],['المسؤول',t.assignee||'بانتظار التوزيع'],['التسليم',t.dueDate||'غير محدد']]){const item=make('div');item.append(make('dt','',key),make('dd','',value||'—'));r.facts.append(item);}
   let note=$(':scope>.mw08-notes',r.info);if(!note){note=disclosure('ملاحظات قبل التنفيذ','mw08-notes');note.append(make('p'));r.info.insertBefore(note,r.editor);}set($('p',note),t.notes||'');note.hidden=!t.notes;
  }
- function decorate(){frame=0;all('.sales-task-card').forEach(card=>{const r=ensure(card);if(r){arrange(r);refresh(r);}});}
+ function decorate(){frame=0;all('.sales-task-card').forEach(card=>{const r=ensure(card);if(r){arrange(r);refresh(r);syncWorkflowActions(r);}});}
  function schedule(){if(!frame)frame=requestAnimationFrame(decorate);}
- const observer=new MutationObserver(ms=>{if(ms.some(m=>m.type==='childList'&&[...m.addedNodes].some(n=>n.nodeType===1)))schedule();});observer.observe(document.body,{childList:true,subtree:true});
+ const observer=new MutationObserver(ms=>{if(ms.some(m=>m.type==='childList'||m.type==='attributes'&&m.oldValue!==m.target.getAttribute(m.attributeName)&&!m.target.closest?.('.mw08-workflow-actions')))schedule();});observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeOldValue:true,attributeFilter:['disabled','hidden','class','style','aria-disabled']});
  ['mosh:ui-ready','mosh:refreshed','mosh:r19-change','mosh:permissions-applied'].forEach(e=>document.addEventListener(e,schedule));
  window.MoshTaskWorkspace08={decorate,schedule,version:'08'};schedule();
 })();

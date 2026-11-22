@@ -105,7 +105,7 @@
   else if(s.error){msg=s.error;err=true;}
   else if(uiBusy||s.busy)msg='جارٍ تأكيد الحفظ من الخادم…';
   else if(Date.now()<messageUntil){msg=message;err=messageError;}
-  else if(task?.employeeState==='working'&&!task.timingValid){msg='بداية توقيت المهمة بحاجة مراجعة؛ استخدم لوحة عملي الكاملة لاستئناف التوقيت من الآن.';err=true;}
+  else if(task?.employeeState==='working'&&!task.timingValid){msg='بداية توقيت المهمة بحاجة إلى مراجعة؛ استخدم لوحة عملي الكاملة لاستئناف التوقيت من الآن.';err=true;}
   else if(s.info)msg=s.info;
   else if(s.reportError){msg=s.reportError;err=true;}
   $('mini18Message').hidden=!msg;setText('mini18Message',msg);$('mini18Message').classList.toggle('error',err);

@@ -4,7 +4,7 @@
 (function(root,factory){const value=factory();if(typeof module==='object'&&module.exports)module.exports=value;else root.MoshWorkdayModel50=value;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
 const list=v=>Array.isArray(v)?v:[], str=v=>String(v==null?'':v).trim();
-const labels={task:'تنفيذ مهام',break:'استراحة',no_work:'لا يوجد عمل لدي',waste:'وقت مهدور — غير مسجّل',review:'بحاجة مراجعة — سجل غير مكتمل'};
+const labels={task:'تنفيذ مهام',break:'استراحة',no_work:'لا يوجد عمل لدي',waste:'وقت مهدور — غير مسجّل',review:'بحاجة إلى مراجعة — سجل غير مكتمل'};
 // R5: these are ERP activity timestamps, never durations, IDs or staff birth dates.
 // Epoch zero is a missing-start sentinel, not 1970. Read common seconds/ms/ISO
 // encodings without replacing the stored source values. Unsupported dates need review.

@@ -14,7 +14,7 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
   };
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   let csrf = '', baseline = null, wanted = null, scheduled = false, pending = null, ready = false;
-  let taskPending = null, workdeskUncertain = null;
+  let taskPending = null, workdeskUncertain = null, requestWrites = 0;
   const pendingFileRemovals = new Set();
   const api = window.MoshApi = {initialState: {}, auth: {version: 2, users: [], roles: [], security: {minLength: 8}, audit: []}, resources: {}, settingPaths: {}, settings: {}, transactions: [], status: null, retryUntil: 0};
   const publicAuthPath = path => ['/auth/status', '/auth/login', '/auth/setup'].includes(path.split('?')[0]);
@@ -33,14 +33,23 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     if (method !== 'GET' && method !== 'HEAD') headers.set('X-CSRF-TOKEN', csrf);
     let body = options.body;
     if (body !== undefined && !(body instanceof FormData)) { headers.set('Content-Type', 'application/json'); body = JSON.stringify(body); }
+    // Bound both receiving headers and reading the response body, including existing callers' abort signals.
+    const controller=new AbortController(),external=options.signal;
+    const timeout=Number(options.timeoutMs)>0?Number(options.timeoutMs):(body instanceof FormData||path==='/bootstrap'?60000:30000);
+    const abort=()=>controller.abort();
+    if(external?.aborted)abort();else external?.addEventListener('abort',abort,{once:true});
+    const deadline=setTimeout(abort,timeout),write=method!=='GET'&&method!=='HEAD';
+    if(write)requestWrites++;
+    const requestOptions={...options};delete requestOptions.timeoutMs;
+    try {
     let response;
-    try { response = await fetch(window.API_BASE_URL.replace(/\/$/, '') + path, {...options, method, headers, body, credentials: 'include'}); }
-    catch (cause) { if(cause?.name==='AbortError')throw Object.assign(new Error('انتهت مهلة الاتصال؛ أعد المحاولة.'),{name:'AbortError',network:true,aborted:true}); throw Object.assign(new Error('تعذر الاتصال بالخادم. تحقق من الاتصال ثم أعد المحاولة.'), {network: true}); }
+    try { response = await fetch(window.API_BASE_URL.replace(/\/$/, '') + path, {...requestOptions, signal:controller.signal, method, headers, body, credentials: 'include'}); }
+    catch (cause) { if(cause?.name==='AbortError')throw Object.assign(new Error(write?'انتهت مهلة انتظار رد الخادم. تعذر تأكيد الحفظ؛ تحقق من العملية قبل المحاولة مجدداً.':'انتهت مهلة الاتصال؛ أعد المحاولة.'),{name:'AbortError',network:true,aborted:true}); throw Object.assign(new Error('تعذر الاتصال بالخادم. تحقق من الاتصال ثم أعد المحاولة.'), {network: true}); }
     const serverDate=Date.parse(response.headers.get('Date')||'');
     if(Number.isFinite(serverDate)) { api.serverOffset=serverDate-Date.now(); api.serverClockConfirmed=true; }
-    if (options.binary && response.ok) return response.blob();
+    if (options.binary && response.ok) return await response.blob();
     let result; try { result = await response.json(); } catch (cause) {
-      if(cause?.name==='AbortError')throw Object.assign(new Error('انتهت مهلة الاتصال؛ أعد المحاولة.'),{name:'AbortError',network:true,aborted:true});
+      if(cause?.name==='AbortError')throw Object.assign(new Error(write?'انتهت مهلة انتظار رد الخادم. تعذر تأكيد الحفظ؛ تحقق من العملية قبل المحاولة مجدداً.':'انتهت مهلة الاتصال؛ أعد المحاولة.'),{name:'AbortError',network:true,aborted:true});
       if(response.ok)throw Object.assign(new Error('لم يكتمل استلام رد الخادم. أعد المحاولة.'),{network:true});
       result = {};
     }
@@ -62,6 +71,7 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     }
     if (result.data?.csrfToken) csrf = result.data.csrfToken;
     return options.envelope ? result : result.data;
+    } finally {clearTimeout(deadline);external?.removeEventListener('abort',abort);if(write)requestWrites--;}
   };
   api.serverNow = () => Date.now() + (Number(api.serverOffset)||0);
   api.showError = error => {
@@ -211,8 +221,12 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
       // Legacy event handlers may not await; the failure is still shown and the cache is rolled back.
       pending.catch(() => {});
     }
-    return pending;
+    const ownerId=String(api.user.id);
+    return pending.then(() => {
+      if(String(api.user?.id||'')===ownerId)document.dispatchEvent(new CustomEvent('mosh:save-confirmed',{detail:{ownerId}}));
+    });
   };
+  api.isSaving = () => !!(pending || taskPending || requestWrites);
   api.flush = async () => { while (pending || taskPending) await Promise.all([pending, taskPending].filter(Boolean)); };
   // Narrow, server-confirmed task actions. Existing unrelated records/drafts stay intact.
   api.commitTask = function (id, buildPatch) {
@@ -359,9 +373,9 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     });
     taskPending=run;run.finally(()=>{if(taskPending===run)taskPending=null;}).catch(()=>{});return run;
   };
-  api.isSaving = () => !!(pending || taskPending);
+  api.isSaving = () => !!(pending || taskPending || requestWrites);
   api.discardUncommitted = function(){
-    if(!ready||pending||taskPending||workdeskUncertain)return false;
+    if(!ready||pending||taskPending||requestWrites||workdeskUncertain)return false;
     wanted=null;state=copy(baseline);api.initialize();
     if(typeof setDirtyState==='function')setDirtyState(false);
     document.dispatchEvent(new CustomEvent('mosh:local-discarded'));return true;

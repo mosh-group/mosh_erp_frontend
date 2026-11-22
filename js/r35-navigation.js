@@ -32,17 +32,17 @@ function close(focus=false){if(panel)panel.hidden=true;if(sub)sub.hidden=true;if
 function position(el,rect,side=false){el.hidden=false;const r=el.getBoundingClientRect();let left=side?rect.left-r.width-4:rect.right-r.width,top=side?rect.top:rect.bottom+5;
  if(side&&left<8)left=rect.right+4;
  el.style.left=Math.max(8,Math.min(left,innerWidth-r.width-8))+'px';el.style.top=Math.max(8,Math.min(top,innerHeight-r.height-8))+'px';el.style.right='auto';}
-function showGroup(g,b){if(!trigger||owner()!==session||active()!==app){close();return;}parentRow=b;$$('.pv-menu-group',panel).forEach(n=>n.setAttribute('aria-expanded',String(n===b)));sub.replaceChildren(make('div','pv-menu-caption',g.name));
+function showGroup(g,b,toggle=false){if(!trigger||owner()!==session||active()!==app){close();return;}if(toggle&&parentRow===b&&!sub.hidden){sub.hidden=true;b.setAttribute('aria-expanded','false');parentRow=null;return;}parentRow=b;$$('.pv-menu-group',panel).forEach(n=>n.setAttribute('aria-expanded',String(n===b)));sub.replaceChildren(make('div','pv-menu-caption',g.name));
  if(innerWidth<700){const back=make('button','pv-menu-row r35-ui-navigation','‹ العودة إلى المجموعات');back.type='button';back.onclick=()=>{sub.hidden=true;parentRow?.focus();};sub.append(back);}
  for(const original of g.rows){if(!allowed(original))continue;const text=label(original),leaf=make('button','pv-menu-row pv-menu-leaf',text);leaf.type='button';leaf.setAttribute('role','menuitem');
- const count=$('.badge,.hr-count,.m15-count',original)?.textContent.trim();if(count)leaf.append(make('span','r35-menu-count',count));
+ const count=$('.badge,.hr-count,.m15-count',original)?.textContent.trim();if(count&&!(app==='sales'&&Number(count)===0))leaf.append(make('span','r35-menu-count',count));
  leaf.onclick=()=>{const section=app,actor=session;if(!trigger||owner()!==actor||active()!==section){close();return;}
  const target=original.isConnected?original:sources(section).find(n=>label(n)===text);close();if(allowed(target)){target.click();schedule();}else message('لم يعد هذا الإجراء متاحاً. افتح القائمة مجدداً.');};sub.append(leaf);}
  position(sub,b.getBoundingClientRect(),true);if(innerWidth<700){sub.style.left='12px';sub.style.top=panel.style.top;}
 }
 function open(section,b){if(trigger===b&&!panel.hidden){close(true);return;}close();if(!window.MoshAuth37?.canModule(section,'view'))return;const available=groups(section);if(!available.length){message('لا توجد مداخل متاحة لحسابك في هذه الصفحة.');return;}
  trigger=b;app=section;session=owner();b.setAttribute('aria-expanded','true');panel.replaceChildren(make('div','pv-menu-caption','قائمة '+names[section]));
- for(const g of available){const row=make('button','pv-menu-row pv-menu-group r35-ui-navigation');row.type='button';row.setAttribute('role','menuitem');row.setAttribute('aria-haspopup','menu');row.setAttribute('aria-expanded','false');row.append(make('span','pv-menu-icon',g.icon),make('span','pv-menu-itemlabel',g.name),make('span','','‹'));row.onclick=()=>showGroup(g,row);row.onpointerenter=()=>{if(innerWidth>=700&&matchMedia('(hover:hover)').matches)showGroup(g,row);};panel.append(row);}
+ for(const g of available){const row=make('button','pv-menu-row pv-menu-group r35-ui-navigation');row.type='button';row.setAttribute('role','menuitem');row.setAttribute('aria-haspopup','menu');row.setAttribute('aria-expanded','false');row.append(make('span','pv-menu-icon',g.icon),make('span','pv-menu-itemlabel',g.name),make('span','','‹'));row.onclick=()=>showGroup(g,row,section==='sales');if(section!=='sales')row.onpointerenter=()=>{if(innerWidth>=700&&matchMedia('(hover:hover)').matches)showGroup(g,row);};panel.append(row);}
  position(panel,b.getBoundingClientRect());$('button',panel)?.focus();
 }
 function install(section){const v=$('#'+section+'App');if(!v||!v.classList.contains('active'))return;let bar=$('#m15Tabs_'+section,v);

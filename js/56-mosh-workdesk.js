@@ -49,22 +49,22 @@ function checkedStatus(s){
  if(!['task','break','no_work'].includes(s.kind))return s;
  if(s.kind==='task'){
   const time=M.taskTiming(s.task,now());
-  return {...s,since:time.startAt,elapsedMs:time.totalElapsedMs,timerHistory:time.valid&&s.task?.workTiming?.historyIncomplete?'المعروض هو وقت التنفيذ المسجّل. توجد فترة قديمة ناقصة محفوظة للمراجعة؛ لم نُخمّن مدتها.':'',timerIssue:time.valid?'':'توقيت المهمة بحاجة مراجعة: '+time.issues.join(' ')+' البصمة لا تمنع تنفيذ المهمة؛ يلزم توقيت محفوظ من الخادم.'};
+  return {...s,since:time.startAt,elapsedMs:time.totalElapsedMs,timerHistory:time.valid&&s.task?.workTiming?.historyIncomplete?'المعروض هو وقت التنفيذ المسجّل. توجد فترة قديمة ناقصة محفوظة للمراجعة؛ لم نُخمّن مدتها.':'',timerIssue:time.valid?'':'توقيت المهمة بحاجة إلى مراجعة: '+time.issues.join(' ')+' البصمة لا تمنع تنفيذ المهمة؛ يلزم توقيت محفوظ من الخادم.'};
  }
  const a=M.epoch(s.since),n=now(),elapsed=M.elapsed(a,n,M.LIVE_LIMIT);
  if(Number.isFinite(elapsed))return {...s,since:a,elapsedMs:elapsed,timerIssue:''};
  const what=s.kind==='task'?'المهمة':s.kind==='break'?'الاستراحة':'حالة عدم وجود عمل';
  const reason=!Number.isFinite(a)?'وقت البداية غير موجود أو غير صالح':a>n+2000?'وقت البداية لاحق لوقت الخادم':'جلسة مفتوحة لأكثر من ٢٤ ساعة وتحتاج مراجعة';
- return {...s,since:NaN,elapsedMs:NaN,timerIssue:'توقيت '+what+' بحاجة مراجعة: '+reason+'. حدّث البيانات؛ لن نعرض وقتاً مخمّناً أو نصفر السجل.'};
+ return {...s,since:NaN,elapsedMs:NaN,timerIssue:'توقيت '+what+' بحاجة إلى مراجعة: '+reason+'. حدّث البيانات؛ لن نعرض وقتاً مخمّناً أو نصفر السجل.'};
 }
 function currentStatus(){
  const r=presence().record,t=running()[0],at=now();
- if(r?.mode==='break')return {kind:'break',label:'أنا باستراحة',since:M.epoch(r.breakAt),note:'المهمة متوقفة مؤقتاً؛ استئناف المهمة ينهي الاستراحة.'};
+ if(r?.mode==='break')return {kind:'break',label:'في استراحة',since:M.epoch(r.breakAt),note:'المهمة متوقفة مؤقتاً؛ استئناف المهمة ينهي الاستراحة.'};
  if(r?.mode==='active'&&r.noWork)return {kind:'no_work',label:'لا يوجد عمل لدي',since:M.epoch(r.noWorkAt),note:'مدة مستقلة مسجلة، وليست وقت تنفيذ مهمة.'};
  if(t)return {kind:'task',label:'أعمل الآن على: '+(t.title||'مهمة'),since:M.taskTiming(t,at).startAt,task:t,note:[t.customer,'إجمالي التنفيذ — الجلسات السابقة والحالية'].filter(Boolean).join(' · ')};
- if(daySnapshot?.date===today()&&daySnapshot.complete===true){const d=report(),last=d.segments.at(-1);if(last?.kind==='waste'&&last.end>=at-2000)return {kind:r?.mode==='active'?'ready':'off',label:r?.endedAt?'أنهيت عملي اليوم':r?.mode==='active'?'أنا أعمل الآن':'بدون نشاط مسجّل',since:last.start,note:'هذه الفترة ضمن البصمة وغير مغطّاة بنشاط؛ تُحتسب وقتاً مهدوراً غير مسجّل.'};}
- if(!r||r.mode==='off')return {kind:'off',label:r?.endedAt?'أنهيت عملي اليوم':'لم أبدأ العمل بعد',since:NaN,note:'البصمة مرجع الحضور، وليست بدء تنفيذ مهمة.'};
- return {kind:'ready',label:'أنا أعمل الآن',since:NaN,note:'بدء العمل أو استلام المهمة وحده لا يُحتسب وقت تنفيذ.'};
+ if(daySnapshot?.date===today()&&daySnapshot.complete===true){const d=report(),last=d.segments.at(-1);if(last?.kind==='waste'&&last.end>=at-2000)return {kind:r?.mode==='active'?'ready':'off',label:r?.endedAt?'أنهيت عملي اليوم':r?.mode==='active'?'أعمل الآن':'لا يوجد نشاط مسجّل',since:last.start,note:'هذه الفترة ضمن البصمة وغير مغطّاة بنشاط؛ تُحتسب وقتاً مهدوراً غير مسجّل.'};}
+ if(!r||r.mode==='off')return {kind:'off',label:r?.endedAt?'أنهيت عملي اليوم':'لم أبدأ العمل بعد',since:NaN,note:'البصمة لتسجيل الحضور. يبدأ وقت التنفيذ عند بدء المهمة.'};
+ return {kind:'ready',label:'أعمل الآن',since:NaN,note:'لا يُحتسب وقت التنفيذ بمجرد بدء العمل أو استلام المهمة. يبدأ التوقيت عند بدء تنفيذها.'};
 }
 function resetOwner(){const k=String(user()?.id||'');if(k===ownerKey)return;$('wd50LogDialog')?.close();pickerOpen=false;ownerKey=k;selected='';observed=[];lastPresence=null;reportData=null;daySnapshot=null;dayVerifiedAt=0;reportLoaded=false;reportError='';lastError='';info='';reportDate='';reportRequest++;reportBusy=false;lastReportAt=0;taskSig='';pickSig='';}
 function mount(){
@@ -74,7 +74,7 @@ function mount(){
  const bindings=$('es11OriginalBindings'),oldActions=document.querySelector('#employeeSpaceV11 .es11-header-tools .es11-work-actions');
  if(oldActions&&bindings){oldActions.hidden=true;bindings.appendChild(oldActions);}
  card.classList.add('wd50-card');
- card.innerHTML='<div id="wd50Panel" dir="rtl"><div class="wd50-head"><div><small>التحكم بالمهام والوقت</small><h3>'+icon('bag')+'لوحة عملي ومهامي</h3></div><button type="button" class="wd50-icon-btn" data-wd50-refresh title="تحديث لوحة العمل والمهام" aria-label="تحديث لوحة العمل والمهام"><span class="wd06-refresh-icon" aria-hidden="true">↻</span><span>تحديث</span></button></div><section class="wd06-day" aria-labelledby="wd06DayTitle"><div class="wd06-day-heading"><h4 id="wd06DayTitle">حالة العمل</h4><div id="wd50Status" class="wd50-status"><span class="wd50-dot"></span><div><strong id="wd50StatusLabel"></strong><small id="wd50StatusNote"></small></div><bdi id="wd50StatusTimer" dir="ltr">—</bdi></div></div><div class="wd50-day-controls" aria-label="اختيار حالة العمل">'+[['work_start','laptop','أنا أعمل الآن'],['break','cup','أنا باستراحة'],['no_work','hourglass','لا يوجد عمل لدي'],['work_end','done','أنهيت عملي اليوم']].map(([k,i,label])=>'<button type="button" data-wd50-day="'+k+'">'+icon(i)+'<span>'+label+'</span></button>').join('')+'</div><details id="wd06TimeDisclosure" hidden><summary>'+icon('clock')+'<span id="wd06TimeWarningLabel">مدة الحالة غير متاحة</span><span class="wd06-warning-toggle">التفاصيل</span></summary><div id="wd50TimeWarning" class="wd50-time-warning" role="status" hidden></div></details></section><div id="wd50Notice" class="wd50-notice" role="status" hidden></div><div id="wd50Error" class="wd50-error" role="alert" hidden></div><button id="wd50Resolve" class="wd50-resolve" type="button" data-wd50-resolve hidden>التحقق من الحفظ السابق</button><section class="wd06-current" aria-label="المهمة الحالية"><div class="wd50-picker"><label for="wd50PickerToggle">المهمة التي تريد العمل عليها</label><button type="button" id="wd50PickerToggle" aria-expanded="false" aria-controls="wd50PickerList" data-wd50-picker>'+icon('search')+'<span id="wd50PickedLabel">اختر مهمة من مهامك…</span><span aria-hidden="true">⌄</span></button><div id="wd50PickerList" hidden><input id="wd50Search" type="search" autocomplete="off" aria-label="بحث في مهامي" placeholder="ابحث باسم المهمة أو العميل…"><div id="wd50PickerResults"></div></div></div><div id="wd50Task" class="wd50-task"></div></section><div class="wd50-summary"><div class="wd50-summary-title"><b>ملخص وقت عملي اليوم</b><small id="wd50ReportState">جاري قراءة السجل…</small></div><div class="wd50-metrics">'+[['task','تنفيذ مهام'],['break','استراحة'],['no_work','لا يوجد عمل'],['waste','مهدور · غير مسجّل']].map(([k,t])=>'<div class="wd50-metric" data-kind="'+k+'"><span>'+t+'</span><bdi dir="ltr" id="wd50Total_'+k+'">—</bdi></div>').join('')+'</div><div id="wd50Review" class="wd50-review" hidden></div><button type="button" class="wd50-log-btn" data-wd50-log>'+icon('clock')+'سجل يومي وتفصيل الوقت ←</button><small class="wd50-rule">الاستراحة وعدم وجود عمل منفصلان عن الوقت غير المسجّل. لا تُحتسب الدقيقة مرتين.</small></div></div>';
+ card.innerHTML='<div id="wd50Panel" dir="rtl"><div class="wd50-head"><div><small>التحكم بالمهام والوقت</small><h3>'+icon('bag')+'لوحة عملي ومهامي</h3></div><button type="button" class="wd50-icon-btn" data-wd50-refresh title="تحديث لوحة العمل والمهام" aria-label="تحديث لوحة العمل والمهام"><span class="wd06-refresh-icon" aria-hidden="true">↻</span><span>تحديث</span></button></div><section class="wd06-day" aria-labelledby="wd06DayTitle"><div class="wd06-day-heading"><h4 id="wd06DayTitle">حالة العمل</h4><div id="wd50Status" class="wd50-status"><span class="wd50-dot"></span><div><strong id="wd50StatusLabel"></strong><small id="wd50StatusNote"></small></div><bdi id="wd50StatusTimer" dir="ltr">—</bdi></div></div><div class="wd50-day-controls" aria-label="اختيار حالة العمل">'+[['work_start','laptop','بدء العمل'],['break','cup','بدء الاستراحة'],['no_work','hourglass','لا يوجد عمل لدي'],['work_end','done','إنهاء العمل']].map(([k,i,label])=>'<button type="button" data-wd50-day="'+k+'">'+icon(i)+'<span>'+label+'</span></button>').join('')+'</div><details id="wd06TimeDisclosure" hidden><summary>'+icon('clock')+'<span id="wd06TimeWarningLabel">مدة الحالة غير متاحة</span><span class="wd06-warning-toggle">التفاصيل</span></summary><div id="wd50TimeWarning" class="wd50-time-warning" role="status" hidden></div></details></section><div id="wd50Notice" class="wd50-notice" role="status" hidden></div><div id="wd50Error" class="wd50-error" role="alert" hidden></div><button id="wd50Resolve" class="wd50-resolve" type="button" data-wd50-resolve hidden>التحقق من الحفظ السابق</button><section class="wd06-current" aria-label="المهمة الحالية"><div class="wd50-picker"><label for="wd50PickerToggle">المهمة الحالية</label><button type="button" id="wd50PickerToggle" aria-expanded="false" aria-controls="wd50PickerList" data-wd50-picker>'+icon('search')+'<span id="wd50PickedLabel">اختيار مهمة…</span><span aria-hidden="true">⌄</span></button><div id="wd50PickerList" hidden><input id="wd50Search" type="search" autocomplete="off" aria-label="بحث في مهامي" placeholder="ابحث باسم المهمة أو العميل…"><div id="wd50PickerResults"></div></div></div><div id="wd50Task" class="wd50-task"></div></section><div class="wd50-summary"><div class="wd50-summary-title"><b>ملخص وقت العمل اليوم</b><small id="wd50ReportState">جارٍ تحميل السجل…</small></div><div class="wd50-metrics">'+[['task','تنفيذ المهام'],['break','استراحة'],['no_work','لا يوجد عمل'],['waste','وقت مهدور غير مسجّل']].map(([k,t])=>'<div class="wd50-metric" data-kind="'+k+'"><span>'+t+'</span><bdi dir="ltr" id="wd50Total_'+k+'">—</bdi></div>').join('')+'</div><div id="wd50Review" class="wd50-review" hidden></div><button type="button" class="wd50-log-btn" data-wd50-log>'+icon('clock')+'سجل اليوم وتفاصيل الوقت ←</button><small class="wd50-rule">الاستراحة وعدم وجود عمل منفصلان عن الوقت غير المسجّل. لا تُحتسب الدقيقة مرتين.</small></div></div>';
  $('wd50Search').addEventListener('input',()=>renderPicker(true));
  compactLayout();mounted=true;taskSig='';render(true);return true;
 }
@@ -93,7 +93,7 @@ function compactLayout(){
   if(inbox.parentElement!==body)body.appendChild(inbox);
  }
  const label=panel?.querySelector('.wd50-picker>label');if(label)label.textContent='المهمة الحالية';
- const header=panel?.querySelector('.wd50-head>div>small');if(header)header.textContent='تحكم بمهامك وحالتك من مكان واحد';
+ const header=panel?.querySelector('.wd50-head>div>small');if(header)header.textContent='إدارة المهام وحالة العمل';
  const attendance=grid.querySelector('.es11-attendance'),bindings=$('es11OriginalBindings');
  if(attendance&&!attendance.querySelector('#wd51PresenceTotal')&&bindings){
   const old=document.createElement('div');old.hidden=true;old.id='wd51LegacyAttendance';
@@ -107,7 +107,7 @@ function renderAttendance(d){
  const has=d.presenceMs>0,live=has&&d.live&&d.windows.at(-1)?.end>=now()-2000;
  updateText('wd51PunchIn',has?clock(d.windows[0].start).slice(0,5):'—');
  updateText('wd51PresenceTotal',has?M.duration(d.presenceMs):'—');
- updateText('wd51AttendanceText',d.issues.some(x=>/بصمة|حضور/.test(x))?'حضور بحاجة مراجعة':live?'داخل الدوام':has?'انتهى الحضور':'لم تُسجّل بصمة');
+ updateText('wd51AttendanceText',d.issues.some(x=>/بصمة|حضور/.test(x))?'سجل الحضور بحاجة إلى مراجعة':live?'داخل الدوام':has?'انتهى الحضور':'لم تُسجّل بصمة');
  updateText('wd51AttendanceHelper','الوجود في الشركة · لا يساوي وقت تنفيذ المهام');
  const card=document.querySelector('.wd51-attendance');if(card)card.dataset.live=String(live);
 }
@@ -124,15 +124,15 @@ function renderPicker(force=false){
 }
 function actionButtons(t){
  if(!t)return '<div class="wd50-empty wd06-empty">'+icon('bag')+'<strong>اختر مهمة من «مهامي»</strong></div>';
- if(!allowed(t))return '<p class="wd50-empty">عرض فقط: صلاحية تنفيذ المهمة غير مفعلة لهذا الحساب.</p>';
+ if(!allowed(t))return '<p class="wd50-empty">للاطلاع فقط. لا يملك هذا الحساب صلاحية تنفيذ المهمة.</p>';
  if(t.status!=='in_progress')return '<p class="wd50-empty">المهمة ليست متاحة للتنفيذ حالياً.</p>';
  const cat=R.category(t),st=t.employeeState,off=busy||A.workdeskUncertain();
  const b=(k,label,style='')=>'<button type="button" class="wd50-task-btn '+style+'" data-wd50-action="'+k+'" data-task-id="'+esc(t.id)+'" '+(off?'disabled':'')+'>'+icon(k==='receive'?'check':k==='pause'?'pause':k==='finish'?'check':'play')+label+'</button>';
- if(cat==='new')return b('receive','تم استلام المهمة','primary');
+ if(cat==='new')return b('receive','استلام المهمة','primary');
  if(cat==='review')return '<p class="wd50-empty">بانتظار مراجعة المدير؛ التنفيذ متوقف.</p>';
  if(cat!=='active')return '<p class="wd50-empty">المهمة منتهية.</p>';
- if(st==='working')return (!M.taskTiming(t,now()).valid?b('repair_timer','استئناف التوقيت من الآن','primary'):'')+b('pause','إيقاف مؤقت')+b('finish','إنهاء وإرسال للمراجعة',M.taskTiming(t,now()).valid?'primary':'');
- return b('start',R.label(t).includes('بانتظار البدء')?'بدء المهمة':'استئناف المهمة','primary')+(st==='paused'&&!R.label(t).includes('بانتظار البدء')?b('finish','إنهاء وإرسال للمراجعة'):'');
+ if(st==='working')return (!M.taskTiming(t,now()).valid?b('repair_timer','استئناف التوقيت من الآن','primary'):'')+b('pause','إيقاف مؤقت')+b('finish','إنهاء المهمة وإرسالها للمراجعة',M.taskTiming(t,now()).valid?'primary':'');
+ return b('start',R.label(t).includes('بانتظار البدء')?'بدء المهمة':'استئناف المهمة','primary')+(st==='paused'&&!R.label(t).includes('بانتظار البدء')?b('finish','إنهاء المهمة وإرسالها للمراجعة'):'');
 }
 function renderTask(force=false){
  let t=find(selected);if(!t||!own(t)){selected=String(running()[0]?.id||presence().record?.pausedTaskId||'');t=find(selected);if(t&&!own(t)){t=null;selected='';}}
@@ -141,7 +141,7 @@ function renderTask(force=false){
  if(!force&&sig===taskSig)return;taskSig=sig;
  $('wd50Task').dataset.empty=String(!t);
  $('wd50Task').dataset.taskId=t?String(t.id):'';
- $('wd50Task').innerHTML=t?'<div class="wd50-task-head"><div><b>'+esc(t.title||'مهمة')+'</b><small class="wd53-task-client">'+esc(t.customer||'بدون عميل محدد')+'</small></div><button type="button" class="wd50-details" data-wd50-details="'+esc(t.id)+'">التفاصيل ←</button></div><span class="wd50-task-state">'+esc(R.label(t))+'</span>'+(t.returnedForRevision?'<div class="wd50-return"><b>↩ معادة من المدير</b><p>'+esc(R.reason(t)||'راجع ملاحظات المدير.')+'</p></div>':'')+'<div class="wd50-task-actions">'+actionButtons(t)+'</div><small class="wd50-rule">الاستلام يؤكد وصول المهمة فقط؛ بدء المهمة يشغّل مؤقّت التنفيذ.</small>':actionButtons(null);
+ $('wd50Task').innerHTML=t?'<div class="wd50-task-head"><div><b>'+esc(t.title||'مهمة')+'</b><small class="wd53-task-client">'+esc(t.customer||'لم يُحدَّد عميل')+'</small></div><button type="button" class="wd50-details" data-wd50-details="'+esc(t.id)+'">التفاصيل ←</button></div><span class="wd50-task-state">'+esc(R.label(t))+'</span>'+(t.returnedForRevision?'<div class="wd50-return"><b>↩ مُعادة من المدير</b><p>'+esc(R.reason(t)||'راجع ملاحظات المدير.')+'</p></div>':'')+'<div class="wd50-task-actions">'+actionButtons(t)+'</div><small class="wd50-rule">الاستلام يؤكد وصول المهمة فقط؛ بدء المهمة يشغّل مؤقّت التنفيذ.</small>':actionButtons(null);
  window.MoshTaskInbox49?.renderHome?.();
 }
 function updateText(id,value){const e=$(id);if(e&&e.textContent!==String(value))e.textContent=value;}
@@ -152,15 +152,15 @@ function render(force=false){
  updateText('wd50StatusTimer',M.duration(s.kind==='task'?s.elapsedMs:Number.isFinite(s.since)?(s.elapsedMs??M.elapsed(s.since,now())):NaN));
  $('wd50TimeWarning').hidden=!(s.timerIssue||s.timerHistory);updateText('wd50TimeWarning',s.timerIssue||s.timerHistory||'');
  $('wd06TimeDisclosure').hidden=!(s.timerIssue||s.timerHistory);
- updateText('wd06TimeWarningLabel',s.timerIssue?'مدة الحالة غير متاحة':'سجل التوقيت بحاجة مراجعة');
- $('wd50StatusTimer').setAttribute('aria-label',s.timerIssue?'الوقت غير متاح — بحاجة مراجعة':'مدة الحالة الحالية');
+ updateText('wd06TimeWarningLabel',s.timerIssue?'مدة الحالة غير متاحة':'سجل التوقيت بحاجة إلى مراجعة');
+ $('wd50StatusTimer').setAttribute('aria-label',s.timerIssue?'الوقت غير متاح — بحاجة إلى مراجعة':'مدة الحالة الحالية');
  for(const b of $('wd50Panel').querySelectorAll('[data-wd50-day]')){
   const k=b.dataset.wd50Day,on=k==='break'?s.kind==='break':k==='no_work'?s.kind==='no_work':k==='work_end'?s.kind==='off'&&!!r?.endedAt:['task','ready'].includes(s.kind);
   b.setAttribute('aria-pressed',String(on));b.classList.toggle('active',on);
   b.disabled=busy||A.workdeskUncertain()||!e||on||(k==='work_end'&&!r&&running().length===0);
  }
- const savedBusy=busy?'جاري الحفظ على الخادم…':Date.now()<infoUntil?info:'';
- const note=!e?'هذا الحساب غير مربوط بملف موظف. لا يمكن تسجيل أوقات موظف غير محدد.':savedBusy;
+ const savedBusy=busy?'جارٍ حفظ التغييرات…':Date.now()<infoUntil?info:'';
+ const note=!e?'الحساب غير مرتبط بملف موظف. يلزم ربطه لتسجيل وقت العمل.':savedBusy;
  $('wd50Notice').hidden=!note;updateText('wd50Notice',note);$('wd50Error').hidden=!lastError;updateText('wd50Error',lastError);$('wd50Resolve').hidden=!A.workdeskUncertain();$('wd50Resolve').disabled=busy;
  $('wd50PickerToggle').disabled=busy;renderTask(force);renderPicker();renderTotals();
 }
@@ -182,7 +182,7 @@ function report(forDate=today()){
   if(kind){
    const matching=arr(source.activities).filter(a=>!a.cancelled&&!a.voided&&!a.supersededBy&&(a.kind==='nowork'?'no_work':a.kind)===kind&&(kind!=='task'||String(a.taskId)===String(liveTasks[0]?.id))&&Number.isFinite(M.epoch(a.startAt??a.start))&&M.epoch(a.startAt??a.start)<=asOf+2000&&(a.open===true||M.epoch(a.endAt??a.end)>=asOf-2000));
    inconsistent=matching.length!==1||(kind==='task'&&liveTasks.length!==1);
-   if(inconsistent)reportIssues.push('الحالة النشطة لا تطابق سجل الفترات من الخادم؛ الوقت غير المغطّى بحاجة مراجعة وليس وقتاً مهدوراً معتمداً.');
+   if(inconsistent)reportIssues.push('الحالة النشطة لا تطابق سجل الفترات من الخادم؛ الوقت غير المغطّى بحاجة إلى مراجعة وليس وقتاً مهدوراً معتمداً.');
   }
  }
  return M.dailyAccount({date:forDate,now:full&&Number.isFinite(asOf)?Math.min(now(),asOf+(source.live===true?Math.max(0,now()-asOf):0)):now(),timeZone:source?.timeZone||zone(),attendance:full?source.attendance:arr(profile()?.attendanceRecords),activities:full?source.activities:activitiesForPreview(),coverage:full&&!inconsistent?source.coverage:[],complete:full&&source.complete===true&&!inconsistent,issues:reportIssues});
@@ -192,11 +192,11 @@ function renderTotals(){
  const d=report(),full=daySnapshot?.date===today(),has=d.presenceMs>0;
  if(!full&&!reportLoaded){
   for(const k of ['task','break','no_work','waste'])updateText('wd50Total_'+k,'—');
-  updateText('wd50ReportState','جاري قراءة سجل اليوم…');$('wd50Review').hidden=true;renderAttendance(d);return;
+  updateText('wd50ReportState','جارٍ قراءة سجل اليوم…');$('wd50Review').hidden=true;renderAttendance(d);return;
  }
  for(const k of ['task','break','no_work'])updateText('wd50Total_'+k,M.duration(d.totals[k]));
  const waste=full&&has&&d.presenceComplete;
- updateText('wd50Total_waste',waste?M.duration(d.totals.waste):!has?'بانتظار الحضور':'بحاجة مراجعة');
+ updateText('wd50Total_waste',waste?M.duration(d.totals.waste):!has?'بانتظار الحضور':'بحاجة إلى مراجعة');
  $('wd50Total_waste').dir=waste?'ltr':'auto';
  $('wd50Total_waste').style.fontSize=waste?'':'16px';
  updateText('wd50ReportState',full?(daySnapshot.historyPartial?'الوقت المسجّل · السجل القديم جزئي':'الوقت المسجّل من الخادم'):'عرض جزئي · لم يتأكد سجل اليوم');
@@ -239,11 +239,11 @@ function renderLog(){
  const date=reportDate||today(),d=report(date),source=date===today()?daySnapshot:reportData,full=source?.date===date;
  const sig=JSON.stringify([date,full,d.totals,d.issues,d.segments,reportBusy,reportError]);if(sig===lastReportSig)return;lastReportSig=sig;
  updateText('wd50LogTotal','الأنشطة المسجّلة: '+M.duration(d.activityMs)+' · الحضور: '+(d.presenceMs?M.duration(d.presenceMs):'غير مسجّل'));
- let note=reportBusy?'جاري قراءة سجل اليوم…':reportError||d.issues.join(' · ')||
+ let note=reportBusy?'جارٍ قراءة سجل اليوم…':reportError||d.issues.join(' · ')||
   (!full?'لم يتأكد اكتمال سجل هذا اليوم.':source.historyPartial?'المعروض هو الوقت المسجّل المعروف. الفترات القديمة الناقصة لم تُخمّن.':'الأوقات محفوظة على الخادم.');
  if(!d.presenceMs)note+=' لا توجد بصمة؛ هذا لا يمنع حساب الأنشطة. المهدور فقط بانتظار الحضور.';
  updateText('wd50LogNote',note);$('wd50LogNote').className=full&&!d.issues.length?'wd50-log-valid':'wd50-log-warning';
- $('wd50LogMetrics').innerHTML=Object.entries(d.totals).filter(([k,v])=>k!=='review'||v>0).map(([k,v])=>'<div><span>'+M.labels[k]+'</span><bdi dir="auto">'+(k==='waste'&&(!full||!d.presenceComplete)?!d.presenceMs?'بانتظار الحضور':'بحاجة مراجعة':M.duration(v))+'</bdi></div>').join('');
+ $('wd50LogMetrics').innerHTML=Object.entries(d.totals).filter(([k,v])=>k!=='review'||v>0).map(([k,v])=>'<div><span>'+M.labels[k]+'</span><bdi dir="auto">'+(k==='waste'&&(!full||!d.presenceComplete)?!d.presenceMs?'بانتظار الحضور':'بحاجة إلى مراجعة':M.duration(v))+'</bdi></div>').join('');
  $('wd50LogTasks').innerHTML=d.byTask.length?d.byTask.map(t=>'<div class="wd50-log-task"><b>'+esc(t.title)+'</b><bdi dir="ltr">'+M.duration(t.durationMs)+'</bdi></div>').join(''):'<p class="wd50-empty">لا توجد فترات تنفيذ مسجّلة قابلة للحساب في هذا اليوم.</p>';
  $('wd50LogRows').innerHTML=d.segments.map(s=>'<tr data-kind="'+s.kind+'"><td dir="ltr">'+clock(s.start)+'</td><td dir="ltr">'+clock(s.end)+'</td><td>'+esc(s.kind==='task'?s.title||'تنفيذ مهمة':M.labels[s.kind])+'</td><td dir="ltr">'+M.duration(s.end-s.start)+'</td></tr>').join('')||'<tr><td colspan="4">لا توجد فترات مسجّلة لهذا اليوم.</td></tr>';
 }
@@ -271,7 +271,7 @@ async function perform(kind,id){
   }
   revision++;reportData=null;daySnapshot=null;dayVerifiedAt=0;observePresence();
   if(id)selected=String(id);
-  info=({repair_timer:'حُفظ توقيت التنفيذ على الخادم. أي فترة قديمة ناقصة بقيت للمراجعة.',receive:'تم استلام المهمة؛ لم يبدأ مؤقّت التنفيذ.',start:'بدأ مؤقّت المهمة وحُفظت حالة العمل.',pause:'المهمة متوقفة. أي وقت غير مغطّى بحالة مسجلة ضمن البصمة يدخل في الوقت غير المسجّل.',finish:'أُرسلت المهمة للمراجعة. اختر مهمتك التالية أو سجّل حالتك.',submit:'أُرسلت المهمة للمراجعة.',work_start:'بدأ العمل؛ اختر مهمة وابدأها ليُسجّل وقت التنفيذ.',break:'بدأت الاستراحة وتوقف مؤقّت المهمة.',no_work:'سُجّلت حالة لا يوجد عمل لدي وتوقف مؤقّت المهمة.',work_end:'انتهى العمل. بصمة الخروج مستقلة.'})[kind]||'تم الحفظ.';
+  info=({repair_timer:'حُفظ توقيت التنفيذ على الخادم. أي فترة قديمة ناقصة بقيت للمراجعة.',receive:'تم استلام المهمة؛ لم يبدأ مؤقّت التنفيذ.',start:'بدأ مؤقّت المهمة وحُفظت حالة العمل.',pause:'المهمة متوقفة. أي وقت غير مغطّى بحالة مسجلة ضمن البصمة يدخل في الوقت غير المسجّل.',finish:'أُرسلت المهمة للمراجعة. اختر مهمتك التالية أو سجّل حالتك.',submit:'أُرسلت المهمة للمراجعة.',work_start:'بدأ العمل؛ اختر مهمة وابدأها ليُسجّل وقت التنفيذ.',break:'بدأت الاستراحة وتوقف مؤقّت المهمة.',no_work:'سُجّلت حالة «لا يوجد عمل لدي»، وتوقّف مؤقّت المهمة.',work_end:'سُجّل انتهاء العمل. تُسجّل بصمة الخروج بصورة مستقلة.'})[kind]||'تم الحفظ.';
   infoUntil=Date.now()+5000;
   document.dispatchEvent(new CustomEvent('mosh:workdesk-transition',{detail:{kind,taskId:id||null}}));
   channel?.postMessage({type:'changed'});setTimeout(()=>loadReport(today(),true),80);return true;
@@ -297,7 +297,7 @@ function install(){
  if(!inbox.__workdesk50){
   const oldBusy=inbox.isBusy,oldError=inbox.error,oldActions=inbox.actionHtml;
   inbox.perform=taskAction;inbox.isBusy=id=>busy||A.workdeskUncertain()||oldBusy(id);inbox.error=id=>lastError||oldError(id);
-  inbox.actionHtml=t=>(lastError?'<div class="mr49-error" role="alert">'+esc(lastError)+'</div>':'')+(busy?'<p role="status">جاري الحفظ على الخادم…</p>':A.workdeskUncertain()?'<p class="mr49-error">تحقّق من الحفظ السابق من لوحة عملي قبل المتابعة.</p>':((t.employeeState==='working'&&allowed(t)&&!M.taskTiming(t,now()).valid)?'<button type="button" class="emp48-btn primary" data-wd50-action="repair_timer" data-task-id="'+esc(t.id)+'">استئناف التوقيت من الآن</button>':'')+oldActions(t));
+  inbox.actionHtml=t=>(lastError?'<div class="mr49-error" role="alert">'+esc(lastError)+'</div>':'')+(busy?'<p role="status">جارٍ حفظ التغييرات…</p>':A.workdeskUncertain()?'<p class="mr49-error">تحقّق من الحفظ السابق من لوحة عملي قبل المتابعة.</p>':((t.employeeState==='working'&&allowed(t)&&!M.taskTiming(t,now()).valid)?'<button type="button" class="emp48-btn primary" data-wd50-action="repair_timer" data-task-id="'+esc(t.id)+'">استئناف التوقيت من الآن</button>':'')+oldActions(t));
   inbox.__workdesk50=true;
  }
  // Original header buttons and any direct calls route to the same transaction now.

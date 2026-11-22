@@ -114,7 +114,7 @@ if(new URLSearchParams(location.search).get("moshMini")==="1")document.documentE
 <link rel="stylesheet" href="css/r24-purchase-portal.css?v=5b5b78567d5d" media="print" data-r36-deferred-style>
 <link rel="stylesheet" href="css/r25-workflow-fixes.css?v=224e183ac3f1" media="print" data-r36-deferred-style>
 <link rel="stylesheet" href="css/r26-admin-tidy.css?v=24d653b8d1cf" media="print" data-r36-deferred-style>
-<link rel="stylesheet" href="css/r28-instagram.css?v=5b1bb1fbe282" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/r28-instagram.css?v=ca198257b856" media="print" data-r36-deferred-style>
 <link rel="stylesheet" href="css/r29-workflows.css?v=c665b0057ad2" media="print" data-r36-deferred-style>
 <link rel="stylesheet" href="css/r30-shell-fixes.css?v=a455fae0bb9c" media="print" data-r36-deferred-style>
 <link rel="stylesheet" href="css/r31-it.css?v=e3c522aa3cb3" media="print" data-r36-deferred-style>
@@ -140,9 +140,9 @@ html[data-mosh-theme=light] #moshEntry36{background:#f4f3ef;color:#242329}html[d
 <link rel="stylesheet" href="css/task-dialog-04.css?v=7143aa10c1b5" data-mosh-review="r19-review-task04" media="print" data-r36-deferred-style>
 <link rel="stylesheet" href="css/unsaved-dialog-05.css?v=570139d7c8c2" data-mosh-review="r19-review-exit05" media="print" data-r36-deferred-style>
 <link rel="stylesheet" href="css/workday-tasks-06.css?v=30bf3cf978ee" data-mosh-review="r19-review-panels06" media="print" data-r36-deferred-style>
-<link rel="stylesheet" href="css/merged-workspace-07.css?v=6124e5283415" data-mosh-review="r19-review-merged07" media="print" data-r36-deferred-style>
-<link rel="stylesheet" href="css/task-workspace-08.css?v=1d4c9d09aaf4" media="print" data-r36-deferred-style>
-<link rel="stylesheet" href="css/ui09.css?v=12415107b2e5">
+<link rel="stylesheet" href="css/merged-workspace-07.css?v=compact-home-task" data-mosh-review="r19-review-merged07" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/task-workspace-08.css?v=a9c818622fd2" media="print" data-r36-deferred-style>
+<link rel="stylesheet" href="css/ui09.css?v=4ab44d13d14e">
 <link rel="stylesheet" href="css/ui09-communication.css?v=161f722b2163">
 </head>
 <body>
@@ -151,7 +151,7 @@ html[data-mosh-theme=light] #moshEntry36{background:#f4f3ef;color:#242329}html[d
  <form id="entry36Form"><label for="entry36Username">اسم المستخدم</label><input id="entry36Username" name="username" autocomplete="username" maxlength="80" required>
  <label for="entry36Password">كلمة المرور</label><input id="entry36Password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
  <button id="entry36Submit" type="submit" disabled>دخول</button></form>
- <p id="entry36Status" role="status" aria-live="polite">جارٍ التحقق من الجلسة…</p><button id="entry36Retry" type="button" hidden>إعادة المحاولة</button><small id="entry36Version">R40 · مبنية على R39</small></div>
+ <p id="entry36Status" role="status" aria-live="polite">جارٍ التحقق من الجلسة…</p><button id="entry36Retry" type="button" hidden>إعادة المحاولة</button></div>
 </section>
 <div id="moshBootScreen9" role="status" aria-live="polite" dir="rtl"><div class="mosh-boot-box"><strong>MOSH ERP</strong><p id="moshBootMessage9">جاري فتح مساحة العمل…</p><a id="moshBootRetry9" href="" hidden>إعادة المحاولة</a></div></div>
 <noscript><div style="position:fixed;inset:0;z-index:2147483647;background:#0b0e10;color:#edece6;padding:40px;text-align:center">يلزم تفعيل JavaScript لفتح التطبيق.</div></noscript>
@@ -785,7 +785,7 @@ html[data-mosh-theme=light] #moshEntry36{background:#f4f3ef;color:#242329}html[d
 <strong>MOSH AI — سكرتيرك التنفيذي</strong>
 <span id="moshAiUserLine">مساعد شخصي مرتبط ببياناتك وصلاحياتك</span>
 </div>
-<span class="mosh-ai-preview-badge">PREVIEW</span>
+<span class="mosh-ai-preview-badge">نسخة تجريبية</span>
 <button type="button" class="mosh-ai-close" onclick="moshAiClose()" title="إغلاق">×</button>
 </div>
 <div class="mosh-ai-context">
@@ -794,17 +794,17 @@ html[data-mosh-theme=light] #moshEntry36{background:#f4f3ef;color:#242329}html[d
 </div>
 <div class="mosh-ai-messages" id="moshAiMessages"></div>
 <div class="mosh-ai-quick" id="moshAiQuickActions">
-<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('شو عندي اليوم؟')">شو عندي اليوم؟</button>
-<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('رتبلي أولوياتي')">رتب أولوياتي</button>
-<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('شو المتأخر؟')">المتأخر</button>
-<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('لخصلي المهمة الحالية')">لخص المهمة</button>
-<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('شو وضع الفريق؟')">وضع الفريق</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('ما مهامي اليوم؟')">ما مهامي اليوم؟</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('رتّب أولوياتي')">رتب أولوياتي</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('ما المهام المتأخرة؟')">المتأخر</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('لخّص المهمة الحالية')">لخص المهمة</button>
+<button type="button" class="mosh-ai-chip" onclick="moshAiAsk('ما حالة الفريق؟')">وضع الفريق</button>
 </div>
 <div class="mosh-ai-compose">
-<textarea id="moshAiInput" class="mosh-ai-input" rows="1" placeholder="احكي معي... مثلاً: شو لازم أعمل اليوم؟" onkeydown="moshAiInputKey(event)"></textarea>
+<textarea id="moshAiInput" class="mosh-ai-input" rows="1" placeholder="اكتب سؤالك… مثلاً: ما مهامي اليوم؟" onkeydown="moshAiInputKey(event)"></textarea>
 <button type="button" class="mosh-ai-send" onclick="moshAiSend()" title="إرسال">➤</button>
 </div>
-<div class="mosh-ai-footer">نسخة تجريبية محلية — ما في API Key مخزّن داخل التطبيق</div>
+<div class="mosh-ai-footer">نسخة تجريبية محلية — لا يُخزَّن مفتاح API داخل التطبيق</div>
 </aside>
 <div id="archiveDetailsModal" class="modal" onclick="if(event.target===this)closeArchiveDetails()">
 <div class="modalbox" style="width:min(980px,100%);max-height:92vh;overflow:auto">
@@ -1359,7 +1359,8 @@ placeholder="ابحث واختر العميل">
 
 
 <script src="config.js"></script>
-<script src="js/api-client.js?v=be2dcbf6ea1d"></script>
-<script src="js/api-boot.js?v=a4a4596fe4d7"></script>
+<script src="js/api-client.js?v=e8fe816e9392"></script>
+<script src="js/ui-auto-update.js?v=5ff89584053b"></script>
+<script src="js/api-boot.js?v=865dcfdf6b15"></script>
 </body>
 </html>

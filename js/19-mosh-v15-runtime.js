@@ -25,7 +25,16 @@ const oldDist=window.openProductiveDistributionPage,oldRunning=window.openProduc
 window.openProductiveDistributionPage=function(k){const r=k==='hr'?MoshHR13.go('tasks','distribution'):oldDist.apply(this,arguments);commonNav();tabState(k,'distribution');if(k==='sales')salesActive('');return r;};
 window.openProductiveRunningTasksPage=function(k){const r=oldRunning.apply(this,arguments);commonNav();tabState(k,'running');if(k==='sales')salesActive('');return r;};
 window.goApp=function(k){const args=Array.from(arguments);if(!args[1])args[1]=Array.from(document.querySelectorAll('.nav a')).find(a=>String(a.getAttribute('onclick')||'').includes("goApp('"+k+"'"))||args[1];const r=oldGo.apply(this,args);if(PRODUCTIVE_DEPARTMENTS[k]){commonNav();if(k==='hr'&&!Q('hrAppTasks')?.querySelector('.db9'))openProductiveDistributionPage('hr');}return r;};
-function taskTab(k,mode){if(!Q(getProductiveConfig(k)?.appId)?.classList.contains('active'))goApp(k);if(mode==='running')openProductiveRunningTasksPage(k);else openProductiveDistributionPage(k);}
+function taskTab(k,mode){
+ if(k==='hr'){
+  const permission=mode==='assign'?'assign':mode==='running'?'running':'dashboard';
+  if(window.MoshAuth37&&!window.MoshAuth37.canModule('hr',permission))return false;
+ }
+ if(!Q(getProductiveConfig(k)?.appId)?.classList.contains('active'))goApp(k);
+ if(k==='hr'&&mode==='distribution'){const result=MoshHR13.go('home');tabState(k,'distribution');return result;}
+ if(k==='hr'&&mode==='assign'){const result=MoshDepartmentDashboard.openAssignment(k);tabState(k,'assign');return result;}
+ if(mode==='running')openProductiveRunningTasksPage(k);else window.MoshDepartmentDashboard.openDashboard(k);
+}
 api.taskTab=taskTab;
 /* 2. Sales workspace: all old forms remain the source of truth. */
 const oldSalesList=window.salesList;

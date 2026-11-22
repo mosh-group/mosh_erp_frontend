@@ -12,6 +12,7 @@ html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls svg { width:2
 html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body {
  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch;
  border-top:1px solid var(--compact-soft-line); padding-top:var(--mosh-section-gap); min-width:0;
+ --wd07-task-height:11rem;
 }
 html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body>.wd06-current {
  border:0; padding:0; padding-inline-end:var(--mosh-section-gap); gap:var(--mosh-section-gap);
@@ -28,10 +29,21 @@ html.mosh-compact01 #appShell #employeeSpaceV11 .es11-task .es11-card-head { min
 html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox h3,
 html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-picker>label { font-size:14px!important; font-weight:500!important; }
 html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-inbox-count { font-size:12px!important; color:var(--compact-muted)!important; }
-html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task { min-height:200px!important; gap:12px; }
-html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task[data-empty="true"] { border:0!important; background:transparent!important; }
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body #wd50Task,
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body #wd51HomeRows {
+ box-sizing:border-box; flex:none; block-size:var(--wd07-task-height); min-height:0!important;
+}
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body #wd50Task,
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body #mr49Inbox .wd51-home-task {
+ overflow:auto; overflow-wrap:anywhere;
+}
+html.mosh-compact01 #appShell #employeeSpaceV11 .wd07-body #wd50Task[data-empty="true"] {
+ border:1px dashed var(--compact-line)!important; background:var(--compact-control)!important;
+}
+html.mosh-compact01 #appShell #employeeSpaceV11 #wd51HomeRows { margin:0; }
 html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-task-actions { margin-top:auto!important; }
-html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox .wd51-home-task { flex-shrink:0; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox .wd51-home-task { flex:1; box-sizing:border-box; }
+html.mosh-compact01 #appShell #employeeSpaceV11 #mr49Inbox .wd06-row-footer { margin-top:auto; }
 html.mosh-compact01 #appShell #employeeSpaceV11 #wd51HomeError { order:1; }
 @media(max-width:730px) {
  html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-day-controls { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
@@ -41,8 +53,6 @@ html.mosh-compact01 #appShell #employeeSpaceV11 #wd51HomeError { order:1; }
   padding-inline-start:0!important; padding-top:var(--mosh-section-gap)!important;
   border-inline-start:0!important; border-top:1px solid var(--compact-soft-line)!important;
  }
- html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task { min-height:180px!important; }
- html.mosh-compact01 #appShell #employeeSpaceV11 #wd50Task[data-empty="true"] { min-height:120px!important; }
 }
 @media(max-width:360px) {
  html.mosh-compact01 #appShell #employeeSpaceV11 .wd50-head h3 { font-size:18px!important; }

@@ -84,7 +84,7 @@
    const records=items.map(x=>{
     const isApprover=x.approverId===mine && ['quotation_pending','purchase_pending'].includes(x.stage);
     return `<article class="r24p-item"><div><b>${html(x.title||'طلب شراء')}</b><small>${html(x.policyName)} · ${html(stages[x.stage]||x.stage)}</small><small>رقم الطلب: ${html(x.requestNo||x.id)}</small></div>${isApprover?`<button type="button" data-r24p="decision" data-action="${html(x.id)}">مراجعة واعتماد</button>`:''}${x.stage==='returned' && (canCreate()||x.ownerId===mine)?`<button type="button" data-r24p="resubmit" data-action="${html(x.id)}">إعادة تقديم الطلب</button>`:''}</article>`;
-   });modalData={busy:false};show('طلبات وموافقات الشراء',records.join('')||'<p class="r24p-hint">ما في طلبات أو موافقات حالياً.</p>');
+   });modalData={busy:false};show('طلبات وموافقات الشراء',records.join('')||'<p class="r24p-hint">لا توجد طلبات أو موافقات حالياً.</p>');
   }catch(err){notice(err.message||'تعذر قراءة الطلبات.',true)} }
  async function resubmit(requestId){const x=queued.find(x=>x.id===requestId);if(!x)return;
   if(!window.confirm('إعادة تقديم الطلب بعد تعديل بياناته؟ سيبدأ تسلسل الاعتمادات من المرحلة الأولى.'))return;

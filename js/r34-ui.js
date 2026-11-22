@@ -29,6 +29,20 @@ function form(id,title,html,submit,after,button='حفظ'){
  const s=snapshot(),h={};const d=dialog(id,title,`<form data-r34-form>${html}<div data-r34-error class="r34-error"></div><footer class="r34-actions"><button type="submit" class="r34-btn primary">${E(button)}</button>${B('إلغاء','close',id)}</footer></form>`,true);
  const f=$('form',d);f.addEventListener('submit',async ev=>{ev.preventDefault();if(d.getAttribute('aria-busy')==='true'||!f.reportValidity())return;const submitted=new FormData(f);busy(d,true);try{guard(s);const result=await submit(submitted,f,h,s);guard(s);busy(d,false);close(id);if(after)await after(result);window.MoshUI19.toast('تم الحفظ على الخادم.');}catch(e){busy(d,false);error(d,e);}});return d;
 }
+function attachFileClear(input,{nameElement,emptyText='لم يُرفق ملف بعد',onClear}={}){
+ const row=document.createElement('span'),button=document.createElement('button');
+ row.className='r34-file-selection';button.type='button';button.className='r34-file-clear';button.dataset.r34FileClear='';button.textContent='×';button.title='إزالة الملف المختار';button.setAttribute('aria-label','إزالة الملف المختار');
+ input.parentNode.insertBefore(row,nameElement||input.nextSibling);
+ if(nameElement)row.appendChild(nameElement);row.appendChild(button);
+ function refresh(){const file=input.files?.[0];button.hidden=!file;if(nameElement)nameElement.textContent=file?.name||emptyText;}
+ input.addEventListener('change',refresh);
+ button.addEventListener('click',event=>{
+  event.preventDefault();event.stopPropagation();
+  if(input.disabled||input.closest('[aria-busy="true"]')||!input.files?.length)return;
+  input.value='';if(onClear)onClear();input.dispatchEvent(new Event('change',{bubbles:true}));
+ });
+ refresh();return button;
+}
 function accept(resource,doc,s=snapshot()){guard(s);if(!doc?.id)throw new Error('استجابة الحفظ غير مكتملة.');const stateNow=()=>{try{return state;}catch(_){return{};}};
  const map={'tasks':'salesTasks','customers':'customers','hr-requests':'hrProRequests','hr-approvals':'hrApprovals'};
  const local=stateNow()[map[resource]]?.find(x=>String(x.id)===String(doc.id));if(Number(local?._version||0)>Number(doc._version||0))return;
@@ -37,5 +51,5 @@ function accept(resource,doc,s=snapshot()){guard(s);if(!doc?.id)throw new Error(
 function clear(){epoch++;for(const id of dialogs)window.MoshUI19?.close(id,true);dialogs.clear();}
 for(const event of ['mosh:logout-complete','mosh:session-expired'])document.addEventListener(event,clear);
 document.addEventListener('click',e=>{const b=e.target.closest?.('[data-r34="close"]');if(b){e.preventDefault();close(b.dataset.id);}});
-window.Mosh34={$, $$,E,owner,uid,snapshot,guard,request,commit,dialog,close,error,busy,B,note,empty,field,area,opts,select,form,stamp,size,accept};
+window.Mosh34={$, $$,E,owner,uid,snapshot,guard,request,commit,dialog,close,error,busy,B,note,empty,field,area,opts,select,form,stamp,size,accept,attachFileClear};
 })();

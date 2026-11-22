@@ -10,7 +10,7 @@
  function close(force=false){
   const modal=$('#r39MarketingCustomerModal');if(!modal)return;
   if(!force){const dirty=[...modal.querySelectorAll('input,textarea')].some(e=>e.value.trim()&&!(e.id==='newCustomerCountry'&&e.value==='سوريا'));
-   if(dirty&&!confirm('في بيانات عميل لم تُحفظ. بدك تطلع بدون حفظ؟'))return;}
+   if(dirty&&!confirm('توجد تعديلات على بيانات العميل لم تُحفظ. هل تريد الخروج دون حفظها؟'))return;}
   modal.remove();openModal=null;restoreSalesForm();
  }
  function open(){

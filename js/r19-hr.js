@@ -315,7 +315,7 @@
   }
 
   async function openInbox(filter) {
-    const dialog = createDialog('r19-hr-inbox','طلبات الخصم والعقوبات',loading()); if (!dialog) return;
+    const dialog = createDialog('r19-hr-inbox','متابعة الطلبات',loading()); if (!dialog) return;
     const token = dialog._r19HRView;
     try {
       const data = await readSnapshot(); if (!dialogCurrent(dialog,token)) return;

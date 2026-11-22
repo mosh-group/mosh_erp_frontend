@@ -85,14 +85,14 @@
     }
     if (reviewRecord) issues.push('يوجد سجل حضور يحتاج مراجعة الموارد البشرية.');
     const uniqueIssues = [...new Set(issues)];
-    if (firstAt == null) return {...blank,state:uniqueIssues.length ? 'review' : 'missing',entry:uniqueIssues.length ? 'بحاجة مراجعة' : 'لم تُسجّل',status:uniqueIssues[0] || 'لا توجد بصمة دخول مسجلة لليوم',issues:uniqueIssues};
+    if (firstAt == null) return {...blank,state:uniqueIssues.length ? 'review' : 'missing',entry:uniqueIssues.length ? 'بحاجة إلى مراجعة' : 'لم تُسجّل',status:uniqueIssues[0] || 'لا توجد بصمة دخول مسجلة لليوم',issues:uniqueIssues};
     const windows = M.union(intervals), totalMs = windows.reduce((sum,row) => sum + row.end - row.start,0);
     const minutes = Math.floor(totalMs / 60000), hours = Math.floor(minutes / 60);
     let entry;
     try { entry = new Intl.DateTimeFormat('ar-SY-u-nu-latn',{timeZone:zone,hour:'2-digit',minute:'2-digit',hour12:true}).format(new Date(firstAt)); }
     catch (_) { entry = new Date(firstAt).toISOString().slice(11,16); }
     let state = uniqueIssues.length ? 'review' : live ? 'inside' : 'outside';
-    let status = uniqueIssues.length ? 'الحضور بحاجة مراجعة' : live ? 'داخل الشركة' : 'انتهى الحضور';
+    let status = uniqueIssues.length ? 'الحضور بحاجة إلى مراجعة' : live ? 'داخل الشركة' : 'انتهى الحضور';
     if (!synchronized || ctx.online === false) { state = 'unconfirmed'; status = ctx.online === false ? 'آخر حضور مؤكد · بانتظار الاتصال' : 'بانتظار مزامنة ساعة النظام'; live = false; }
     const dayLabel = M.dateKey(firstAt,zone) !== date ? ' · أمس' : '';
     return {entry,entryLabel:'بصمة الدخول'+dayLabel,duration:String(hours).padStart(2,'0')+' س '+String(minutes % 60).padStart(2,'0')+' د',state,status,firstAt,lastOut,totalMs,live,issues:uniqueIssues,windows};

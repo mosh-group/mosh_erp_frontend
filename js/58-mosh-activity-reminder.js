@@ -37,7 +37,7 @@
   let box=$('wd51Reminder');if(box)return box;
   box=document.createElement('aside');box.id='wd51Reminder';box.hidden=true;box.dir='rtl';
   box.setAttribute('role','dialog');box.setAttribute('aria-modal','false');box.setAttribute('aria-labelledby','wd51ReminderTitle');box.setAttribute('aria-describedby','wd51ReminderMessage');
-  box.innerHTML='<div class="wd51-reminder-head"><span class="wd51-reminder-symbol" aria-hidden="true">◷</span><div><small>متابعة وقتك</small><h3 id="wd51ReminderTitle">حدّد حالتك الحالية</h3></div><button type="button" data-reminder-choice="dismiss" aria-label="إغلاق التذكير وتأجيله خمس دقائق">×</button></div><p id="wd51ReminderMessage"></p><div class="wd51-reminder-elapsed"><span>بدون نشاط مسجّل</span><bdi id="wd51ReminderElapsed" dir="ltr"></bdi></div><div id="wd51ReminderError" role="status" hidden></div><div class="wd51-reminder-actions"><button type="button" data-reminder-choice="break">أنا في استراحة</button><button type="button" data-reminder-choice="no_work">لا يوجد عمل لدي</button><button type="button" class="wd51-reminder-task" data-reminder-choice="task">أنا أعمل على مهمة ←</button></div><button type="button" data-reminder-choice="verify" id="wd51ReminderVerify" hidden>التحقق من الحالة والحفظ</button><footer><span>الحالة تبدأ عند حفظ اختيارك، دون تغيير الوقت السابق.</span><button type="button" data-reminder-choice="dismiss">ذكّرني بعد ٥ دقائق</button></footer>';
+  box.innerHTML='<div class="wd51-reminder-head"><span class="wd51-reminder-symbol" aria-hidden="true">◷</span><div><small>متابعة وقتك</small><h3 id="wd51ReminderTitle">حدّد حالتك الحالية</h3></div><button type="button" data-reminder-choice="dismiss" aria-label="إغلاق التذكير وتأجيله خمس دقائق">×</button></div><p id="wd51ReminderMessage"></p><div class="wd51-reminder-elapsed"><span>لا يوجد نشاط مسجّل</span><bdi id="wd51ReminderElapsed" dir="ltr"></bdi></div><div id="wd51ReminderError" role="status" hidden></div><div class="wd51-reminder-actions"><button type="button" data-reminder-choice="break">أنا في استراحة</button><button type="button" data-reminder-choice="no_work">لا يوجد عمل لدي</button><button type="button" class="wd51-reminder-task" data-reminder-choice="task">أنا أعمل على مهمة ←</button></div><button type="button" data-reminder-choice="verify" id="wd51ReminderVerify" hidden>التحقق من الحالة والحفظ</button><footer><span>الحالة تبدأ عند حفظ اختيارك، دون تغيير الوقت السابق.</span><button type="button" data-reminder-choice="dismiss">ذكّرني بعد ٥ دقائق</button></footer>';
   box.addEventListener('click',e=>{const b=e.target.closest('[data-reminder-choice]');if(!b||b.disabled)return;e.preventDefault();e.stopPropagation();choose(b.dataset.reminderChoice);});
   document.body.appendChild(box);return box;
  }
@@ -78,12 +78,12 @@
  function render(e){
   if(!prompt||!$('wd51Reminder'))return;
   const c=D.reminderContext(),blocked=c.busy||c.uncertain||c.error||!c.online;
-  $('wd51ReminderMessage').textContent=blocked?'تعذر التأكد من حالتك الآن. تحقّق من الحفظ والاتصال قبل تسجيل نشاط جديد.':'مرّت ٥ دقائق بدون نشاط مسجّل ضمن حضورك. هذه الفترة تُحتسب وقتاً مهدوراً غير مسجّل؛ ماذا تعمل الآن؟';
+  $('wd51ReminderMessage').textContent=blocked?'تعذر التأكد من حالتك الآن. تحقّق من الحفظ والاتصال قبل تسجيل نشاط جديد.':'مرّت ٥ دقائق من وقت الحضور دون نشاط مسجّل. تُحتسب هذه الفترة وقتاً مهدوراً غير مسجّل. ما حالة عملك الآن؟';
   $('wd51ReminderElapsed').textContent=blocked?'—':duration(Math.max(0,time()-prompt.gapStart));
   for(const b of $('wd51Reminder').querySelectorAll('.wd51-reminder-actions button'))b.disabled=inFlight||blocked;
   $('wd51ReminderVerify').hidden=!blocked;$('wd51ReminderVerify').disabled=inFlight||c.busy;
   $('wd51ReminderError').hidden=!(inFlight||c.error||c.uncertain);
-  $('wd51ReminderError').textContent=inFlight?'جاري حفظ اختيارك…':c.uncertain?'نتيجة الحفظ غير مؤكدة؛ تحقّق منها قبل إعادة المحاولة.':c.error||'';
+  $('wd51ReminderError').textContent=inFlight?'جارٍ حفظ اختيارك…':c.uncertain?'نتيجة الحفظ غير مؤكدة؛ تحقّق منها قبل إعادة المحاولة.':c.error||'';
  }
  function dismiss(){
   if(!prompt)return false;

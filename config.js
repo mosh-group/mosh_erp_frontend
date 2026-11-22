@@ -25,4 +25,4 @@ if (
 }
 
 // Change this value to use another Laravel backend. Use the same hostname for both apps.
-window.API_BASE_URL = 'http://91.144.16.26:1001/api';
+window.API_BASE_URL = 'http://localhost:8000/api';

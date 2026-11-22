@@ -23,7 +23,7 @@
   function setStatusError(id,value){if(value)errors.set(String(id),value);else errors.delete(String(id));}
   function cyclePanel(t){
     const evs=model.events(t),cycle=model.currentCycle(t),reason=model.reason(t);
-    const returned=t.returnedForRevision?'<div class="mr49-return-note"><b>↩ معادة من المدير'+(model.category(t)==='new'?' — يلزم استلامها مجدداً':'')+'</b><p>'+esc(reason||'تعديلات مطلوبة. راجع ملاحظات المدير في سجل المهمة.')+'</p></div>':'';
+    const returned=t.returnedForRevision?'<div class="mr49-return-note"><b>↩ مُعادة من المدير'+(model.category(t)==='new'?' — يلزم استلامها مجدداً':'')+'</b><p>'+esc(reason||'تعديلات مطلوبة. راجع ملاحظات المدير في سجل المهمة.')+'</p></div>':'';
     const labels={return:'إعادة من المدير',receive:'تم استلام المهمة',start:'بدء التنفيذ',pause:'إيقاف مؤقت',submit:'إرسال للمراجعة'};
     const rows=evs.map(e=>'<li><div><b>'+labels[e.kind]+'</b><span>'+esc(e.message.by||'')+'</span></div><time>'+esc(fmtDate(e.message.time))+'</time>'+(e.kind==='return'?'<p>'+esc(text(e.message.text).split('المطلوب تعديله:').slice(1).join('المطلوب تعديله:').trim())+'</p>':'')+'</li>').join('');
     return returned+'<div class="mr49-cycle-hint">دورة الاستلام '+cycle.number+' · الاستلام لا يبدأ مؤقّت التنفيذ.</div>'+(evs.length?'<details class="mr49-history"><summary>سجل الاستلام والتعديلات ('+evs.length+')</summary><ol>'+rows+'</ol><small>الأوقات والأسماء المعروضة هي القيم المحفوظة التي أعادها الخادم. السجل السابق للمهمة محفوظ أيضاً.</small></details>':'');
@@ -34,7 +34,7 @@
     if(!mine(t)) html='<p class="emp48-note warn">تنفيذ المهمة متاح للموظف المسندة إليه فقط.</p>';
     else if(!allowed(t,'status'))html='<p class="emp48-note warn">صلاحية تغيير الحالة غير مفعّلة لهذا الحساب.</p>';
     else if(t.status!=='in_progress')html='<p class="emp48-note">المهمة ليست متاحة للتنفيذ حالياً.</p>';
-    else if(busy.has(id)) html='<p class="emp48-note" role="status">جاري الحفظ على الخادم…</p>';
+    else if(busy.has(id)) html='<p class="emp48-note" role="status">جارٍ الحفظ على الخادم…</p>';
     else if(group==='new')html='<button type="button" class="emp48-btn primary" data-emp48-action="receive">✓ تم استلام المهمة</button>';
     else if(group==='review')html='<p class="emp48-wait">أرسلت المهمة للمراجعة؛ ليست ضمن مهامك الجارية. إذا أُعيدت لك ستظهر في «مهام جديدة».</p>';
     else if(group==='active') {
@@ -410,7 +410,7 @@
   function taskRow(t){
     const returned=model.category(t)==='new'&&t.returnedForRevision;
     const disabled=!allowed(t,'view')||!allowed(t,'details');
-    return '<div class="mr49-task-row'+(returned?' mr49-returned':'')+'"><div class="mr49-task-copy">'+(returned?'<span class="mr49-return-badge">↩ معادة من المدير</span>':'')+'<b>'+esc(t.title||'مهمة بدون عنوان')+'</b><small class="wd53-task-client">'+esc(t.customer||'بدون عميل محدد')+'</small>'+(t.dueDate?'<small class="wd53-task-due">الموعد: '+esc(t.dueDate)+'</small>':'')+''+(returned&&model.reason(t)?'<p>'+esc(model.reason(t))+'</p>':'')+'</div><div class="mr49-task-actions"><button type="button" data-mr49-open="'+esc(t.id)+'" '+(disabled?'disabled title="لا توجد صلاحية فتح التفاصيل"':'aria-label="فتح '+esc(t.title||'المهمة')+'"')+'>فتح ←</button>'+(model.category(t)!=='review'?'<button type="button" data-wd50-select="'+esc(t.id)+'" '+(disabled?'disabled':'')+'>لوحة عملي</button>':'')+'</div></div>';
+    return '<div class="mr49-task-row'+(returned?' mr49-returned':'')+'"><div class="mr49-task-copy">'+(returned?'<span class="mr49-return-badge">↩ مُعادة من المدير</span>':'')+'<b>'+esc(t.title||'مهمة بلا عنوان')+'</b><small class="wd53-task-client">'+esc(t.customer||'لم يُحدَّد عميل')+'</small>'+(t.dueDate?'<small class="wd53-task-due">الموعد: '+esc(t.dueDate)+'</small>':'')+''+(returned&&model.reason(t)?'<p>'+esc(model.reason(t))+'</p>':'')+'</div><div class="mr49-task-actions"><button type="button" data-mr49-open="'+esc(t.id)+'" '+(disabled?'disabled title="لا توجد صلاحية فتح التفاصيل"':'aria-label="فتح '+esc(t.title||'المهمة')+'"')+'>فتح ←</button>'+(model.category(t)!=='review'?'<button type="button" data-wd50-select="'+esc(t.id)+'" '+(disabled?'disabled':'')+'>لوحة عملي</button>':'')+'</div></div>';
   }
   function renderHome(){
     if(!user())return;
@@ -420,7 +420,7 @@
     if(!homeTab)homeTab=g.new.length?'new':g.active.length?'active':'review';
     if(!card.querySelector('#mr49Inbox')){
       card.classList.add('mr49-home-card','wd51-inbox');
-      card.innerHTML='<div id="mr49Inbox" dir="rtl"><div class="es11-card-head"><h3>مهامي</h3><span id="wd07TaskCount" class="wd07-inbox-count"></span></div><div id="wd51HomeTabs" class="wd51-home-tabs" role="group" aria-label="تصنيف مهامي"></div><label class="wd51-home-search"><span class="wd51-sr-only">بحث ضمن مهامي</span><input id="wd51HomeSearch" type="search" autocomplete="off" placeholder="ابحث باسم المهمة أو العميل…"></label><div id="wd51HomeRows" class="wd51-home-rows"></div><div class="mr49-home-footer"><button type="button" id="wd51HomeAll" class="mr49-all" data-mr49-list="all">عرض جميع مهامي ←</button></div><p id="wd51HomeError" class="mr49-error" role="status" hidden></p></div>';
+      card.innerHTML='<div id="mr49Inbox" dir="rtl"><div class="es11-card-head"><h3>مهامي</h3><span id="wd07TaskCount" class="wd07-inbox-count"></span></div><div id="wd51HomeTabs" class="wd51-home-tabs" role="group" aria-label="تصنيف مهامي"></div><label class="wd51-home-search"><span class="wd51-sr-only">البحث في مهامي</span><input id="wd51HomeSearch" type="search" autocomplete="off" placeholder="ابحث باسم المهمة أو العميل…"></label><div id="wd51HomeRows" class="wd51-home-rows"></div><div class="mr49-home-footer"><button type="button" id="wd51HomeAll" class="mr49-all" data-mr49-list="all">عرض جميع مهامي ←</button></div><p id="wd51HomeError" class="mr49-error" role="status" hidden></p></div>';
       $('wd51HomeSearch').addEventListener('input',e=>{homeQuery=e.target.value;renderHome();});
     }
     const all=[...g.new,...g.active,...g.review],selectedId=window.MoshWorkdesk50?.selectedTaskId?.()||'';
@@ -429,11 +429,11 @@
     $('wd51HomeTabs').innerHTML=[['new','جديدة',g.new.length,'mr49NewCount'],['active','جارية',g.active.length,'mr49ActiveCount'],['review','بانتظار المراجعة',g.review.length,'wd51ReviewCount']].map(([k,label,n,id])=>'<button type="button" data-wd51-home-tab="'+k+'" aria-pressed="'+(homeTab===k)+'" class="'+(homeTab===k?'active ':'')+(k==='new'&&n?'has-new':'')+'"><span>'+label+'</span><b id="'+id+'">'+n+'</b></button>').join('');
     const q=text(homeQuery).toLocaleLowerCase('ar');
     const rows=g[homeTab].filter(t=>!q||[t.title,t.customer,t.taskNo,t.number].some(v=>text(v).toLocaleLowerCase('ar').includes(q)));
-    $('wd51HomeRows').innerHTML=rows.slice(0,4).map(t=>{
+    $('wd51HomeRows').innerHTML=rows.slice(0,1).map(t=>{
       const disabled=!allowed(t,'view')||!allowed(t,'details'),returned=t.returnedForRevision&&model.category(t)==='new';
       const isSelected=homeTab!=='review'&&String(t.id)===selectedId;
-      return '<article class="wd51-home-task" data-task-id="'+esc(t.id)+'" data-selected="'+isSelected+'"><div><button type="button" class="wd51-task-title" data-mr49-open="'+esc(t.id)+'" '+(disabled?'disabled':'')+'>'+esc(t.title||'مهمة بدون عنوان')+'</button><small class="wd53-task-client">'+esc(t.customer||'بدون عميل محدد')+'</small></div><div class="wd06-row-footer"><span class="wd51-task-tag '+(returned?'returned':'')+'">'+esc(returned?'↩ معادة من المدير':model.label(t))+'</span><button type="button" class="wd51-task-pick" '+(homeTab==='review'?'data-mr49-open':'data-wd50-select')+'="'+esc(t.id)+'" '+(homeTab==='review'?'':'aria-pressed="'+isSelected+'" ')+(disabled?'disabled':'')+'>'+(homeTab==='review'?'التفاصيل ←':isSelected?'محدّدة حالياً':'اختيار المهمة ←')+'</button></div></article>';
-    }).join('')||'<div class="wd51-home-empty">'+(q?'لا توجد مهام مطابقة للبحث.':homeTab==='new'?'لا توجد مهام جديدة بانتظار استلامك.':homeTab==='active'?'لا توجد مهام جارية حالياً.':'لا توجد مهام بانتظار المراجعة.')+'</div>';
+      return '<article class="wd51-home-task" data-task-id="'+esc(t.id)+'" data-selected="'+isSelected+'"><div><button type="button" class="wd51-task-title" data-mr49-open="'+esc(t.id)+'" '+(disabled?'disabled':'')+'>'+esc(t.title||'مهمة بلا عنوان')+'</button><small class="wd53-task-client">'+esc(t.customer||'لم يُحدَّد عميل')+'</small></div><div class="wd06-row-footer"><span class="wd51-task-tag '+(returned?'returned':'')+'">'+esc(returned?'↩ مُعادة من المدير':model.label(t))+'</span><button type="button" class="wd51-task-pick" '+(homeTab==='review'?'data-mr49-open':'data-wd50-select')+'="'+esc(t.id)+'" '+(homeTab==='review'?'':'aria-pressed="'+isSelected+'" ')+(disabled?'disabled':'')+'>'+(homeTab==='review'?'التفاصيل ←':isSelected?'محدّدة حالياً':'اختيار المهمة ←')+'</button></div></article>';
+    }).join('')||'<div class="wd51-home-empty">'+(q?'لا توجد مهام مطابقة للبحث.':homeTab==='new'?'لا توجد مهام جديدة بانتظار الاستلام.':homeTab==='active'?'لا توجد مهام جارية حالياً.':'لا توجد مهام بانتظار المراجعة.')+'</div>';
     if(rows.length>4)$('wd51HomeRows').insertAdjacentHTML('beforeend','<button type="button" class="mr49-more" data-mr49-list="'+homeTab+'">عرض '+(rows.length-4)+' مهام أخرى ←</button>');
     $('wd51HomeAll').textContent='عرض جميع مهامي ('+all.length+') ←';
     $('wd07TaskCount').textContent=all.length===1?'مهمة واحدة':'المجموع: '+all.length;
@@ -443,7 +443,7 @@
   function ensureList(){
     let d=$('mr49ListDialog');if(d)return d;
     d=document.createElement('dialog');d.id='mr49ListDialog';d.className='mr49-dialog mr49-list-dialog';d.dir='rtl';
-    d.innerHTML='<header><div><small>مساحة الموظف</small><h3>مهامي</h3></div><button type="button" data-mr49-list-close aria-label="إغلاق">×</button></header><div class="mr49-dialog-content"><div id="mr49ListTabs" class="mr49-tabs"></div><label class="mr49-search"><span>بحث ضمن مهامي</span><input id="mr49ListSearch" type="search" placeholder="اسم المهمة أو العميل…" autocomplete="off"></label><div id="mr49ListRows"></div></div><footer><span id="mr49ListPage"></span><button type="button" data-mr49-page="-1">السابق</button><button type="button" data-mr49-page="1">التالي</button><button type="button" data-mr49-list-close>إغلاق</button></footer>';
+    d.innerHTML='<header><div><small>مساحة الموظف</small><h3>مهامي</h3></div><button type="button" data-mr49-list-close aria-label="إغلاق">×</button></header><div class="mr49-dialog-content"><div id="mr49ListTabs" class="mr49-tabs"></div><label class="mr49-search"><span>البحث في مهامي</span><input id="mr49ListSearch" type="search" placeholder="اسم المهمة أو العميل…" autocomplete="off"></label><div id="mr49ListRows"></div></div><footer><span id="mr49ListPage"></span><button type="button" data-mr49-page="-1">السابق</button><button type="button" data-mr49-page="1">التالي</button><button type="button" data-mr49-list-close>إغلاق</button></footer>';
     document.body.appendChild(d);$('mr49ListSearch').addEventListener('input',e=>{listQuery=e.target.value;listPage=1;renderList();});
     d.addEventListener('close',()=>{listSignature='';previousFocus?.focus?.();});return d;
   }

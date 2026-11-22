@@ -105,3 +105,17 @@
  .mw08-workspace .mw08-children td[data-mw08-label]:not(.mt54-task-name)::before{content:attr(data-mw08-label);display:block;color:var(--mw08-muted);font-size:11px;margin-bottom:4px}
 }
 .mw08-workspace .field[hidden],.mw08-workspace .btn[hidden],.mw08-workspace [hidden]{display:none!important}
+
+.mw08-workspace .mw08-workflow-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mw08-workspace .mw08-workflow-button{min-height:42px;padding:10px 16px;font-weight:700;white-space:normal;line-height:1.5}
+.mw08-workspace .mw08-workflow-primary{background:#e4bb40!important;color:#171407!important;border-color:#e4bb40!important}
+.mw08-workspace .mw08-workflow-primary:hover:not(:disabled){background:#f0cb5a!important;border-color:#f0cb5a!important}
+.mw08-workspace .mw08-workflow-button:focus-visible{outline:2px solid #e4bb40;outline-offset:3px}
+.mw08-workspace .mw08-workflow-button:disabled{opacity:.55;cursor:wait}
+@media(max-width:560px){.mw08-workspace .mw08-workflow-actions{width:100%}.mw08-workspace .mw08-workflow-button{flex:1 1 180px}}
+
+/* Review decisions are visible at the beginning of each manager queue card. */
+.mgr28-modal .mgr28-task-review-item{flex-direction:column;align-items:stretch}
+.mgr28-modal .mgr28-task-review-actions{justify-content:flex-start;flex-shrink:1;padding-bottom:12px;border-bottom:1px solid #34474f}
+.mgr28-modal .mgr28-task-review-actions .btn{min-height:42px;white-space:normal;line-height:1.5}
+.mgr28-modal .mgr28-task-review-actions .btn.primary{background:#e4bb40;color:#171407;border-color:#e4bb40;font-weight:700}

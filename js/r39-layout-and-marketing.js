@@ -33,6 +33,7 @@
  }
  function ensureMarketingDashboard(){
   const app=$('#marketingApp');if(!app?.classList.contains('active'))return;
+  if(app.dataset.taskView==='assign')return;
   if(!window.MoshAuth37?.canModule?.('marketing','view')||!window.MoshAuth37.canModule('marketing','dashboard'))return;
   app.classList.remove('ig28-open');
   $('#marketingExecV33')?.classList.remove('mk33-show');

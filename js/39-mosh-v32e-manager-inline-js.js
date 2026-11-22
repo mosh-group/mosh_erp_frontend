@@ -15,7 +15,8 @@
   {key:'promotion',label:'الترويج'},
   {key:'logistics',label:'اللوجستيات'},
   {key:'warehouses',label:'المستودعات العامة'},
-  {key:'accounting',label:'المحاسبة'}
+  {key:'accounting',label:'المحاسبة'},
+  {key:'platform',label:'MOSH MEDIA'}
  ];
  let timer=0,lock=false;
  function legacyBadge(key){return document.querySelector('#mgr28Tab_'+key+' .mgr28-badge')}

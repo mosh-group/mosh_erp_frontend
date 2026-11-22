@@ -19,7 +19,7 @@ function render(force=false){
   const timeMissing=t.employeeState==='working'&&!MoshWorkdayModel50.taskTiming(t,window.MoshApi?.serverNow?.()||Date.now()).valid;
   const old=stage.querySelector('.emp48-workflow'),expanded=old?.querySelector('.mr49-history')?.open;
   const box=document.createElement('section');box.className='emp48-workflow';box.dataset.taskId=String(t.id);
-  box.innerHTML='<div class="emp48-workflow-head"><div class="emp48-workflow-title"><b>تنفيذ المهمة</b><small>استلم المهمة أولاً، ثم ابدأ التنفيذ عندما تصبح جاهزاً.</small></div><span class="emp48-state">'+esc(api.model.label(t))+'</span></div><div class="emp48-actions">'+api.actionHtml(t)+'</div>'+(timeMissing?'<p class="wd53-overlay-time-warning" role="status">توقيت المهمة بحاجة مراجعة من الخادم؛ لم نغيّر أوقات التنفيذ السابقة.</p>':'')+api.cyclePanel(t);
+  box.innerHTML='<div class="emp48-workflow-head"><div class="emp48-workflow-title"><b>تنفيذ المهمة</b><small>استلم المهمة أولاً، ثم ابدأ التنفيذ عندما تصبح جاهزاً.</small></div><span class="emp48-state">'+esc(api.model.label(t))+'</span></div><div class="emp48-actions">'+api.actionHtml(t)+'</div>'+(timeMissing?'<p class="wd53-overlay-time-warning" role="status">توقيت المهمة بحاجة إلى مراجعة من الخادم؛ لم نغيّر أوقات التنفيذ السابقة.</p>':'')+api.cyclePanel(t);
   if(old)old.replaceWith(box);else{const note=stage.querySelector('.emp47-readonly-note');if(note)note.after(box);else stage.prepend(box);}
   if(expanded&&box.querySelector('.mr49-history'))box.querySelector('.mr49-history').open=true;
   lastSignature=signature;

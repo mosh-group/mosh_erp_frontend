@@ -11,4 +11,38 @@ html.mosh-meta #appShell .topbar .ui09-page-heading{gap:2px 10px!important}.ui09
 
 .ui09-confirm{max-width:480px;width:calc(100% - 40px);border:1px solid #40545b;border-radius:16px;background:#10191d;color:#f0f2f3;padding:24px;line-height:1.9}.ui09-confirm::backdrop{background:#0009}.ui09-confirm-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px}
 
+/* Sales menus close explicitly as well as through native details disclosure. */
+#ui09-tree-sales .ui09-sales-group>summary{display:flex;align-items:center;gap:8px;list-style:none;font-weight:600;box-sizing:border-box}
+#ui09-tree-sales .ui09-sales-group>summary::-webkit-details-marker{display:none}
+#ui09-tree-sales .ui09-sales-group>summary::after{content:'‹';margin-inline-start:auto;font-size:18px;transition:transform .15s}
+#ui09-tree-sales .ui09-sales-group[open]>summary::after{transform:rotate(-90deg)}
+#ui09-tree-sales .ui09-sales-group-body{display:grid;gap:3px;margin:3px 0 7px;margin-inline-start:8px;padding-inline-start:6px;border-inline-start:1px solid var(--mx-border,#384349)}
+#ui09-tree-sales .ui09-sales-group:not([open])>.ui09-sales-group-body,#ui09-tree-sales .ui09-sales-group-body[hidden]{display:none!important}
+#ui09-tree-sales .ui09-sales-group:has([aria-current=page])>summary{color:var(--accent,#e1c46e)}
+#ui09-tree-sales .ui09-tree-count{margin-inline-start:8px;font-size:11px;padding:1px 5px;border-radius:6px;background:var(--mx-hover,#ffffff12)}
+#salesApp .mgr28-badge[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){#ui09-tree-sales .ui09-sales-group>summary::after{transition:none}}
+
+/* Department sidebars mirror their existing headers. */
+.ui09-header-tree .ui09-tree-leaf{display:flex;align-items:center;gap:8px;line-height:1.65;min-height:38px;white-space:normal;overflow-wrap:anywhere}
+.ui09-header-tree .ui09-header-group>summary{list-style:none;font-weight:600;box-sizing:border-box}
+.ui09-header-tree .ui09-header-group>summary::-webkit-details-marker{display:none}
+.ui09-header-tree .ui09-header-group>summary::after{content:'‹';margin-inline-start:auto;font-size:18px;transition:transform .15s}
+.ui09-header-tree .ui09-header-group[open]>summary::after{transform:rotate(-90deg)}
+.ui09-header-tree .ui09-header-group-body{display:grid;gap:3px;margin:3px 0 7px;margin-inline-start:8px;padding-inline-start:6px;border-inline-start:1px solid var(--mx-border,#384349)}
+.ui09-header-tree .ui09-header-group:not([open])>.ui09-header-group-body,.ui09-header-tree .ui09-header-group-body[hidden]{display:none!important}
+.ui09-header-tree .ui09-header-group:has([aria-current=page])>summary{color:var(--accent,#e1c46e)}
+.ui09-header-tree .ui09-tree-count{margin-inline-start:auto;font-size:11px;min-width:19px;padding:0 4px;border-radius:6px;background:var(--mx-hover,#ffffff12);text-align:center}
+@media(prefers-reduced-motion:reduce){.ui09-header-tree .ui09-header-group>summary::after{transition:none}}
+#ui09-tree-hr .ui09-tree-leaf{display:flex;align-items:center;gap:8px;line-height:1.65;min-height:38px;white-space:normal;overflow-wrap:anywhere}
+#ui09-tree-hr .ui09-hr-group{min-width:0}
+#ui09-tree-hr .ui09-hr-group>summary{list-style:none;font-weight:600;box-sizing:border-box}
+#ui09-tree-hr .ui09-hr-group>summary::-webkit-details-marker{display:none}
+#ui09-tree-hr .ui09-hr-group>summary::after{content:'‹';margin-inline-start:auto;font-size:18px;transition:transform .15s}
+#ui09-tree-hr .ui09-hr-group[open]>summary::after{transform:rotate(-90deg)}
+#ui09-tree-hr .ui09-hr-group-body{display:grid;gap:3px;margin:3px 0 7px;margin-inline-start:8px;padding-inline-start:6px;border-inline-start:1px solid var(--mx-border,#384349)}
+#ui09-tree-hr .ui09-hr-group:has([aria-current=page])>summary{color:var(--accent,#e1c46e)}
+#ui09-tree-hr .ui09-tree-count{margin-inline-start:auto;font-size:11px;min-width:19px;padding:0 4px;border-radius:6px;background:var(--mx-hover,#ffffff12);text-align:center}
+@media(prefers-reduced-motion:reduce){#ui09-tree-hr .ui09-hr-group>summary::after{transition:none}}
+
 html.mosh-meta #appShell .topbar #backBtn[data-ui09-back]{font-size:22px!important}html.mosh-meta #appShell .topbar #backBtn[data-ui09-back]::after{content:none}

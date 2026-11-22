@@ -11,7 +11,7 @@ const uid=()=>String(window.MoshApi?.user?.id||'');
 const textDate=v=>{if(!v)return '—';const d=new Date(v);return isNaN(d)?String(v):d.toLocaleString('ar-SY',{hour12:false,dateStyle:'short',timeStyle:'short'})};
 const getForm=form=>Object.fromEntries(new FormData(form).entries());
 const req=()=>{const bytes=new Uint8Array(16);if(globalThis.crypto?.getRandomValues)crypto.getRandomValues(bytes);else for(let i=0;i<bytes.length;i++)bytes[i]=Math.floor(Math.random()*256);return 'r24-'+Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('')};
-const labelStatus={working:'عم يشتغل',break:'استراحة',no_work:'لا يوجد عمل',untracked:'حاضر بلا نشاط مسجّل',off:'خارج الدوام',unknown:'نشاط غير مؤكّد'};
+const labelStatus={working:'يعمل حالياً',break:'استراحة',no_work:'لا يوجد عمل',untracked:'حاضر بلا نشاط مسجّل',off:'خارج الدوام',unknown:'نشاط غير مؤكّد'};
 const statusClass={working:'ok',break:'warn',no_work:'warn',untracked:'bad',off:'',unknown:'warn'};
 const bt=(label,action,extra='',kind='')=>`<button type="button" class="r24-button ${kind}" data-r24="${safe(action)}" ${extra}>${label}</button>`;
 const option=(v,label,active='')=>`<option value="${safe(v)}" ${String(v)===String(active)?'selected':''}>${safe(label)}</option>`;
@@ -19,7 +19,7 @@ const firstTab=['dashboard','employees','approvals','purchases'];
 const S={active:'dashboard',overview:null,approvals:null,purchases:null,decisions:null,alerts:null,presets:null,report:null,
  employeeFilter:{q:'',dept:'',status:''},approvalFilter:{status:'mine',type:''},purchaseFilter:{q:'',status:''},
  reportFilters:{type:'tasks',department:'',employeeId:'',from:'',to:''},archiveFilter:'all',loading:false,busy:false,loaded:false,modal:null,
- signatureConfigured:false,accountId:'',open:false,policies:null,policyUsers:null,sealInfo:null};
+ signatureConfigured:false,accountId:'',open:false,taskView:'',policies:null,policyUsers:null,sealInfo:null};
 function content(){return $('r24AdminRoot')}
 // R36.1: Bootstrap returns User::document(), not effectivePermissions().
 // Use the SAME permission resolver used by the sidebar. Server authorization is unchanged.
@@ -35,7 +35,7 @@ function showError(err){const target=$('r24Page');if(target)target.innerHTML=`<d
 async function post(path,payload){if(S.busy)throw new Error('عملية حفظ أخرى قيد التنفيذ.');S.busy=true;try{const result=await api(path,{method:'POST',body:{...payload,requestId:req()}});document.dispatchEvent(new CustomEvent('mosh:r24-admin-updated'));return result}finally{S.busy=false}}
 function timesince(ms){const t=Number(ms);if(!t||t>Date.now()+120000)return '—';const m=Math.max(0,Math.floor((Date.now()-t)/60000));return `${Math.floor(m/60)} س ${m%60} د`}
 function filterByState(list,status){return status?list.filter(x=>x.status===status):list}
-function wrapTable(head,rows){return `<div class="r24-table-wrap"><table><thead><tr>${head.map(v=>`<th>${safe(v)}</th>`).join('')}</tr></thead><tbody>${rows.join('')||`<tr><td colspan="${head.length}" class="r24-empty">لا توجد بيانات ضمن هالاختيار.</td></tr>`}</tbody></table></div>`}
+function wrapTable(head,rows){return `<div class="r24-table-wrap"><table><thead><tr>${head.map(v=>`<th>${safe(v)}</th>`).join('')}</tr></thead><tbody>${rows.join('')||`<tr><td colspan="${head.length}" class="r24-empty">لا توجد بيانات وفق هذا الاختيار.</td></tr>`}</tbody></table></div>`}
 function pill(v,kind=''){return `<span class="r24-pill ${kind}">${safe(v)}</span>`}
 function nav(){const label=[['dashboard','لوحة التحكم'],['employees','متابعة الموظفين'],['approvals','الاعتمادات'],['purchases','متابعة المشتريات']];
  const count=(S.approvals?.items||[]).filter(x=>x.canDecide).length;
@@ -51,11 +51,11 @@ function nav(){const label=[['dashboard','لوحة التحكم'],['employees','
 }
 function dashboard(){const o=S.overview;
  if(!o)return '<div class="r24-loading">لا توجد بيانات.</div>';
- const c=o.totals||{},types=[['working','عم يشتغلون'],['break','استراحة'],['no_work','لا يوجد عمل'],['untracked','بدون نشاط مسجّل']];
+ const c=o.totals||{},types=[['working','يعملون حالياً'],['break','استراحة'],['no_work','لا يوجد عمل'],['untracked','بدون نشاط مسجّل']];
  return `<div class="r24-grid">${types.map(([s,t])=>`<button type="button" class="r24-card r24-metric" data-r24="employee-status" data-status="${s}"><span class="r24-muted">${t}</span><b>${Number(c[s]||0)}</b><span class="r24-mini r24-muted">اضغط لعرض الموظفين ←</span></button>`).join('')}</div>
  <div class="r24-grid r24-section" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button type="button" data-r24="go" data-view="approvals" class="r24-card r24-metric"><span class="r24-muted">طلبات الخصم والعقوبات بانتظار الإدارة</span><b>${o.pendingApprovals||0}</b></button>
  <button type="button" data-r24="go" data-view="alerts" class="r24-card r24-metric"><span class="r24-muted">ردود جديدة على التنبيهات</span><b>${o.newReplies||0}</b></button></div>
- <div class="r24-notice">${safe(o.sourceNote||'')} وتقدر تشوف جميع الموظفين حسب القسم أو الاسم ضمن «متابعة الموظفين».</div>`;
+ <div class="r24-notice">${safe(o.sourceNote||'')} ويمكنك الاطلاع على جميع الموظفين حسب القسم أو الاسم ضمن «متابعة الموظفين».</div>`;
 }
 function employees(){const data=S.overview?.employees||[],f=S.employeeFilter;
  const depts=['',...new Set(data.map(x=>x.department).filter(Boolean))];
@@ -70,7 +70,7 @@ function approvals(){const f=S.approvalFilter,data=S.approvals?.items||[];
  return `<div class="r24-section-head"><h2>الاعتمادات الإدارية</h2><span class="r24-muted r24-mini">التفاصيل أولاً، ثم الموافقة أو الإرجاع</span></div>
  <div class="r24-toolbar"><label>عرض<select data-r24-approval="status">${option('mine','بانتظار موافقتك فقط',f.status)}${option('all','كل السجلات',f.status)}</select></label><label>النوع<select data-r24-approval="type">${option('','جميع الأنواع',f.type)}${option('disciplinary','خصم وعقوبة',f.type)}${option('purchase-managed','مشتريات بموافقات',f.type)}${option('purchase-legacy','مشتريات سابقة',f.type)}</select></label></div>
  ${wrapTable(['الطلب','القسم','مرحلة الاعتماد','الحالة','عرض'],list.map(x=>`<tr><td><b>${safe(x.title)}</b><div class="r24-muted r24-mini">${safe(x.requester)} · ${safe(x.id)}</div></td><td>${safe(x.department)}</td><td>${safe(x.stage)}</td><td>${pill(x.status==='pending_admin'?'بانتظار موافقتك':x.status)}</td><td>${bt('عرض التفاصيل','approval-detail',`data-id="${safe(x.id)}"`)}</td></tr>`))}
- <div class="r24-notice">اعتماد المشتريات الموجود مسبقاً ما زال يتم من مساره الأصلي. ما رح نسمح بموافقة شكلية تتجاوز فحص المورد والطلب.</div>`;
+ <div class="r24-notice">يستمر اعتماد المشتريات الحالية عبر مساره الأصلي، مع الالتزام بالتحقق من المورد والطلب قبل الموافقة.</div>`;
 }
 function purchases(){const f=S.purchaseFilter,items=(S.purchases?.items||[]).filter(x=>(!f.q||[x.title,x.number,x.department].join(' ').toLowerCase().includes(f.q.toLowerCase()))&&(!f.status||x.stage===f.status));
  const statuses=['',...new Set((S.purchases?.items||[]).map(x=>x.stage).filter(Boolean))];
@@ -82,8 +82,8 @@ function reports(){const f=S.reportFilters,rs=S.report,pr=S.presets?.items||{};
  <form data-r24-submit="report" class="r24-card r24-report-controls"><label>نوع التقرير<select name="type">${[['tasks','المهام'],['employees','الموظفون'],['attendance','سجل الدوام'],['purchases','المشتريات'],['disciplinary','الخصومات والعقوبات']].map(([x,y])=>option(x,y,f.type)).join('')}</select></label>
  <label>القسم<input name="department" value="${safe(f.department)}" placeholder="كل الأقسام (حسب الصلاحيات)"></label><label>رقم الموظف (اختياري)<input name="employeeId" value="${safe(f.employeeId)}" placeholder="EMP/..."></label>
  <label>من تاريخ<input type="date" name="from" value="${safe(f.from)}"></label><label>إلى تاريخ<input type="date" name="to" value="${safe(f.to)}"></label>
- <div class="r24-actions" style="align-self:end"><button class="r24-button r24-primary" type="submit">إنشاء التقرير</button>${bt('حفظ الفلترة','preset-form')}</div></form>
- <div class="r24-section r24-card"><h3>فلاتري المحفوظة (خاصة بحسابي)</h3><div class="r24-actions" style="margin-top:10px">${Object.values(pr).map(p=>`${bt(safe(p.name),'preset-load',`data-id="${safe(p.id)}"`)}${bt('×','preset-delete',`data-id="${safe(p.id)}" title="حذف الفلترة"`,'r24-danger')}`).join('')||'<span class="r24-muted">ما عندك فلاتر محفوظة.</span>'}</div></div>
+ <div class="r24-actions" style="align-self:end"><button class="r24-button r24-primary" type="submit">إنشاء التقرير</button>${bt('حفظ التصفية','preset-form')}</div></form>
+ <div class="r24-section r24-card"><h3>خيارات التصفية المحفوظة (خاصة بحسابي)</h3><div class="r24-actions" style="margin-top:10px">${Object.values(pr).map(p=>`${bt(safe(p.name),'preset-load',`data-id="${safe(p.id)}"`)}${bt('×','preset-delete',`data-id="${safe(p.id)}" title="حذف الفلترة"`,'r24-danger')}`).join('')||'<span class="r24-muted">لا توجد لديك خيارات تصفية محفوظة.</span>'}</div></div>
  ${rs?`<section class="r24-section"><div class="r24-section-head"><h2>نتيجة التقرير · ${rs.count} سجل</h2><div class="r24-actions">${bt('تصدير CSV / Excel','report-csv')}${bt('طباعة / PDF','report-print')}</div></div>${wrapTable(rs.columns,(rs.rows||[]).map(row=>'<tr>'+row.map(x=>`<td>${safe(x)}</td>`).join('')+'</tr>'))}<p class="r24-muted r24-mini">وقت استخراج البيانات: ${textDate(rs.generatedAt)}. الأرقام من السجلات الفعلية فقط.</p></section>`:''}`;
 }
 function decisionCode(d){return d.number||d.decisionNo||d.decisionNumber||d.orderNo||d.code||d.id||'—'}
@@ -143,7 +143,7 @@ async function load(view,force=false){
   if(uid()!==who||requestGeneration!==generation||latestFor.get(key)!==requestKey)return;
   S[key]=result;loadedKey.set(key,requestKey);loadedAt.set(requestKey,Date.now());
  }catch(error){if(uid()!==who||requestGeneration!==generation)return;
-  if(error.status===403)throw new Error('ما عندك صلاحية للوصول إلى هالقسم.');throw error;
+  if(error.status===403)throw new Error('ليس لديك صلاحية الوصول إلى هذا القسم.');throw error;
  }})();
  inFlight.set(requestKey,work);
  try{return await work}finally{if(inFlight.get(requestKey)===work)inFlight.delete(requestKey)}
@@ -159,7 +159,21 @@ function enter(){
  if(!app.classList.contains('r24-admin-mode'))app.classList.add('r24-admin-mode');
  const root=content();if(root)root.hidden=false;const back=$('r38AdminBack');if(back)back.hidden=true;
  if(S.accountId!==uid()){clearLoaded();S.accountId=uid();}
- S.open=true;close();return go('dashboard');
+ S.open=true;S.taskView='';close();return go('dashboard');
+}
+function openTasks(mode){
+ const app=$('adminApp'),root=content();
+ if(!app?.classList.contains('active')||!root||!roleCan())return false;
+ if(!['running','assign'].includes(mode)||!window.MoshAuth37?.canModule('admin',mode))return false;
+ // The R24 shell hides all legacy children while its dashboard is active.
+ // Cancel dashboard reads before revealing the existing task workspace.
+ ++viewGeneration;cancelReads();close();S.open=true;S.taskView=mode;
+ root.hidden=true;app.classList.remove('r24-admin-mode');
+ if(mode==='running')window.openProductiveRunningTasksPage('admin');
+ else window.MoshDepartmentDashboard.openAssignment('admin');
+ const radio=$(mode==='running'?'adminTabRunning':'adminTabDistribution');
+ if(radio)radio.checked=true;
+ return true;
 }
 function modal(title,html){let host=$('r24Backdrop');if(!host)return;host.hidden=false;$('r24ModalTitle').textContent=title;$('r24ModalBody').innerHTML=html;
  S.modal={title};setTimeout(()=>host.querySelector('input:not([type=hidden]),textarea,select')?.focus(),10);
@@ -178,7 +192,7 @@ async function taskDetails(id){const d=await api('/tasks/'+enc(id));modal('تف�
 function alertForm(id){const e=(S.overview?.employees||[]).find(x=>x.id===id);if(!e)return;
  modal('تنبيه إداري · '+e.name,`<form data-r24-submit="send-alert" class="r24-form-grid"><input type="hidden" name="employeeId" value="${safe(id)}"><label>الجهة المستلمة<select name="target">${option('employee','الموظف نفسه')}${option('manager','مدير قسمه')}${option('both','الموظف ومديره')}</select></label><label class="wide">سبب التنبيه<textarea name="message" rows="4" required placeholder="اكتب الملاحظة التي تريد توثيقها"></textarea></label><div class="wide r24-muted">التنبيه إداري وليس عقوبة، ويمكن للموظف الرد مع حفظ كامل السجل.</div><div class="r24-form-actions wide"><button type="submit" class="r24-button r24-primary">إرسال التنبيه</button>${bt('إلغاء','modal-close')}</div></form>`)}
 function alertDetail(id){const x=(S.alerts?.items||[]).find(y=>y.id===id);if(!x)return;
- modal('سجل التنبيه · '+x.employeeName,`<div class="r24-card"><p><b>نص التنبيه:</b> ${safe(x.message)}</p><p class="r24-muted">أُرسل بواسطة ${safe(x.sentByName)} · ${textDate(x.createdAt)}</p></div>${x.reply?`<div class="r24-notice"><b>رد الموظف:</b><p>${safe(x.reply)}</p><small>${textDate(x.replyAt)}</small></div>`:'<div class="r24-muted r24-section">ما وصل رد بعد.</div>'}${x.reply&&!x.replySeenAt?bt('تم الاطلاع على الرد','alert-seen',`data-id="${safe(id)}"`,'r24-primary'):''}${bt('إغلاق','modal-close')}`)}
+ modal('سجل التنبيه · '+x.employeeName,`<div class="r24-card"><p><b>نص التنبيه:</b> ${safe(x.message)}</p><p class="r24-muted">أُرسل بواسطة ${safe(x.sentByName)} · ${textDate(x.createdAt)}</p></div>${x.reply?`<div class="r24-notice"><b>رد الموظف:</b><p>${safe(x.reply)}</p><small>${textDate(x.replyAt)}</small></div>`:'<div class="r24-muted r24-section">لم يرد أي رد بعد.</div>'}${x.reply&&!x.replySeenAt?bt('تم الاطلاع على الرد','alert-seen',`data-id="${safe(id)}"`,'r24-primary'):''}${bt('إغلاق','modal-close')}`)}
 function approvalDetail(id){const x=(S.approvals?.items||[]).find(y=>y.id===id);if(!x)return;
  modal('تفاصيل طلب الاعتماد',`<div class="r24-card"><h2>${safe(x.title)}</h2><p class="r24-muted">${safe(x.requester)} · ${safe(x.department)} · ${safe(x.stage)}</p><p class="r24-pre">${safe(x.reason||x.details||'')}</p><p><b>المبلغ:</b> ${safe(x.amount??'غير محدد')} ${safe(x.currency||'')}</p></div>
  <h3 style="margin:15px 0">الموافقات والسجل السابق</h3>${timeline(x.history)}<h3 style="margin:15px 0">المرفقات</h3><div class="r24-card">${(x.attachments||[]).map(f=>`<div>${safe(f.name||f.fileName||f.key||'مرفق')}</div>`).join('')||'لا يوجد مرفقات'}</div>
@@ -231,10 +245,10 @@ async function sealSettings(){
  const approved=data.active;
  modal('ختم موش الرسمي',`<p class="r24-muted">تغيير الختم يحتاج موافقة المدير العام. الختم القديم يضل معتمداً لحد الموافقة.</p>${approved?`<div class="r24-card"><p>الختم الحالي: ${safe(approved.id)}</p><img src="${safe(approved.image)}" style="max-width:170px;max-height:130px" alt="الختم المعتمد"></div>`:'<p>لم يُعتمد ختم رسمي بعد.</p>'}
  ${data.canPropose?`<form data-r24-submit="seal-propose" class="r24-card"><h3>طلب تغيير الختم</h3><label>صورة الختم PNG<input type="file" name="sealFile" accept="image/png" required></label><label>سبب التغيير<textarea name="reason" required></textarea></label><label>تأكيد كلمة السر<input type="password" name="password" required></label><div class="r24-form-actions"><button class="r24-button r24-primary">إرسال الطلب للمدير العام</button></div></form>`:''}
- ${data.canApprove?`<h3>طلبات بانتظار موافقة المدير العام</h3>${(data.pending||[]).map(x=>`<div class="r24-card" style="margin-top:10px"><p>${safe(x.proposedBy)} · ${textDate(x.proposedAt)}</p>${x.image?`<img alt="الختم الجديد المقترح" src="${safe(x.image)}" style="max-width:170px;max-height:130px">`:''}<p>${safe(x.reason)}</p><div class="r24-form-actions">${bt('اعتماد','seal-decide',`data-id="${safe(x.id)}" data-version="${x._version}" data-decision="approve"`,'r24-primary')}${bt('رفض','seal-decide',`data-id="${safe(x.id)}" data-version="${x._version}" data-decision="reject"`,'r24-danger')}</div></div>`).join('')||'<p class="r24-muted">ما في طلبات تغيير معلّقة.</p>'}`:''}${bt('إغلاق','modal-close')}`);
+ ${data.canApprove?`<h3>طلبات بانتظار موافقة المدير العام</h3>${(data.pending||[]).map(x=>`<div class="r24-card" style="margin-top:10px"><p>${safe(x.proposedBy)} · ${textDate(x.proposedAt)}</p>${x.image?`<img alt="الختم الجديد المقترح" src="${safe(x.image)}" style="max-width:170px;max-height:130px">`:''}<p>${safe(x.reason)}</p><div class="r24-form-actions">${bt('اعتماد','seal-decide',`data-id="${safe(x.id)}" data-version="${x._version}" data-decision="approve"`,'r24-primary')}${bt('رفض','seal-decide',`data-id="${safe(x.id)}" data-version="${x._version}" data-decision="reject"`,'r24-danger')}</div></div>`).join('')||'<p class="r24-muted">لا توجد طلبات تغيير معلّقة.</p>'}`:''}${bt('إغلاق','modal-close')}`);
 }
 function decisionPrintChoose(id){modal('طريقة طباعة القرار',`<p class="r24-muted">حدد شكل التوقيع والختم على النسخة المطبوعة.</p><div class="r24-form-actions">${bt('توقيع وختم إلكتروني','decision-print-mode',`data-id="${safe(id)}" data-mode="electronic"`,'r24-primary')}${bt('مكان للتوقيع والختم اليدوي','decision-print-mode',`data-id="${safe(id)}" data-mode="manual"`)}</div>`)}
-function presetForm(){modal('حفظ الفلترة باسم',`<form data-r24-submit="preset"><label>اسم الفلترة<input name="name" required maxlength="150" placeholder="مثلاً: تقرير مهام التصميم الشهري"></label><div class="r24-form-actions"><button type="submit" class="r24-button r24-primary">حفظ الفلترة لحسابي</button>${bt('إلغاء','modal-close')}</div></form>`)}
+function presetForm(){modal('حفظ التصفية باسم',`<form data-r24-submit="preset"><label>اسم الفلترة<input name="name" required maxlength="150" placeholder="مثلاً: تقرير مهام التصميم الشهري"></label><div class="r24-form-actions"><button type="submit" class="r24-button r24-primary">حفظ التصفية لحسابي</button>${bt('إلغاء','modal-close')}</div></form>`)}
 function exportCsv(){const r=S.report;if(!r)return;const quote=t=>'"'+String(t??'').replace(/"/g,'""')+'"',rows=[r.columns,...r.rows].map(row=>row.map(quote).join(',')).join('\r\n');
  const link=document.createElement('a'),blob=new Blob(['\ufeff',rows],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob);link.href=url;link.download='MOSH_R24_Report_'+new Date().toISOString().slice(0,10)+'.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 function printMarkup(title,markup){const w=window.open('','_blank','width=1000,height=720');if(!w){toast('اسمح بفتح نافذة الطباعة من المتصفح.');return}w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${safe(title)}</title><style>body{font:16px Arial,Tahoma,sans-serif;margin:40px;color:#111}h1{border-bottom:2px solid #c2a04e;padding-bottom:15px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #aaa;padding:8px;text-align:right}p{line-height:1.9}footer{margin-top:80px;border-top:1px solid #ddd;padding-top:12px;text-align:center}</style></head><body><h1>MOSH GROUP — ${safe(title)}</h1>${markup}<footer>نظام موش · طباعة معلومات النظام</footer></body></html>`);w.document.close();w.focus();w.print()}
@@ -296,7 +310,7 @@ async function onClick(e){const b=e.target.closest('[data-r24]');if(!b||!content
  else if(action==='report-csv')exportCsv();
  else if(action==='preset-form')presetForm();
  else if(action==='preset-load'){const p=S.presets?.items?.[id];if(!p)return;S.reportFilters={...S.reportFilters,...p.filters};renderPage();}
- else if(action==='preset-delete'){if(!confirm('حذف هالفلترة من حسابك فقط؟'))return;await post('/presets/'+enc(id)+'/delete',{});S.presets=await api('/presets');renderPage()}
+ else if(action==='preset-delete'){if(!confirm('هل تريد حذف هذه التصفية من حسابك فقط؟'))return;await post('/presets/'+enc(id)+'/delete',{});S.presets=await api('/presets');renderPage()}
  }catch(err){toast(errorMessage(err),true)}
 }
 function filter(e){const el=e.target;if(!content()?.contains(el))return;
@@ -335,10 +349,10 @@ function install(){const app=$('adminApp');if(!app)return;
   S.open=false;S.accountId='';++viewGeneration;clearLoaded();close();
   if(content())content().replaceChildren();app.classList.remove('r24-admin-mode');
  });
- document.addEventListener('mosh:refreshed',()=>{clearLoaded();if(app.classList.contains('active')){if(roleCan())void go(S.active,true);else activate();}});
+ document.addEventListener('mosh:refreshed',()=>{clearLoaded();if(app.classList.contains('active')){if(roleCan()){if(S.taskView)openTasks(S.taskView);else void go(S.active,true);}else activate();}});
  document.addEventListener('mosh:permissions-applied',activate);
  document.addEventListener('mosh:r24-admin-updated',()=>{clearLoaded();});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-window.MoshAdministration24={open:()=>{window.goApp?.('admin')},openAlert:async(id)=>{window.goApp?.('admin');await go('alerts',true);if(id)alertDetail(id)},refresh:()=>go(S.active,true),enter,version:'r36.1-admin-audit'};
+window.MoshAdministration24={open:()=>{window.goApp?.('admin')},openAlert:async(id)=>{window.goApp?.('admin');await go('alerts',true);if(id)alertDetail(id)},refresh:()=>S.taskView?openTasks(S.taskView):go(S.active,true),enter,openTasks,version:'r36.2-admin-task-navigation'};
 })();

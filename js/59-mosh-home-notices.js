@@ -61,7 +61,7 @@
     if (!$('moshNoticeStrip52')) {
       const strip=document.createElement('section'); strip.id='moshNoticeStrip52';strip.className='nt52-strip';strip.dir='rtl';
       strip.setAttribute('aria-labelledby','nt52Heading');
-      strip.innerHTML='<div class="nt52-strip-head"><div class="nt52-heading">'+bell+'<h3 id="nt52Heading">التنبيهات والتعاميم</h3><span id="nt52Count" class="nt52-count" aria-live="polite" aria-atomic="true"></span></div><div class="nt52-strip-tools"><button type="button" class="nt52-icon" data-nt52-refresh aria-label="تحديث التنبيهات" title="تحديث التنبيهات">↻</button><button type="button" class="nt52-link" data-nt52-list>عرض الجميع ←</button></div></div><div id="nt52Feature" class="nt52-feature" hidden></div><div id="nt52Error" class="nt52-error" role="status" hidden></div>';
+      strip.innerHTML='<div class="nt52-strip-head"><div class="nt52-heading">'+bell+'<h3 id="nt52Heading">التنبيهات والتعاميم</h3><span id="nt52Count" class="nt52-count" aria-live="polite" aria-atomic="true"></span></div><div class="nt52-strip-tools"><button type="button" class="nt52-icon" data-nt52-refresh aria-label="تحديث التنبيهات" title="تحديث التنبيهات">↻</button><button type="button" class="nt52-link" data-nt52-list>عرض الكل ←</button></div></div><div id="nt52Feature" class="nt52-feature" hidden></div><div id="nt52Error" class="nt52-error" role="status" hidden></div>';
       header.after(strip);
     }
     // Keep legacy binding IDs alive, but remove the duplicate tiles/cards from the layout.
@@ -87,8 +87,8 @@
     const signature=JSON.stringify([owner,unread.map(x=>[x.id,x.title,x.message,x._version,urgent(x)]),all.length,error,fetching]);
     if (previousSignature!==signature) {
       previousSignature=signature;strip.classList.toggle('has-new',!!n);
-      updateText('nt52Count',unread.length?unread.length+' غير مقروءة':'لا يوجد جديد');
-      strip.querySelector('[data-nt52-list]').textContent=unread.length?'عرض الجميع ←':'السجل ←';
+      updateText('nt52Count',unread.length?unread.length+' غير مقروءة':'لا توجد إشعارات جديدة');
+      strip.querySelector('[data-nt52-list]').textContent=unread.length?'عرض الكل ←':'السجل ←';
       strip.querySelector('[data-nt52-refresh]').disabled=fetching;
       const feature=$('nt52Feature');feature.hidden=!n;
       if(n) feature.innerHTML='<div class="nt52-feature-copy"><div class="nt52-feature-title">'+(urgent(n)?'<span class="nt52-urgent">عاجل</span>':'')+'<button type="button" data-nt52-open="'+esc(n.id)+'">'+esc(n.title||typeName(n))+'</button></div><p>'+esc(n.message||'')+'</p><small>'+esc([typeName(n),n.sourceDepartment||n.createdBy||'الإدارة',date(n.createdAt)].filter(Boolean).join(' · '))+'</small></div><button type="button" class="nt52-open" data-nt52-open="'+esc(n.id)+'">عرض '+typeName(n)+' ←</button>';

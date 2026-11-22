@@ -5,60 +5,78 @@ if(window.MoshR14Polish)return;
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
 const visible=el=>!!el&&el.getClientRects().length>0&&!el.hidden;
 const text=el=>String(el?.textContent||'').replace(/\s+/g,' ').trim();
-let bypassExit=false,pendingPhotoFile=null,pendingPhotoPreview='';
+let bypassExit=false,pendingPhotoFile=null,pendingPhotoPreview='',editRevision=0;
 
 function dirty(){try{return typeof appIsDirty!=='undefined'&&!!appIsDirty}catch(e){return document.body.dataset.r14Dirty==='1'}}
 function setDirty(v=true){try{if(typeof setDirtyState==='function')setDirtyState(v);else document.body.dataset.r14Dirty=v?'1':'0'}catch(e){document.body.dataset.r14Dirty=v?'1':'0'}}
-function activeSurface(){return qa('.modal.show,.hr-pro-modal-root:not([hidden]),dialog[open],.auth37-editorback').filter(visible).pop()||qa('#emp47TaskOverlay.show').find(visible)||q('.view.active')||document.body}
+function activeSurface(){return qa('.modal.show,.hr-pro-modal-root:not([hidden]),dialog[open],.auth37-editorback,#mgr28Modal').filter(visible).pop()||qa('#emp47TaskOverlay.show').find(visible)||q('.view.active')||document.body}
 function isFilter(el){if(!el)return false;return el.matches('input[type=search],[data-filter],#wd50LogDate,#appListSearch,#salesReportSearch')||/بحث|فلتر|filter/i.test(el.id||'')}
-function isEditorControl(el){if(!el||isFilter(el)||el.disabled||el.readOnly||el.closest('[data-chat34-task]'))return false;const surface=el.closest('.modal.show,.hr-profile-shell,.hr-pro-modal,.o18-dialog,.auth37-editorbox,.sales-task-card,.service-contract-editor,.quote-editor,.settings-editor');return !!surface&&el.matches('input:not([type=search]),textarea,select,[contenteditable=true]')}
+function isEditorControl(el){if(!el||isFilter(el)||el.disabled||el.readOnly||el.closest('[data-chat34-task]')||/^(managerAssignee_|managerTransferDept_|managerTransferAdmin_)/.test(el.id||''))return false;const surface=el.closest('.modal.show,.hr-profile-shell,.hr-pro-modal,.o18-dialog,.auth37-editorbox,.sales-task-card,.service-contract-editor,.quote-editor,.settings-editor');return !!surface&&el.matches('input:not([type=search]),textarea,select,[contenteditable=true]')}
 
 function ensureDialog(){
  let d=q('#r14UnsavedDialog');if(d)return d;
  d=document.createElement('dialog');d.id='r14UnsavedDialog';d.setAttribute('aria-labelledby','r40UnsavedTitle');d.setAttribute('aria-describedby','r40UnsavedDescription');
- d.innerHTML='<div class="r14-confirm-body"><div class="r40-exit-heading"><span class="r40-exit-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h6M14 2v6h6M14 2l6 6v4"/><circle cx="18" cy="18" r="4"/><path d="M18 16v2l1 1"/></svg></span><div><h3 id="r40UnsavedTitle">حفظ التعديلات قبل الخروج؟</h3><p id="r40UnsavedDescription">عندك تعديلات لسه ما انحفظت.</p></div></div></div><footer><button type="button" class="btn" data-r14="save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>حفظ والخروج</button><button type="button" class="btn" data-r14="discard">الخروج دون حفظ</button><button type="button" class="btn" data-r14="cancel" autofocus>متابعة التعديل</button></footer>';
+ d.innerHTML='<div class="r14-confirm-body"><div class="r40-exit-heading"><span class="r40-exit-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h6M14 2v6h6M14 2l6 6v4"/><circle cx="18" cy="18" r="4"/><path d="M18 16v2l1 1"/></svg></span><div><h3 id="r40UnsavedTitle">حفظ التعديلات قبل الخروج؟</h3><p id="r40UnsavedDescription">لديك تعديلات لم تُحفظ بعد.</p></div></div></div><footer><button type="button" class="btn" data-r14="save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>حفظ والخروج</button><button type="button" class="btn" data-r14="discard">الخروج دون حفظ</button><button type="button" class="btn" data-r14="cancel" autofocus>متابعة التعديل</button></footer>';
  document.body.appendChild(d);d.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();d.querySelector('[data-r14="save"]')?.click();}else if(e.key==='Escape'){e.preventDefault();d.querySelector('[data-r14="cancel"]')?.click();}});return d;
+}
+function isSaveAction(button){
+ const label=text(button),handler=button.getAttribute('onclick')||'';
+ if(button.closest('#r14UnsavedDialog')||button.classList.contains('r35-ui-navigation')||/\b(?:open\w*|goApp|render\w*|toggle\w*)\s*\(/.test(handler)||/\.(?:open|openTasks|reviewTask)\s*\(/.test(handler))return false;
+ if(button.classList.contains('save-btn'))return true;
+ return /^(حفظ|إنشاء المهمة|إرسال الطلب|تسجيل|تحديث وحفظ)/.test(label)&&!/مسودة/.test(label);
 }
 function findSaveButton(surface=activeSurface()){
  const taskEditor=q('.mw08-editor',surface);if(dirty()&&taskEditor&&!taskEditor.open)taskEditor.open=true;
- const buttons=qa('button',surface).filter(b=>visible(b)&&!b.disabled&&b.getAttribute('aria-disabled')!=='true'&&!b.classList.contains('mosh-auth-hidden'));
- return buttons.find(b=>/^(حفظ|حفظ التغييرات|حفظ وإغلاق|إنشاء المهمة|إرسال الطلب|اعتماد|تسجيل|تحديث وحفظ)/.test(text(b))&&!/مسودة/.test(text(b)))||buttons.find(b=>b.classList.contains('primary')&&/حفظ|إنشاء|إرسال|اعتماد/.test(text(b)))||null;
+ return qa('button',surface).find(b=>visible(b)&&!b.disabled&&b.getAttribute('aria-disabled')!=='true'&&!b.classList.contains('mosh-auth-hidden')&&isSaveAction(b))||null;
 }
 let activeExitRequest=null;
 function requestUnsavedExit(exitAction){
  if(activeExitRequest)return activeExitRequest;
  const sourceSurface=activeSurface(),sourceSave=findSaveButton(sourceSurface),d=ensureDialog();
- let timer=null,closed=false,saving=false,resolveRequest;
+ let timer=null,deadline=null,closed=false,saving=false,resolveRequest,saveConfirmed=false,saveFailure=null,saveRevision=0,armed=false;
  const promise=new Promise(resolve=>{resolveRequest=resolve;});activeExitRequest=promise;
  let status=q('[data-r36-exit-status]',d);if(!status){status=document.createElement('p');status.dataset.r36ExitStatus='';status.setAttribute('role','status');d.querySelector('.r14-confirm-body').append(status);}status.textContent='';
  const saveButton=d.querySelector('[data-r14="save"]');saveButton.disabled=!sourceSave;
- if(!sourceSave)status.textContent='لا يوجد حفظ متاح بهذه الشاشة. يمكنك العودة أو الخروج بدون حفظ.';
- const done=value=>{if(closed)return;closed=true;clearTimeout(timer);d.onclick=null;d.oncancel=null;d.onclose=null;try{d.close();}catch(_){}activeExitRequest=null;resolveRequest(value);};
+ if(!sourceSave)status.textContent='لا يوجد نموذج قابل للحفظ في هذه النافذة. يمكنك متابعة التعديل أو الخروج دون حفظ.';
+ const notify=message=>{status.textContent=message;if(window.MoshUI19?.toast)window.MoshUI19.toast(message);else if(typeof window.toast==='function')window.toast(message);};
+ const confirmed=()=>{if(armed&&saving)saveConfirmed=true;};
+ const failed=e=>{if(armed&&saving)saveFailure=e.detail||new Error('تعذر الحفظ.');};
+ document.addEventListener('mosh:saved',confirmed);document.addEventListener('mosh:save-confirmed',confirmed);document.addEventListener('mosh:save-failed',failed);document.addEventListener('mosh:validation-error',failed);
+ const done=value=>{if(closed)return;closed=true;clearTimeout(timer);clearTimeout(deadline);document.removeEventListener('mosh:saved',confirmed);document.removeEventListener('mosh:save-confirmed',confirmed);document.removeEventListener('mosh:save-failed',failed);document.removeEventListener('mosh:validation-error',failed);d.onclick=null;d.oncancel=null;d.onclose=null;try{d.close();}catch(_){}activeExitRequest=null;resolveRequest(value);};
  const leave=()=>{done(true);bypassExit=true;try{exitAction?.();}finally{setTimeout(()=>bypassExit=false,0);}};
+ const fail=message=>{setDirty(true);done(false);notify(message);sourceSurface.querySelector?.(':invalid')?.focus?.();};
  d.oncancel=e=>{e.preventDefault();done(false);};d.onclose=()=>done(false);
  d.onclick=async e=>{const b=e.target.closest('[data-r14]');if(!b)return;const action=b.dataset.r14;
   e.preventDefault();e.stopPropagation();
   if(action==='cancel')return done(false);
   if(action==='discard'){
-   if(window.MoshApi?.isSaving?.()){status.textContent='طلب الحفظ ما زال قيد التحقق. يمكنك إلغاء هذه النافذة والعودة؛ لا نفترض أن الطلب فشل.';return;}
-   // Discard uncommitted in-memory state; never write a rejection back to the database.
-   if(window.MoshApi?.discardUncommitted&&window.MoshApi.discardUncommitted()===false){status.textContent='هناك عملية غير مؤكدة. ألغِ هذه النافذة ثم تحقّق من الحفظ قبل تجاهل التعديلات.';return;}setDirty(false);return leave();
+   if(window.MoshApi?.isSaving?.()){status.textContent='طلب الحفظ ما زال قيد التحقق. يمكنك العودة إلى النموذج؛ لم يصل تأكيد من الخادم بعد.';return;}
+   if(window.MoshApi?.discardUncommitted&&window.MoshApi.discardUncommitted()===false){status.textContent='تعذر تأكيد العملية السابقة. عُد إلى النموذج وتحقق منها قبل تجاهل التعديلات.';return;}setDirty(false);return leave();
   }
   if(action!=='save'||saving)return;
   const save=sourceSave?.isConnected&&!sourceSave.disabled?sourceSave:findSaveButton(sourceSurface);
-  if(!save){status.textContent='الحفظ غير متاح حسب صلاحيتك أو حالة النموذج. يمكنك العودة أو الخروج بدون حفظ.';saveButton.disabled=true;return;}
-  saving=true;saveButton.disabled=true;status.textContent='جارٍ التحقق من الحفظ…';
-  try{save.click();}catch(error){saving=false;saveButton.disabled=false;status.textContent=error.message||'تعذر الحفظ.';return;}
+  if(!save)return fail('لم يتم الحفظ: لا يوجد زر حفظ متاح لهذا النموذج حسب الصلاحيات الحالية.');
+  const form=save.form||save.closest?.('form');
+  if(form?.reportValidity&&!form.reportValidity())return fail('لم يتم الحفظ. أكمل الحقول المطلوبة وصحّح القيم المعلّمة، ثم حاول مجدداً.');
+  saving=true;saveButton.disabled=true;status.textContent='جارٍ الحفظ…';saveConfirmed=false;saveFailure=null;armed=false;
+  // Includes the earlier-request drain; even a stalled earlier operation cannot trap this dialog forever.
+  deadline=setTimeout(()=>{if(!closed)fail('تعذر تأكيد الحفظ خلال المهلة المحددة. احتفظنا بالتعديلات في النموذج؛ تحقق من الاتصال ومن نتيجة العملية قبل المحاولة مجدداً.');},90000);
+  try{await window.MoshApi?.flush?.();if(closed)return;saveRevision=editRevision;armed=true;save.click();}catch(error){if(!closed)fail(error.message||'لم يتم الحفظ. حاول مجدداً.');return;}
   const started=Date.now();const wait=()=>{if(closed)return;
-   if(!dirty()&&!window.MoshApi?.isSaving?.())return leave();
-   if(Date.now()-started>=10000){saving=false;saveButton.disabled=false;status.textContent='لم يؤكد النظام الحفظ. راجع رسالة الخطأ؛ الإلغاء والرجوع يبقيان متاحين.';return;}
+   if(saveFailure&&!window.MoshApi?.isSaving?.())return fail(saveFailure.message||'لم يتم الحفظ. راجع البيانات وحاول مجدداً.');
+   if(saveConfirmed&&!window.MoshApi?.isSaving?.()){
+    if(editRevision===saveRevision){setDirty(false);notify('تم الحفظ بنجاح.');return leave();}
+    done(false);notify('تم حفظ التعديلات السابقة. لديك تعديلات أحدث في النموذج تحتاج إلى الحفظ.');return;
+   }
+   if(Date.now()-started>=10000&&!window.MoshApi?.isSaving?.())return fail('لم يتم تأكيد الحفظ. راجع البيانات المطلوبة في النموذج ثم حاول مجدداً.');
+   if(Date.now()-started>=10000)status.textContent='جارٍ انتظار تأكيد الحفظ من الخادم…';
    timer=setTimeout(wait,120);
   };timer=setTimeout(wait,120);
  };
  if(!d.open)d.showModal();return promise;
 }
 
-function exitCandidate(el){if(!el)return false;const t=text(el);if(/^(إغلاق|إلغاء|إلغاء الأمر|رجوع|رجوع للمهام|العودة|×|✕)$/.test(t))return true;return !!el.closest('[data-close-modal],[data-dismiss]');}
+function exitCandidate(el){if(!el||el.hasAttribute('data-r34-file-clear'))return false;const t=text(el);if(/^(إغلاق|إلغاء|إلغاء الأمر|رجوع|رجوع للمهام|العودة|×|✕)$/.test(t))return true;return !!el.closest('[data-close-modal],[data-dismiss]');}
 function performEscape(){
  const s=activeSurface();
  if(s===document.body)return;
@@ -69,8 +87,8 @@ function performEscape(){
  else if(s.classList.contains('modal'))s.classList.remove('show');
 }
 
-document.addEventListener('input',e=>{if(isEditorControl(e.target))setDirty(true)},true);
-document.addEventListener('change',e=>{if(isEditorControl(e.target))setDirty(true)},true);
+document.addEventListener('input',e=>{if(isEditorControl(e.target)){editRevision++;setDirty(true)}},true);
+document.addEventListener('change',e=>{if(isEditorControl(e.target)){editRevision++;setDirty(true)}},true);
 document.addEventListener('click',e=>{
  if(e.target.closest?.('#r14UnsavedDialog'))return;
  if(bypassExit||!dirty())return;const b=e.target.closest('button,a');if(!b||!visible(b)||!exitCandidate(b))return;
@@ -183,5 +201,5 @@ const schedule=()=>{if(scheduled)return;scheduled=true;requestAnimationFrame(dec
 new MutationObserver(schedule).observe(document.documentElement,{subtree:true,childList:true});
 document.addEventListener('DOMContentLoaded',schedule);setTimeout(schedule,100);setTimeout(schedule,1000);
 
-window.MoshR14Polish={version:'14.0',requestUnsavedExit,decorate};
+window.MoshR14Polish={version:'14.1',requestUnsavedExit,isEditorControl,decorate};
 })();
