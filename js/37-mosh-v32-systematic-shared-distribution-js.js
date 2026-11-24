@@ -50,7 +50,8 @@ function createChild(parent,dep,type,assignee,extra){
  var obj={
   id:id,number:no,taskNo:no,parentTaskId:parent.id,parentTaskNo:parent.taskNo||parent.number||'',parentTaskTitle:parent.title||'',
   salesOrderId:r.salesOrderId||null,salesOrderNo:r.salesOrderNo||'',origin:r.origin||(r.salesOrderId?'أمر مبيعات':'مهمة مباشرة'),createdBy:currentName(),
-  customer:r.customer||'',title:r.title||'مهمة مشتركة',description:r.description||'',department:dep,assignee:clean(assignee),
+  customer:r.customer||'',customerId:r.customerId||'',title:r.title||'مهمة مشتركة',description:r.description||'',department:dep,assignee:clean(assignee),
+  assigneeId:assignee?String(staffFor(dep).find(p=>clean(p.name)===clean(assignee))?.id||''):'',
   assignmentMode:assignee?'manager_assigned':'manager',employeeState:'new',reviewManager:'',returnedForRevision:false,dueDate:r.dueDate||'',notes:r.notes||'',
   status:'in_progress',createdAt:nowText(),history:[],sharedDistributionChild:true,sharedNodeType:type,sharedRootTaskId:r.id,sharedDepartment:dep,sharedVersion:VERSION
  };
@@ -69,17 +70,6 @@ function makeRoot(t,mode,leadDep){
 }
 function createDepartmentUnit(root,dep){
  return createChild(root,dep,'department','',{sharedTeamContainer:false,sharedDepartment:dep});
-}
-function convertUnitToTeam(unit,names,lead){
- var dep=deptOfUnit(unit);unit.sharedTeamContainer=true;unit.sharedDepartment=dep;unit.sharedTeamLead=lead||names[0]||'';unit.department='المهمات';unit.assignee='';unit.assignmentMode='shared_team';unit.employeeState='new';unit.status='shared_container';
- unit.history=arr(unit.history);unit.history.push({text:'وزّع مدير القسم هذا الجزء على فريق: '+names.join('، ')+'.',time:nowText(),by:currentName()});
- names.forEach(function(name){createChild(unit,dep,'member',name,{sharedLead:clean(name)===clean(unit.sharedTeamLead)})});
-}
-function createSameDepartmentTeam(t,names,lead){
- pushUndo();var dep=clean(t.department);var root=makeRoot(t,'team',dep);var unit=createDepartmentUnit(root,dep);convertUnitToTeam(unit,names,lead);syncStatuses(false);saveSafe();refreshBoards();openRoot(root.id);return root;
-}
-function createMultiDepartments(t,deps,lead){
- pushUndo();var root=makeRoot(t,'departments',lead||deps[0]);deps.forEach(function(dep){createDepartmentUnit(root,dep)});root.history.push({text:'الأقسام المشاركة: '+deps.map(displayDepartment).join('، ')+'.',time:nowText(),by:currentName()});syncStatuses(false);saveSafe();refreshBoards();openRoot(root.id);return root;
 }
 function addDepartments(root,deps){
  var existing=deptUnits(root.id).map(deptOfUnit);var add=deps.filter(function(d){return !existing.includes(d)});if(!add.length)return;
@@ -138,7 +128,7 @@ if(typeof BASE_MANAGER_TRANSFER==='function'){
  window.managerTransferTask=function(id,containerId,department){var t=task(id);if(isShared(t)){alert('هذا جزء من مهمة مشتركة. لإضافة قسم جديد افتح المهمة الرئيسية واستخدم «+ إضافة قسم».');return false}return BASE_MANAGER_TRANSFER.apply(this,arguments)};
 }
 if(typeof BASE_MANAGER_FINISH_SUB==='function'){
- window.managerFinishPackageSubTask=function(id,parentId,containerId,department){var t=task(id),shared=isShared(t);var result=BASE_MANAGER_FINISH_SUB.apply(this,arguments);if(shared){if(t&&t.history&&t.history.length)t.history[t.history.length-1].text='اعتمد مدير القسم انتهاء دوره في المهمة المشتركة.';syncStatuses(true);refreshBoards()}return result};
+ window.managerFinishPackageSubTask=async function(id,parentId,containerId,department){var shared=isShared(task(id));var result=await BASE_MANAGER_FINISH_SUB.apply(this,arguments);if(result&&shared){syncStatuses(true);refreshBoards()}return result};
 }
 if(typeof BASE_TASK_MANAGER_CONTROLS==='function'){
  window.taskManagerControlsHtml=function(t,containerId){var h=BASE_TASK_MANAGER_CONTROLS(t,containerId);if(!isShared(t))return h;
@@ -155,7 +145,7 @@ function ensureModal(){
 }
 var modalState=null;
 function closeModal(){var m=document.getElementById('sd32Modal');if(m)m.classList.remove('show');modalState=null}
-function teamCard(p,i){var n=clean(p.name);return '<label class="sd32-choice"><input type="checkbox" data-sd32-person="'+esc2(n)+'"><span><b>'+esc2(n)+'</b><small>'+esc2(p.department||'')+'</small></span><label class="sd32-lead"><input type="radio" name="sd32Lead" value="'+esc2(n)+'" disabled> مسؤول رئيسي</label></label>'}
+function teamCard(p){var n=clean(p.name);return '<label class="sd32-choice"><input type="checkbox" data-sd32-person="'+esc2(p.id)+'"><span><b>'+esc2(n)+'</b><small>'+esc2(p.department||'')+'</small></span><label class="sd32-lead"><input type="radio" name="sd32Lead" value="'+esc2(p.id)+'" disabled> مسؤول رئيسي</label></label>'}
 function openTeamModal(id){
  var t=task(id);if(!t||t.status!=='in_progress')return;var dep=isShared(t)?deptOfUnit(t):clean(t.department);var people=staffFor(dep);if(people.length<2){alert('لا يوجد موظفان متاحان على الأقل ضمن '+displayDepartment(dep)+'.');return}
  ensureModal();modalState={type:'team',taskId:String(id),department:dep};document.getElementById('sd32ModalKicker').textContent=displayDepartment(dep);document.getElementById('sd32ModalTitle').textContent='توزيع على أكثر من موظف';
@@ -163,11 +153,10 @@ function openTeamModal(id){
  var body=document.getElementById('sd32ModalBody');body.querySelectorAll('[data-sd32-person]').forEach(function(ch){ch.addEventListener('change',function(){var radio=ch.closest('.sd32-choice').querySelector('input[type=radio]');radio.disabled=!ch.checked;if(!ch.checked&&radio.checked)radio.checked=false})});
  document.getElementById('sd32SaveBtn').onclick=saveTeamModal;document.getElementById('sd32Modal').classList.add('show');
 }
-function saveTeamModal(){
+async function saveTeamModal(){
  if(!modalState||modalState.type!=='team')return;var t=task(modalState.taskId);if(!t)return;var checks=Array.from(document.querySelectorAll('#sd32ModalBody [data-sd32-person]:checked'));var names=checks.map(function(x){return x.getAttribute('data-sd32-person')});if(names.length<2){alert('اختر موظفين اثنين على الأقل.');return}
- var lead=document.querySelector('#sd32ModalBody input[name=sd32Lead]:checked');var leadName=lead?lead.value:names[0];closeModal();
- if(isShared(t)&&nodeType(t)==='department'){pushUndo();convertUnitToTeam(t,names,leadName);syncStatuses(false);saveSafe();refreshBoards();return}
- if(!isRoot(t)&&!isShared(t)){createSameDepartmentTeam(t,names,leadName)}
+ var lead=document.querySelector('#sd32ModalBody input[name=sd32Lead]:checked');
+ await distributeFromBoard(t,'team',names,lead?.value||names[0]);
 }
 function deptChoice(dep,selected,withLead){return '<label class="sd32-choice dep"><input type="checkbox" data-sd32-dep="'+esc2(dep)+'" '+(selected?'checked':'')+'><span><b>'+esc2(displayDepartment(dep))+'</b><small>يوصل الجزء لمدير القسم للتوزيع</small></span>'+(withLead?'<label class="sd32-lead"><input type="radio" name="sd32LeadDep" value="'+esc2(dep)+'" '+(selected?'':'disabled')+'> القسم الرئيسي</label>':'')+'</label>'}
 function openDepartmentsModal(id,mode){
@@ -177,10 +166,10 @@ function openDepartmentsModal(id,mode){
  if(!add){var body=document.getElementById('sd32ModalBody');body.querySelectorAll('[data-sd32-dep]').forEach(function(ch){ch.addEventListener('change',function(){var radio=ch.closest('.sd32-choice').querySelector('input[type=radio]');radio.disabled=!ch.checked;if(!ch.checked&&radio.checked)radio.checked=false})});var cr=body.querySelector('input[name=sd32LeadDep][value="'+CSS.escape(current)+'"]');if(cr&&!cr.disabled)cr.checked=true}
  document.getElementById('sd32SaveBtn').onclick=saveDepartmentsModal;document.getElementById('sd32Modal').classList.add('show');
 }
-function saveDepartmentsModal(){
+async function saveDepartmentsModal(){
  if(!modalState)return;var selected=Array.from(document.querySelectorAll('#sd32ModalBody [data-sd32-dep]:checked')).map(function(x){return x.getAttribute('data-sd32-dep')});
  if(modalState.type==='departments'){
-  if(selected.length<2){alert('اختر قسمين على الأقل.');return}var t=task(modalState.taskId);if(!t)return;var lead=document.querySelector('#sd32ModalBody input[name=sd32LeadDep]:checked');var leadDep=lead?lead.value:selected[0];closeModal();createMultiDepartments(t,selected,leadDep);return;
+  if(selected.length<2){alert('اختر قسمين على الأقل.');return}var t=task(modalState.taskId);if(!t)return;var lead=document.querySelector('#sd32ModalBody input[name=sd32LeadDep]:checked');await distributeFromBoard(t,'departments',selected,lead?.value||selected[0]);return;
  }
  if(modalState.type==='addDepartments'){
   if(!selected.length){alert('اختر قسماً واحداً على الأقل.');return}var root=task(modalState.taskId);closeModal();if(root)addDepartments(root,selected);
@@ -219,7 +208,13 @@ function enhanceBoard(){
   });
  });
 }
-function refreshBoards(){syncStatuses(false);setTimeout(function(){try{if(window.MoshDepartmentDashboard&&MoshDepartmentDashboard.refresh){document.querySelectorAll('.db9[data-department]').forEach(function(b){MoshDepartmentDashboard.refresh(b.dataset.department)})}}catch(e){}setTimeout(enhanceBoard,30)},20)}
+function refreshMarketingTaskList(){
+ var cfg=getProductiveConfig('marketing'),view=document.getElementById(cfg.appId),box=document.getElementById(cfg.workspaceId);
+ if(view?.classList.contains('active')&&productiveTaskViewModes.marketing==='running'&&box?.querySelector('.design-running-filter')){
+  renderProductiveRunningTasks('marketing');
+ }
+}
+function refreshBoards(){syncStatuses(false);setTimeout(function(){try{if(window.MoshDepartmentDashboard&&MoshDepartmentDashboard.refresh){document.querySelectorAll('.db9[data-department]').forEach(function(b){MoshDepartmentDashboard.refresh(b.dataset.department)})}refreshMarketingTaskList()}catch(e){}setTimeout(enhanceBoard,30)},20)}
 if(typeof BASE_RENDER_BOARD==='function'){
  window.renderProductiveDistributionBoard=function(k){var r=BASE_RENDER_BOARD.apply(this,arguments);setTimeout(enhanceBoard,10);return r};
 }
@@ -227,5 +222,85 @@ var obsTimer=0;new MutationObserver(function(){clearTimeout(obsTimer);obsTimer=s
 setInterval(function(){if(syncStatuses(true))setTimeout(enhanceBoard,20)},4000);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){ensureModal();syncStatuses(true);setTimeout(enhanceBoard,400)},{once:true});else{ensureModal();syncStatuses(true);setTimeout(enhanceBoard,200)}
 
-window.MoshSharedDistribution32={version:VERSION,openTeam:openTeamModal,openDepartments:function(id){openDepartmentsModal(id,'create')},openAddDepartments:function(id){openDepartmentsModal(id,'add')},closeModal:closeModal,openRoot:openRoot,sync:function(){syncStatuses(true);enhanceBoard()},inspect:function(id){var r=task(id);if(!r)return null;return {root:isRoot(r),mode:r.sharedDistributionMode,ready:r.sharedReady,departments:deptUnits(r.id).map(function(u){return {department:deptOfUnit(u),status:unitStatus(u),assignee:u.assignee,team:members(u.id).map(function(m){return {name:m.assignee,status:m.status,state:m.employeeState}})}})}}};
+let createDraft=null;
+function createDistributionUI(dep,mode){
+ const bar=document.getElementById('createDistributionModes'),box=document.getElementById('createDistributionChoices');
+ if(!bar||!box)return;
+ if(createDraft&&(createDraft.dep!==dep||createDraft.mode!==mode))createDraft=null;
+ box.textContent=createDraft?createDraft.labels.join('، '):'';
+ for(const button of bar.querySelectorAll('button')){
+  const target=button.dataset.mode;
+  button.classList.toggle('active',target===mode);
+  button.setAttribute('aria-pressed',String(target===mode));
+  button.onclick=()=>{
+   if(target==='direct'){document.getElementById('standaloneTaskAssignmentMode').value=target;refreshStandaloneAssignmentUI();return;}
+   const team=target==='team',choices=team?staffFor(dep).map(p=>[String(p.id),p.name]):allDepartments().map(d=>[d,displayDepartment(d)]);
+   if(choices.length<2){alert(team?'لا يوجد موظفان متاحان ضمن القسم.':'لا يوجد قسمان متاحان.');return;}
+   ensureModal();
+   const modal=document.getElementById('sd32Modal'),body=document.getElementById('sd32ModalBody');
+   document.getElementById('sd32ModalKicker').textContent=displayDepartment(dep);
+   document.getElementById('sd32ModalTitle').textContent=team?'توزيع على أكثر من موظف':'توزيع على أكثر من قسم';
+   const previous=createDraft?.mode===target?createDraft.ids:[];
+   body.innerHTML='<p class="sd32-help">'+(team?'اختر موظفين أو أكثر، وحدد واحداً منهم كمسؤول رئيسي. كل موظف سيظهر عنده دوره بشكل مستقل ضمن نفس المهمة.':'اختر قسمين أو أكثر وحدّد القسم الرئيسي.')+'</p><div class="sd32-choices">'+choices.map(([id,label],i)=>{
+    const checked=previous.includes(id);
+    return '<div class="sd32-choice"><input type="checkbox" id="createMember'+i+'" '+(checked?'checked':'')+'><label for="createMember'+i+'"><b>'+esc2(label)+'</b><small>'+esc2(team?dep:'')+'</small></label><label class="sd32-lead"><input type="radio" name="createLead" '+(checked?'':'disabled')+' '+(previous[0]===id?'checked':'')+'>'+(team?'مسؤول رئيسي':'القسم الرئيسي')+'</label></div>';
+   }).join('')+'</div>';
+   const rows=Array.from(body.querySelectorAll('.sd32-choice'));
+   rows.forEach(row=>{const [check,lead]=row.querySelectorAll('input');check.onchange=()=>{lead.disabled=!check.checked;if(!check.checked)lead.checked=false;};});
+   document.getElementById('sd32SaveBtn').onclick=()=>{
+    const selected=choices.filter((_,i)=>rows[i].querySelector('input').checked);
+    const lead=choices.find((_,i)=>rows[i].querySelector('input[type=radio]').checked);
+    if(selected.length<2||!lead){alert(team?'اختر موظفين على الأقل وحدّد المسؤول الرئيسي.':'اختر قسمين على الأقل وحدّد القسم الرئيسي.');return;}
+    createDraft={dep,mode:target,ids:[lead[0],...selected.filter(x=>x!==lead).map(x=>x[0])],labels:selected.map(x=>x[1])};
+    document.getElementById('standaloneTaskAssignmentMode').value=target;closeModal();refreshStandaloneAssignmentUI();
+   };
+   modal.classList.add('show');
+  };
+ }
+}
+async function distributeFromBoard(t,mode,selected,lead){
+ const saveButton=document.getElementById('sd32SaveBtn');
+ if(saveButton.disabled)return;
+ saveButton.disabled=true;
+ try{
+  const ordered=[lead,...selected.filter(value=>value!==lead)];
+  const payload={department:t.department,status:'in_progress',employeeState:'new'};
+  for(const field of ['title','customer','customerId','description','dueDate','dueRule','notes','origin','salesOrderId','salesOrderNo']){
+   if(t[field]!=null)payload[field]=t[field];
+  }
+  await createDistributed(payload,mode,ordered,String(MoshApi.user.id),t);
+  closeModal();refreshBoards();
+ }catch(error){alert(error.message||'تعذر حفظ توزيع المهمة.');}
+ finally{saveButton.disabled=false;}
+}
+async function createDistributed(payload,mode,selected,owner,existing=null){
+ const dep=payload.department,team=mode==='team',people=selected.map(id=>staffFor(dep).find(p=>String(p.id)===id)).filter(Boolean);
+ if((team?people.length:selected.length)<2)throw new Error(team?'اختر موظفين على الأقل.':'اختر قسمين على الأقل.');
+ const existingUnit=existing&&isShared(existing)&&nodeType(existing)==='department';
+ const root=existingUnit?{id:existing.sharedRootTaskId,title:existing.parentTaskTitle}:existing?{...existing,history:[...(existing.history||[])]}:{...payload,id:crypto.randomUUID()};
+ if(!existingUnit)makeRoot(root,mode,team?dep:selected[0]);
+ const rows=existingUnit?[]:[root];
+ for(const department of team?[dep]:selected){
+  const unit={...payload,id:crypto.randomUUID(),attachments:[],parentTaskId:root.id,parentTaskTitle:root.title,sharedDistributionChild:true,sharedRootTaskId:root.id,sharedDepartment:department,sharedNodeType:'department',sharedTeamContainer:team,department:team?'المهمات':department,status:team?'shared_container':'in_progress',assignmentMode:team?'shared_team':'manager',assignee:'',assigneeId:''};
+  if(existingUnit)unit.id=existing.id;
+  if(team)unit.sharedTeamLead=people[0].name;
+  rows.push(unit);
+  if(team)for(const [i,p] of people.entries())rows.push({...payload,id:crypto.randomUUID(),attachments:[],parentTaskId:unit.id,parentTaskTitle:root.title,sharedDistributionChild:true,sharedRootTaskId:root.id,sharedDepartment:dep,sharedNodeType:'member',sharedLead:i===0,assignee:p.name,assigneeId:String(p.id),assignmentMode:'manager_assigned'});
+ }
+ const operations=rows.map(data=>{
+  if(!existing||data.id!==existing.id)return {resource:'tasks',action:'create',id:data.id,data};
+  const changes={};
+  for(const field of Object.keys(data)){
+   if(!['id','attachments','workChat','parentTaskTitle'].includes(field)&&JSON.stringify(data[field])!==JSON.stringify(existing[field]))changes[field]=data[field];
+  }
+  return {resource:'tasks',action:'update',id:existing.id,version:existing._version,data:changes};
+ });
+ const options={method:'POST',headers:{'Idempotency-Key':crypto.randomUUID()},body:{operations}};
+ let result;try{result=await MoshApi.request('/transactions',options);}catch(e){if(!e.network)throw e;result=await MoshApi.request('/transactions',options);}
+ for(const change of result.changes)if(change.resource==='tasks'&&change.data)MoshApi.acceptCreatedTask(change.data,owner);
+ if(existing&&!result.changes.some(change=>String(change.id)===String(existing.id)&&change.data))await MoshApi.refreshTasks();
+ refreshMarketingTaskList();
+ return root;
+}
+window.MoshSharedDistribution32={createDistributionUI,createDistributed,creationSelection:()=>createDraft?.ids.slice()||[],version:VERSION,openTeam:openTeamModal,openDepartments:function(id){openDepartmentsModal(id,'create')},openAddDepartments:function(id){openDepartmentsModal(id,'add')},closeModal:closeModal,openRoot:openRoot,sync:function(){syncStatuses(true);enhanceBoard()},inspect:function(id){var r=task(id);if(!r)return null;return {root:isRoot(r),mode:r.sharedDistributionMode,ready:r.sharedReady,departments:deptUnits(r.id).map(function(u){return {department:deptOfUnit(u),status:unitStatus(u),assignee:u.assignee,team:members(u.id).map(function(m){return {name:m.assignee,status:m.status,state:m.employeeState}})}})}}};
 })();

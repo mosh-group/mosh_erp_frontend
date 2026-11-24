@@ -900,16 +900,16 @@ placeholder="ابحث واختر العميل">
 <option value="الموارد البشرية">قسم الموارد البشرية</option>
 </select>
 </div>
-<div class="field" id="standaloneAssignmentModeField"><label for="standaloneTaskAssignmentMode">طريقة الإسناد</label>
-<select id="standaloneTaskAssignmentMode" onchange="refreshStandaloneAssignmentUI()">
-<option value="manager">إرسال لمدير القسم ليوزعها</option>
-<option value="direct">تعيين مباشر لموظف</option>
-</select>
+<div class="field" id="standaloneAssignmentModeField"><label for="standaloneTaskAssignmentMode">توزيع المهمة</label>
+<div class="sd32-modebar" id="createDistributionModes">
+<button type="button" data-mode="direct">موظف واحد</button><button type="button" data-mode="team">أكثر من موظف</button><button type="button" data-mode="departments">أكثر من قسم</button>
+</div>
+<select hidden id="standaloneTaskAssignmentMode"><option value="direct">موظف واحد</option><option value="team">أكثر من موظف</option><option value="departments">أكثر من قسم</option></select>
+<div id="createDistributionChoices"></div>
 </div>
 <div class="field" id="standaloneAssigneeField" style="display:none">
 <label for="standaloneTaskAssignee">الموظف المنفذ</label>
-<input id="standaloneTaskAssignee" list="standaloneStaffList" autocomplete="off" placeholder="اختر موظف من القسم">
-<datalist id="standaloneStaffList"></datalist>
+<select id="standaloneTaskAssignee"><option value="">اختر المنفّذ</option></select>
 </div>
 <div class="field r38-deadline-field"><label for="standaloneTaskDueDate">موعد التسليم</label><input id="standaloneTaskDueDate" type="date"></div>
 </div>
