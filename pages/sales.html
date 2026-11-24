@@ -1,0 +1,50 @@
+<section id="salesApp" class="view">
+<div class="menu-strip">
+<div class="menu">
+<button id="salesDistributionTab" class="design-menu-btn" onclick="openProductiveDistributionPage('sales')">القائمة الرئيسية لقسم المبيعات <span id="salesDistributionBadge" class="design-menu-badge"></span></button>
+</div>
+<div class="menu">
+<button id="salesRunningTab" class="design-menu-btn" onclick="openProductiveRunningTasksPage('sales')">مهام قسم المبيعات</button>
+</div>
+<div class="menu"><button onclick="toggleDrop('ordersDrop')">المبيعات ▾</button>
+<div id="ordersDrop" class="dropdown">
+<button onclick="salesList('quotes')">إضافة عرض سعر</button>
+<button onclick="salesList('orders')">عرض سعر موافق</button>
+<button onclick="salesList('cancelledquotes')">عرض سعر ملغي</button>
+<button onclick="salesList('servicecontracts')">عقد بيع</button>
+</div>
+</div>
+<div class="menu"><button onclick="toggleDrop('customersDrop')">العملاء ▾</button>
+<div id="customersDrop" class="dropdown">
+<button onclick="salesList('newcustomer')">إضافة عميل جديد</button>
+<button onclick="salesList('editcustomer')">تعديل معلومات عميل</button>
+<button onclick="salesList('customergroup')">قائمة العملاء</button>
+</div>
+</div>
+<div class="menu"><button onclick="toggleDrop('servicesDrop')">الخدمات ▾</button>
+<div id="servicesDrop" class="dropdown">
+<button onclick="salesList('newservice')">إضافة خدمة</button>
+<button onclick="salesList('editservice')">تعديل خدمة</button>
+<button onclick="salesList('servicelist')">قائمة الخدمات</button>
+</div>
+</div>
+<div class="menu"><button onclick="toggleDrop('reportsDrop')">إعداد التقارير ▾</button>
+<div id="reportsDrop" class="dropdown">
+<button onclick="salesList('salesreport')">إعداد تقرير مبيعات معيّن</button>
+<button onclick="salesList('customerreport')">حسب العملاء</button>
+<button onclick="salesList('salespeople')">حسب مندوبي المبيعات</button>
+<button onclick="salesList('productsreport')">حسب الخدمات</button>
+</div>
+</div>
+<div class="menu"><button onclick="toggleDrop('configDrop')">التهيئة ▾</button>
+<div id="configDrop" class="dropdown">
+<button onclick="salesList('newsalesperson')">إضافة مندوب مبيعات</button>
+<button onclick="salesList('quotetemplates')">خيارات قوالب عرض السعر</button>
+</div>
+</div>
+<div class="menu">
+<button type="button" onclick="openDeptExecReportStep3('sales','المبيعات')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+</div>
+<div id="salesDynamic"></div>
+</section>

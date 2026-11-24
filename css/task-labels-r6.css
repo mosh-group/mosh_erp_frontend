@@ -25,3 +25,60 @@ html body.mosh-calm19 .content .mt54-client-name,
 @media(max-width:730px){html body.mosh-calm19 .content .mt54-task-name,html body.mosh-calm19 .content .db9-table .mt54-task-name,#emp47TaskOverlay .mt54-task-name,#mgr28Modal .mt54-task-name,#hrApp .mt54-task-name,#m15Modal .mt54-task-name{font-size:18px!important}html body.mosh-calm19 .content .mt54-client-name,#emp47TaskOverlay .mt54-client-name,#hrApp .mt54-client-name,#mgr28Modal .mt54-client-name{font-size:16px!important}}
 html body.mosh-calm19 .content input[id^="taskEditTitle_"]{font-size:20px!important;line-height:1.5!important}
 html body.mosh-calm19 .content input[id^="taskEditCustomer_"]{font-size:17px!important;line-height:1.5!important}
+
+.db9[data-department] .db9-table td .mt54-identity .mt54-task-name {
+  font-size:22px!important;
+  font-weight:800!important;
+}
+.db9[data-department] .db9-table td .mt54-identity .mt54-client-name {
+  font-size:13px!important;
+  font-weight:400!important;
+}
+.customer-task-card {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,2fr);
+  gap:16px;
+  margin-block:12px;
+  padding:14px;
+}
+.customer-task-card-client {
+  display:grid;
+  align-content:start;
+  gap:6px;
+}
+.customer-task-card-client strong {
+  font-size:18px;
+  overflow-wrap:anywhere;
+}
+.customer-task-card-details {
+  display:grid;
+  gap:10px;
+  border-inline-start:1px solid var(--line,#414850);
+  padding-inline-start:16px;
+}
+.customer-task-card-details h3 {
+  margin:0;
+}
+.customer-task-entry {
+  border:1px solid var(--line,#414850);
+  border-radius:8px;
+  padding:10px 12px;
+}
+.customer-task-entry summary {
+  cursor:pointer;
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+.customer-task-description {
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+@media(max-width:730px) {
+  .customer-task-card {grid-template-columns:1fr}
+  .customer-task-card-details {border-inline-start:0;padding-inline-start:0}
+}
+@media(max-width:730px) {
+  .db9[data-department] .db9-table td .mt54-identity .mt54-task-name {
+    font-size:19px!important;
+  }
+}

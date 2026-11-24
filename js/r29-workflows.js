@@ -165,7 +165,7 @@ async function handle(action,id,b){
    if(!record||String(record.id)!==String(id))throw new Error('تعذر قراءة المهمة من الخادم.');
    api().acceptServerChanges([{resource:'tasks',id:String(record.id),data:record}],who);
   }
-  window.goApp('tasks');if(!$('#tasksApp')?.classList.contains('active'))return;
+  if(await window.goApp('tasks')===false||!$('#tasksApp')?.classList.contains('active'))return;
   ui().close('r29TaskList',true);
   activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:'',returnTo:'adminTasks'};
   window.openTaskDetails(id);
@@ -213,7 +213,7 @@ function decorate(){if(decorateTimer)return;decorateTimer=setTimeout(()=>{decora
 const priorFilter=window.filterAndPageAppList;if(typeof priorFilter==='function')window.filterAndPageAppList=function(key,rows,...args){const taskList=Array.isArray(rows)&&rows.length&&rows.some(r=>r&&('employeeState'in r||'assigneeId'in r)&&('department'in r));return priorFilter.call(this,key,taskList?MoshR29Model.sortUrgent(rows):rows,...args);};
 const priorStatus=window.staffStatusLabel;if(typeof priorStatus==='function')window.staffStatusLabel=function(p){if(p?.employmentStatus==='draft')return'مسودة';return priorStatus.apply(this,arguments);};
 function cleanup(){clearTimeout(decorateTimer);decorateTimer=0;hrTicket++;customerTicket++;HR=null;customersState=null;taskView=null;thumbQueue=[];thumbCache.clear();for(const u of thumbUrls)URL.revokeObjectURL(u);thumbUrls.clear();$$('dialog[id^=r29]').forEach(d=>{ui()?.close(d.id,true);d.remove();});$('#r29ClientNav')?.remove();$('#r29TeamNav')?.remove();$$('#r29HRBar,#r29ProfileBar,#r29AttendancePortal').forEach(e=>e.remove());}
-window.MoshR29={openHR,openCustomers,adminTasks,returnToAdminTasks:()=>{window.goApp('admin');if($('#adminApp')?.classList.contains('active'))return adminTasks();},reason,viewBlob,isHr,pretty,version:'R30',commitWithState,syncNavigation:decorate};
+window.MoshR29={openHR,openCustomers,adminTasks,returnToAdminTasks:()=>openAppWith('admin',adminTasks),reason,viewBlob,isHr,pretty,version:'R30',commitWithState,syncNavigation:decorate};
 ['mosh:ui-ready','mosh:refreshed','mosh:r19-change'].forEach(e=>document.addEventListener(e,decorate));['mosh:session-expired','mosh:logout-complete'].forEach(e=>document.addEventListener(e,cleanup));
 new MutationObserver(m=>{if(m.some(x=>[...x.addedNodes].some(n=>n.nodeType===1&&!n.closest?.('dialog[id^=r29]'))))decorate();}).observe(document.body,{childList:true,subtree:true});decorate();
 })();

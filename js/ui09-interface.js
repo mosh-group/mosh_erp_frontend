@@ -40,8 +40,15 @@ window.MoshPrevious09=previous;
 
 const departmentIds=new Set(['admin','hr','sales','marketing','social','design','photo','editing','promotion','it','logistics','purchases','accounting','warehouses','platform']);
 let expanded='',trees=new Map();
-function openDepartmentTaskView(app,action){
+function openDepartmentTaskView(app,action,kind='main'){
  const running=action==='running';
+ if(running){
+  const view=document.getElementById(app+'App');
+  if(view&&view.dataset.departmentTaskKind!==kind){
+   view.dataset.departmentTaskKind=kind;
+   resetAppListPage('prod_'+app+'_running');
+  }
+ }
  if(app==='admin')return window.MoshAdministration24.openTasks(running?'running':'assign');
  if(!running)return window.MoshDepartmentDashboard.openAssignment(app);
  const open=running?window.openProductiveRunningTasksPage:window.openProductiveDistributionPage;
@@ -49,9 +56,11 @@ function openDepartmentTaskView(app,action){
 }
 function treeRows(app){
  const rows=[{name:'لوحة القسم',action:'dashboard',run:()=>window.MoshDepartmentDashboard.openDashboard(app)}];
- if(auth()?.canModule(app,'running'))rows.push({name:'المهام الجارية',action:'running',run:()=>openDepartmentTaskView(app,'running')});
- if(auth()?.canModule(app,'assign'))rows.push({name:'توزيع المهام',action:'assign',run:()=>openDepartmentTaskView(app,'assign')});
- const v=$('#'+app+'App'),originals=[...(window.MoshGrouped35?.sources(app)||[]),...all('.menu-strip button,.menu-strip a',v||document).filter(n=>v?.contains(n))];const seen=new Set(rows.map(x=>x.name));for(const n of originals){const name=n.textContent.trim().replace(/\s+/g,' ');if(!name||seen.has(name)||n.classList.contains('mosh-auth-hidden')||n.hidden||n.disabled)continue;seen.add(name);rows.push({name,source:n,run:()=>{let target=n.isConnected?n:[...(window.MoshGrouped35?.sources(app)||[])].find(x=>x.textContent.trim().replace(/\s+/g,' ')===name);const mode=target?.id===app+'DistributionTab'?'dashboard':target?.id===app+'RunningTab'?'running':'';if(mode){if(!auth()?.canModule(app,mode))return false;return mode==='dashboard'?window.MoshDepartmentDashboard.openDashboard(app):openDepartmentTaskView(app,'running');}if(app==='sales'&&target?.closest('#mgr28Tab_sales'))target=$('#mgr32eApproval_sales')||target;if(target&&window.MoshGrouped35?.allowed(target))target.click();else toast('افتح لوحة القسم للوصول لهذا الإجراء.');}});}return rows;}
+ if(auth()?.canModule(app,'running'))rows.push(
+  {name:'المهام الجارية',action:'running',run:()=>openDepartmentTaskView(app,'running')},
+  {key:'subtasks',name:'المهام الفرعية',action:'running',run:()=>openDepartmentTaskView(app,'running','subtask')}
+ );
+ const v=$('#'+app+'App'),originals=[...(window.MoshGrouped35?.sources(app)||[]),...all('.menu-strip button,.menu-strip a',v||document).filter(n=>v?.contains(n))];const seen=new Set(rows.map(x=>x.name));for(const n of originals){if(app==='marketing'&&auth()?.taskScope?.()==='mine'&&auth()?.canModule(app,'running')&&(n.id==='marketingRunningTab'||n.dataset.mk33View==='tasks'))continue;const name=n.textContent.trim().replace(/\s+/g,' ');if(!name||seen.has(name)||n.classList.contains('mosh-auth-hidden')||n.hidden||n.disabled)continue;seen.add(name);rows.push({name,source:n,run:()=>{let target=n.isConnected?n:[...(window.MoshGrouped35?.sources(app)||[])].find(x=>x.textContent.trim().replace(/\s+/g,' ')===name);const mode=target?.id===app+'DistributionTab'?'dashboard':target?.id===app+'RunningTab'?'running':'';if(mode){if(!auth()?.canModule(app,mode))return false;return mode==='dashboard'?window.MoshDepartmentDashboard.openDashboard(app):openDepartmentTaskView(app,'running');}if(app==='sales'&&target?.closest('#mgr28Tab_sales'))target=$('#mgr32eApproval_sales')||target;if(target&&window.MoshGrouped35?.allowed(target))target.click();else toast('افتح لوحة القسم للوصول لهذا الإجراء.');}});}return rows;}
 function salesTreeGroups(){
  const groups=new Map();
  for(const {name,rows} of window.MoshGrouped35?.groups('sales')||[]){
@@ -125,11 +134,12 @@ function hrSidebarRows(){
   // The legacy distribution tab opens the task overview. HR's dashboard is
   // its home page, with employee, request and entitlement summaries.
   if(action==='dashboard')row.run=openHRDepartmentDashboard;
+  if(action==='running')row.run=()=>openDepartmentTaskView('hr','running');
   rows.push(row);
  };
  add('#m15Tabs_hr > button[data-mode="distribution"]','dashboard');
  add('#m15Tabs_hr > button[data-mode="running"]','running');
- if(auth()?.canModule('hr','assign'))rows.push({name:'توزيع المهام',action:'assign',run:()=>openDepartmentTaskView('hr','assign')});
+ if(auth()?.canModule('hr','running'))rows.push({key:'subtasks',name:'المهام الفرعية',action:'running',run:()=>openDepartmentTaskView('hr','running','subtask')});
  add('#mgr32eApproval_hr','approvals');
  const tools=$('#r23ManagerTools_hr');
  if(window.MoshGrouped35?.allowed(tools)){
@@ -192,18 +202,38 @@ function refreshHRTree(t){
 }
 // Mirror the department header without moving or replacing its controls.
 function departmentHeaderRows(app){
- const bar=$('#m15Tabs_'+app),view=$('#'+app+'App');if(!bar)return treeRows(app).filter(row=>!row.action||auth()?.canModule(app,row.action)).map(row=>({...row,key:row.action||row.name}));
+ if(app==='marketing'&&auth()?.taskScope?.()==='mine'){
+  if(!auth()?.canModule(app,'running'))return [];
+  return [
+   {key:'running',name:'مهام قسم التسويق',action:'running',run:()=>openDepartmentTaskView(app,'running')},
+   {key:'subtasks',name:'المهام الفرعية',action:'running',run:()=>openDepartmentTaskView(app,'running','subtask')}
+  ];
+ }
+ const bar=$('#m15Tabs_'+app),view=$('#'+app+'App');if(!bar)return treeRows(app).filter(row=>!row.action||auth()?.canModule(app,row.action)).map(row=>({...row,key:row.key||row.action||row.name}));
  const sourceRow=(source,scope,action)=>{
   if((action&&!auth()?.canModule(app,action))||!hrMenuAvailable(source))return null;
-  const name=hrMenuLabel(source);if(!name)return null;
-  const resolve=()=>{const candidates=typeof scope==='function'?scope():all(scope);return (source.id&&document.getElementById(source.id))||candidates.find(node=>hrMenuLabel(node)===name);};
+  const rawName=hrMenuLabel(source),name=rawName.replace(/^[▦◉◇☷✎↻✓\s]+/,'').trim();
+  if(!name||source.dataset.mode==='assign'||name==='توزيع المهام')return null;
+  const resolve=()=>{
+   const candidates=typeof scope==='function'?scope():all(scope);
+   return (source.id&&document.getElementById(source.id))||candidates.find(node=>hrMenuLabel(node)===rawName);
+  };
   const available=()=>hrMenuAvailable(resolve());
-  return {key:source.id||source.dataset.mode||name,name:name.replace(/^[▦◉◇☷✎↻✓\s]+/,'').trim(),action,
+  return {key:source.id||source.dataset.mode||name,name,action,
    count:$('.badge,.hr-count,.m15-count,.mgr28-badge',source)?.textContent.trim()||'',available,
-   run:()=>{const target=resolve();if(!hrMenuAvailable(target))return false;target.click();}};
+   run:()=>{
+    const target=resolve();if(!hrMenuAvailable(target))return false;
+    target.click();
+   }};
  };
  const rows=[],represented=new Set(),header=[...bar.children].sort((a,b)=>Number(getComputedStyle(a).order)-Number(getComputedStyle(b).order));
  const add=row=>{if(row){rows.push(row);represented.add(row.key);}};
+ const addDepartmentMenu=name=>{
+  const children=(window.MoshGrouped35?.groups(app)||[]).map(group=>({key:group.name,name:group.name,
+   children:group.rows.map(source=>sourceRow(source,()=>window.MoshGrouped35?.sources(app)||[])).filter(Boolean)
+  })).filter(group=>group.children.length);
+  if(children.length)add({key:'department-menu',name,children});
+ };
  for(const node of header){
   if(node.classList.contains('r23-manager-tools')){
    if(!window.MoshGrouped35?.allowed(node))continue;
@@ -213,26 +243,38 @@ function departmentHeaderRows(app){
   }
   if(node.classList.contains('pv-menu-host')){
    if(!window.MoshGrouped35?.allowed(node))continue;
-   const children=(window.MoshGrouped35?.groups(app)||[]).map(group=>({key:group.name,name:group.name,
-    children:group.rows.map(source=>sourceRow(source,()=>window.MoshGrouped35?.sources(app)||[])).filter(Boolean)
-   })).filter(group=>group.children.length);
-   if(children.length)add({key:'department-menu',name:hrMenuLabel($('.pv-menu-trigger',node)),children});
+   addDepartmentMenu(hrMenuLabel($('.pv-menu-trigger',node)));
    continue;
   }
   const source=node.matches('button,a')?node:$(':scope > button,:scope > a',node);if(!source)continue;
   const action=source.dataset.mode==='distribution'?'dashboard':source.dataset.mode==='running'?'running':source.id==='mgr32eApproval_'+app?'approvals':'';
-  add(sourceRow(source,'#m15Tabs_'+app+' button,#m15Tabs_'+app+' a',action));
-  if(action==='running'&&auth()?.canModule(app,'assign'))add({key:'assign',name:'توزيع المهام',action:'assign',run:()=>openDepartmentTaskView(app,'assign')});
+  const row=sourceRow(source,'#m15Tabs_'+app+' button,#m15Tabs_'+app+' a',action);
+  if(row&&action==='running')row.run=()=>openDepartmentTaskView(app,'running');
+  add(row);
+  if(action==='running'&&auth()?.canModule(app,'running')&&!represented.has('subtasks'))add({key:'subtasks',name:'المهام الفرعية',action:'running',run:()=>openDepartmentTaskView(app,'running','subtask')});
  }
+ if(app==='marketing'&&!represented.has('department-menu'))addDepartmentMenu('قائمة القسم');
  // Some departments also retain native header links, reports or dropdowns.
  // Inspect ancestors only up to the department, since it may not be active yet.
  const visible=source=>{for(let node=source;node&&node!==view;node=node.parentElement){const style=getComputedStyle(node);if(node.hidden||node.classList.contains('mosh-auth-hidden')||style.display==='none'||style.visibility==='hidden')return false;}return true;};
  for(const source of all('.menu-strip button,.menu-strip a',view)){
+  // Marketing customers already has an entry in the grouped department menu.
+  if(source.id==='marketingCustomersTab')continue;
   if(!visible(source)||source.closest('.dropdown')||source.closest('.r23-manager-tools')||bar.contains(source)||[app+'DistributionTab',app+'RunningTab','mgr28Tab_'+app].includes(source.id))continue;
   const row=sourceRow(source,()=>all('.menu-strip button,.menu-strip a',view));if(!row||represented.has(row.key))continue;
   const drop=salesDropdownId(source);
   if(drop){row.children=all('button,a',document.getElementById(drop)).map(child=>sourceRow(child,'#'+drop+' button,#'+drop+' a')).filter(Boolean);if(!row.children.length)continue;}
   add(row);
+ }
+ if(auth()?.canModule(app,'running')&&!represented.has('subtasks'))add({key:'subtasks',name:'المهام الفرعية',action:'running',run:()=>openDepartmentTaskView(app,'running','subtask')});
+ if(app==='social'){
+  const index=rows.findIndex(row=>row.key==='socialHubTab');
+  if(index>=0){
+   const customers={key:'social-customers',name:'عملاء السوشال ميديا',action:'view',run:()=>window.openSocialCustomers()};
+   const menu=rows.find(row=>row.key==='department-menu');
+   if(menu)menu.children.push(customers);
+   else rows.splice(index,0,{key:'department-menu',name:'قائمة القسم',children:[customers]});
+  }
  }
  return rows;
 }
@@ -269,7 +311,8 @@ function refreshDepartmentHeaderTree(app,t){
    if(t.headerCurrentKey===key)button.setAttribute('aria-current','page');
    const activate=()=>{
     if(!auth()?.canModule(app,'view')||(row.action&&!auth()?.canModule(app,row.action))||(row.available&&!row.available()))return false;
-    let result;restoring=true;try{result=window.goApp(app,t.link);}finally{restoring=false;}
+    let result;
+    restoring=true;try{result=window.goApp(app,t.link);}finally{restoring=false;}
     if(result===false||!$('#'+app+'App')?.classList.contains('active'))return false;
     if(row.run()===false)return false;
     opened.clear();ancestors.forEach(entry=>opened.add(entry));t.headerCurrentKey=key;sync();return true;
@@ -288,6 +331,8 @@ function refreshTree(app){
  const allowed=auth()?.canModule(app,'view');
  t.box.hidden=!allowed||expanded!==app;
  t.link.setAttribute('aria-expanded',String(!t.box.hidden));
+  t.box.setAttribute('aria-busy',String(!t.box.hidden&&!!window.MoshPages?.pending(app)));
+  if(!t.box.hidden&&window.MoshPages?.pending(app))return;
  if(t.box.hidden){if(app==='sales')all('.ui09-sales-group',t.box).forEach(section=>setSalesGroupOpen(section,false));if(headerTree)t.headerOpenKeys?.clear();return;}
  if(app==='hr'){refreshHRTree(t);return;}
  if(headerTree){refreshDepartmentHeaderTree(app,t);return;}
@@ -344,7 +389,61 @@ function refreshTree(app){
   host.append(b);
  }
 }
-function sidebar(){for(const link of all('#appSidebar .nav a[onclick]')){const app=link.getAttribute('onclick')?.match(/goApp\(['"]([^'"]+)/)?.[1];if(!departmentIds.has(app)||trees.has(app))continue;const box=make('div','ui09-tree-children');box.id='ui09-tree-'+app;box.hidden=true;link.after(box);link.classList.add('ui09-tree-parent');link.setAttribute('aria-controls',box.id);link.setAttribute('aria-expanded','false');link.onclick=e=>{e.preventDefault();if(!auth()?.canModule(app,'view'))return;expanded=expanded===app?'':app;for(const key of trees.keys())refreshTree(key);};const arrow=make('span','ui09-tree-arrow','‹');arrow.setAttribute('aria-hidden','true');link.append(arrow);trees.set(app,{link,box,signature:''});}if(expanded)refreshTree(expanded);}
+function openSidebarDepartment(app,link){
+ const finish=result=>{
+  if(result===false||!$('#'+app+'App')?.classList.contains('active'))return;
+  if(auth()?.canModule(app,'dashboard')){
+   if(app==='hr')openHRDepartmentDashboard();
+   else window.MoshDepartmentDashboard.openDashboard(app);
+  }else if(auth()?.canModule(app,'running')){
+   openDepartmentTaskView(app,'running');
+  }
+  if(expanded===app)refreshTree(app);
+ };
+ const result=window.goApp(app,link);
+ return typeof result?.then==='function'?result.then(finish):finish(result);
+}
+window.MoshSidebar09={
+ openLinkedSection(app){
+  if(!auth()?.canModule(app,'view'))return false;
+  if(app==='warehouses')return window.MoshOps18.open(app,'home');
+  const link=all('#appSidebar .nav a').find(anchor=>anchor.getAttribute('href')==='?section='+app);
+  if(departmentIds.has(app)){
+   sidebar();
+   expanded=app;
+   for(const key of trees.keys())refreshTree(key);
+   return openSidebarDepartment(app,link);
+  }
+  return window.goApp(app,link);
+ }
+};
+function sidebar(){
+ for(const link of all('#appSidebar .nav a[onclick]')){
+  const app=link.getAttribute('onclick')?.match(/goApp\(['"]([^'"]+)/)?.[1];
+  if(!departmentIds.has(app)||trees.has(app))continue;
+  const box=make('div','ui09-tree-children');
+  box.id='ui09-tree-'+app;
+  box.hidden=true;
+  link.after(box);
+  link.classList.add('ui09-tree-parent');
+  link.setAttribute('aria-controls',box.id);
+  link.setAttribute('aria-expanded','false');
+  link.onclick=event=>{
+   event.preventDefault();
+   if(!auth()?.canModule(app,'view'))return;
+   navigateSafely(()=>{
+    expanded=expanded===app?'':app;
+    for(const key of trees.keys())refreshTree(key);
+    return openSidebarDepartment(app,link);
+   });
+  };
+  const arrow=make('span','ui09-tree-arrow','‹');
+  arrow.setAttribute('aria-hidden','true');
+  link.append(arrow);
+  trees.set(app,{link,box,signature:''});
+ }
+ if(expanded)refreshTree(expanded);
+}
 
 async function lifecycle(p,action){const archive=action==='archive';if(!await MoshConfirm09(archive?'أرشفة '+p.name+' وإيقاف حسابه؟ سيبقى تاريخ المهام والدوام والمستندات محفوظاً.':'استعادة '+p.name+' إلى دليل الموظفين بحالة غير نشط؟ تفعيل الملف والحساب يتم بصورة مستقلة.'))return;try{await MoshApi.flush();const result=await MoshApi.request('/hr/employee-lifecycle',{method:'POST',body:{employeeId:String(p.id),action,_version:p._version,requestId:uid()}});MoshApi.acceptServerChanges(result.changes,MoshApi.user.id);if(archive&&MoshApi.auth?.users)MoshApi.auth.users.forEach(u=>{if(String(u.employeeId)===String(p.id))u.active=false;});hrStaffFormOpen=false;hrStaffEditingId='';if(window.MoshHR13)MoshHR13.go('employees');else window.renderStaffWorkflowConfig?.();toast(archive?'تمت الأرشفة وحُفظ التاريخ.':'تمت الاستعادة بحالة غير نشط.');return true;}catch(e){toast(e.message);return false;}}
 window.deleteStaffProfile=id=>{const p=state.staffProfiles.find(x=>String(x.id)===String(id));return p?lifecycle(p,'archive'):false;};
@@ -358,9 +457,30 @@ const oldStandaloneSave=window.saveStandaloneTask;
 if(typeof oldStandaloneSave==='function')window.saveStandaloneTask=function(...args){const errors=[],title=$('#standaloneTaskTitle'),customer=$('#standaloneTaskCustomer'),person=$('#standaloneTaskAssignee'),dept=$('#standaloneTaskDepartment')?.value,mode=$('#standaloneTaskAssignmentMode')?.value;
  if(!title?.value.trim())errors.push([title,'اكتب اسم المهمة.']);
  if(!customer?.value.trim())errors.push([customer,'اختر العميل.']);else if(!getCatalogCustomerByName(customer.value))errors.push([customer,'اختر عميلاً مسجلاً من القائمة، أو أضفه أولاً.']);
- if(dept!=='المهمات'&&(dept==='الإدارة'||mode==='direct')){const p=getStaffProfileByName(person?.value||'');if(!p?.id)errors.push([person,'اختر موظفاً مسجلاً في الموارد البشرية.']);else if(!isStaffAssignable(p))errors.push([person,'اختر موظفاً نشطاً.']);}
+ if(mode==='direct'){const p=getStaffProfileByName(person?.value||'');if(!p?.id)errors.push([person,'اختر موظفاً مسجلاً في الموارد البشرية.']);else if(!isStaffAssignable(p))errors.push([person,'اختر موظفاً نشطاً.']);}
  if(!report(errors))return false;return oldStandaloneSave.apply(this,args);};
-let frame=0;function decorate(){frame=0;if(!auth()?.current())return;passwordEyes();closeIcons();header();sidebar();attendanceControls();archiveControls();}function schedule(){if(!frame)frame=requestAnimationFrame(decorate);}
+function departmentAssignmentEntry(){
+ const view=$('.view.active'),app=view?.id.replace(/App$/,'');
+ if(!app||!window.getProductiveConfig?.(app))return;
+ const existing=view.querySelector('[data-department-assignment-entry]');
+ const allowed=auth()?.canModule(app,'assign');
+ const native=view.querySelector('.db9 [data-action="assignment"]');
+ if(!allowed||native?.getClientRects().length||view.dataset.taskView==='assign'){
+  existing?.remove();return;
+ }
+ const dashboard=Array.from(view.querySelectorAll('button,a')).find(control=>
+  control.getClientRects().length&&(
+   control.matches('[data-mode="distribution"],[data-h13-view="home"]')||
+   ['لوحة التحكم','لوحة القسم','لوحة الإدارة'].includes(control.textContent.trim())
+  ));
+ if(!dashboard){existing?.remove();return;}
+ if(existing&&existing.previousElementSibling===dashboard)return;
+ const entry=existing||make('button','btn r35-ui-navigation','توزيع المهام');
+ entry.type='button';entry.dataset.departmentAssignmentEntry=app;
+ entry.onclick=()=>{if(auth()?.canModule(app,'assign'))openDepartmentTaskView(app,'assign');};
+ dashboard.after(entry);
+}
+let frame=0;function decorate(){frame=0;if(!auth()?.current())return;passwordEyes();closeIcons();header();sidebar();attendanceControls();archiveControls();departmentAssignmentEntry();}function schedule(){if(!frame)frame=requestAnimationFrame(decorate);}
 new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1)))schedule();}).observe(document.body,{childList:true,subtree:true});
 for(const ev of ['mosh:ui-ready','mosh:section-enter','mosh:refreshed','mosh:permissions-applied'])document.addEventListener(ev,schedule);
 for(const ev of ['mosh:logout-complete','mosh:session-expired'])document.addEventListener(ev,()=>{trail=[];lastNavigation=null;expanded='';for(const t of trees.values()){t.box.hidden=true;t.signature='';}all('.ui09-password input').forEach(f=>f.type='password');});

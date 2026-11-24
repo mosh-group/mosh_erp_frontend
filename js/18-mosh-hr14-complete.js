@@ -132,8 +132,6 @@ window.hrDeleteDisciplinary=async function(pid,id){if(!permitted())return;const 
 let discContext=null;
 function discEdit(pid,id){if(!permitted())return;const p=getStaffProfileById(pid),r=A(p?.disciplinaryRecords).find(x=>String(x.id)===String(id));if(!r)return;discContext={pid,id};modal('تعديل تفاصيل الإجراء','<div class="m14-grid">'+input('تاريخ الواقعة','m14DiscDate',r.incidentDate||today(),'date')+textArea('السبب','m14DiscReason',r.reason||'')+textArea('رد الموظف','m14DiscResponse',r.employeeResponse||'')+'</div><p>يبقى مستوى الإجراء ومسار اعتماده كما هو. تعديل المستوى يتطلب إجراءً جديدًا.</p>',btn('حفظ التعديل','disc-save','','primary'));}
 async function saveDisc(){if(!discContext||!dateValid(Q('m14Modal'))||!value('m14DiscReason')){toast('اكتب السبب وتأكد من التاريخ.',true);return;}const p=getStaffProfileById(discContext.pid),r=A(p?.disciplinaryRecords).find(x=>String(x.id)===String(discContext.id));if(!r)return;const ok=await transaction(()=>{p.auditTrail=A(p.auditTrail);p.auditTrail.push({time:now(),by:name(),text:'تعديل وصف الإجراء '+r.id});r.incidentDate=value('m14DiscDate');r.reason=value('m14DiscReason');r.employeeResponse=value('m14DiscResponse');r.updatedAt=now();});if(ok){closeModal();pane('disciplinary',hrDisciplinaryPaneHtml(p));decorate();}}
-const oldApplyRequest14=window.hrProApplyRequest;
-window.hrProApplyRequest=function(r){const result=oldApplyRequest14.apply(this,arguments);if(r.type==='hourly_leave'){const p=getStaffProfileById(r.employeeId);if(p&&!A(p.leaveRecords).some(x=>String(x.id)===String(r.id))){p.leaveRecords=A(p.leaveRecords);p.leaveRecords.push({id:r.id,type:'ساعية',startDate:r.data.date,endDate:r.data.date,fromTime:r.data.fromTime,toTime:r.data.toTime,hours:round(hrCalculateAttendanceHours(r.data.fromTime,r.data.toTime,0)),workdayHours:Math.max(1,num(state.hrProSettings?.workdayHours,8)),deductAnnual:false,days:0,status:'approved',note:r.reason||'',createdAt:r.createdAt,createdBy:r.createdBy});}}return result;};
 const originalDisciplinary=window.hrDisciplinaryPaneHtml;window.hrDisciplinaryPaneHtml=function(p){let s=originalDisciplinary(p);if(!p)return s;const box=document.createElement('div');box.innerHTML=s;box.querySelectorAll('button[onclick^="hrDeleteDisciplinary"]').forEach(b=>{const m=b.getAttribute('onclick').match(/'([^']+)'/g);if(m?.length>=2)b.insertAdjacentHTML('beforebegin',btn('تعديل','disc-edit',p.id+'|'+m[1].slice(1,-1)));});return box.innerHTML;};
 // Event delegation remains in one place; actions never depend on native confirm dialogs.
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-m14]');if(!b)return;e.preventDefault();const act=b.dataset.m14,arg=b.dataset.arg||'';try{
@@ -150,7 +148,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-m14]
  else if(act==='att-stage')stageAttendance();
  else if(act==='att-remove')await removeRecord('attendance',arg);
  else if(act==='record-cancel'){Q(arg==='leave'?'m14LeaveForm':'m14AttForm').innerHTML='';}
- else if(act==='task'){closeModal();goApp('tasks');openTaskDetailsFromAll(arg);}
+ else if(act==='task'){closeModal();return openAppWith('tasks',()=>openTaskDetailsFromAll(arg));}
  else if(act==='employee-edit')openStaffEmployeeForm(arg);
  else if(act==='employee-remove')await deleteEmployee(arg);
  else if(act==='contracts')contracts(arg);

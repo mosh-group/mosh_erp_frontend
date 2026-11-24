@@ -1,0 +1,147 @@
+<section id="adminApp" class="view">
+<div class="admin-tabs-only">
+<input type="radio" name="adminPureTab" id="adminTabDistribution">
+<input type="radio" name="adminPureTab" id="adminTabRunning">
+<input type="radio" name="adminPureTab" id="adminTabHome" checked>
+<input type="radio" name="adminPureTab" id="adminTabReports">
+<input type="radio" name="adminPureTab" id="adminTabApprovals">
+<input type="radio" name="adminPureTab" id="adminTabDecisions">
+<input type="radio" name="adminPureTab" id="adminTabMeetings">
+<input type="radio" name="adminPureTab" id="adminTabComms">
+<input type="radio" name="adminPureTab" id="adminTabTasks">
+<input type="radio" name="adminPureTab" id="adminTabWork">
+<div class="admin-pure-nav">
+<label id="adminDistributionTab" for="adminTabDistribution" onclick="openProductiveDistributionPage('admin')">القائمة الرئيسية لقسم الإدارة <span id="adminDistributionBadge" class="design-menu-badge"></span></label>
+<label id="adminRunningTab" for="adminTabRunning" onclick="openProductiveRunningTasksPage('admin')">مهام الإدارة</label>
+<label for="adminTabHome">الرئيسية</label>
+<label for="adminTabReports">التقارير التنفيذية</label>
+<label for="adminTabApprovals">الاعتمادات</label>
+<label for="adminTabDecisions">القرارات الإدارية</label>
+<label for="adminTabMeetings">الاجتماعات والمحاضر</label>
+<label for="adminTabComms">التعاميم والسياسات</label>
+<label for="adminTabTasks">مهام الإدارة</label>
+<label for="adminTabWork">متابعة العمل الآن</label>
+</div>
+<div class="admin-pure-pages">
+<div class="admin-pure-page admin-page-productivity">
+<div id="adminProductiveWorkspace"></div>
+</div>
+<div class="admin-pure-page admin-page-home">
+<div class="admin-pure-title">
+<h2>الإدارة التنفيذية</h2>
+<p>الرئيسية الإدارية</p>
+</div>
+<div class="admin-pure-kpis">
+<div><span>التقارير التنفيذية</span><b>تقارير الأقسام</b></div>
+<div><span>الاعتمادات</span><b>الحالات الاستثنائية فقط</b></div>
+<div><span>القرارات</span><b>سجل الإدارة</b></div>
+<div><span>الاجتماعات</span><b>المحاضر والنتائج</b></div>
+</div>
+<div class="admin-pure-grid">
+<div class="admin-pure-card">
+<h3>التقارير التنفيذية</h3>
+<p>تقارير مدراء الأقسام المرسلة للمدير التنفيذي.</p>
+<label for="adminTabReports" class="admin-pure-action">فتح التقارير</label>
+</div>
+<div class="admin-pure-card">
+<h3>مهام الإدارة</h3>
+<p>المهام التشغيلية الخاصة بالإدارة.</p>
+<label for="adminTabTasks" class="admin-pure-action">فتح المهام</label>
+</div>
+<div class="admin-pure-card">
+<h3>متابعة العمل الآن</h3>
+<p>دليل نشاط الموظفين داخل النظام.</p>
+<label for="adminTabWork" class="admin-pure-action">فتح المتابعة</label>
+</div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-reports">
+<div class="admin-pure-title">
+<h2>التقارير التنفيذية</h2>
+<p>التقارير التي يرسلها مدراء الأقسام للمدير التنفيذي.</p>
+</div>
+<div class="admin-pure-card admin-pure-launch-card">
+<button type="button" class="admin-pure-button" onclick="openExecReportsStep2()">فتح مركز التقارير التنفيذية</button>
+</div>
+<div id="adminExecReportsStep2" style="display:none"></div>
+</div>
+<div class="admin-pure-page admin-page-approvals">
+<div class="admin-pure-title">
+<h2>الاعتمادات</h2>
+<p>فقط الحالات التي تحتاج اعتماد الإدارة فعلياً.</p>
+</div>
+<div class="admin-pure-empty">
+<b>لا توجد اعتمادات إدارية حالياً</b>
+<span>المشتريات واللوجستيات الروتينية لا تدخل ضمن هذه الصفحة.</span>
+</div>
+</div>
+<div class="admin-pure-page admin-page-decisions">
+<div class="admin-pure-title">
+<h2>القرارات الإدارية</h2>
+<p>سجل القرارات والمسؤولين وحالة التنفيذ.</p>
+</div>
+<div class="admin-pure-table">
+<div class="admin-pure-row admin-pure-th">
+<span>القرار</span><span>المسؤول</span><span>القسم</span><span>الموعد</span><span>الحالة</span>
+</div>
+<div class="admin-pure-row">
+<span>لا توجد قرارات مسجلة حالياً</span><span>—</span><span>—</span><span>—</span><span>—</span>
+</div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-meetings">
+<div class="admin-pure-title">
+<h2>الاجتماعات والمحاضر</h2>
+<p>الاجتماعات الإدارية وجدول الأعمال والمحاضر.</p>
+</div>
+<div class="admin-pure-table">
+<div class="admin-pure-row admin-pure-th">
+<span>الاجتماع</span><span>التاريخ</span><span>الحضور</span><span>الحالة</span><span>المحضر</span>
+</div>
+<div class="admin-pure-row">
+<span>لا توجد اجتماعات مسجلة حالياً</span><span>—</span><span>—</span><span>—</span><span>—</span>
+</div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-comms">
+<div class="admin-pure-title">
+<h2>التعاميم والتنبيهات</h2>
+<p>نفس الأرشيف الموحد المستخدم في الموارد البشرية، مع فصل واضح بين التعميم والتنبيه.</p>
+</div>
+<div class="admin-pure-grid">
+<div class="admin-pure-card">
+<h3>مركز التواصل الموحد</h3>
+<p>التعاميم والتنبيهات محفوظة في سجل واحد مشترك بين الإدارة والموارد البشرية.</p>
+<button type="button" class="admin-pure-button" onclick="goApp('hr',null);setTimeout(()=>openHRPro('communications'),0)">فتح الأرشيف الموحد</button>
+</div>
+<div class="admin-pure-card">
+<h3>دليل الموارد البشرية</h3>
+<p>الدليل والسياسات التشغيلية أصبحت ضمن قسم الموارد البشرية.</p>
+</div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-tasks">
+<div class="admin-pure-title">
+<h2>مهام الإدارة</h2>
+<p>المهام التشغيلية الخاصة بقسم الإدارة.</p>
+</div>
+<div class="admin-pure-card admin-pure-launch-card">
+<button type="button" class="admin-pure-button" onclick="openAdminTasksV2161()">فتح مهام الإدارة</button>
+</div>
+<div id="adminAppContent" style="display:none">
+<div id="adminAppTasks"></div>
+</div>
+</div>
+<div class="admin-pure-page admin-page-work">
+<div class="admin-pure-title">
+<h2>متابعة العمل الآن</h2>
+<p>دليل نشاط الموظفين داخل النظام، وليس نظام دوام.</p>
+</div>
+<div class="admin-pure-card admin-pure-launch-card">
+<button type="button" class="admin-pure-button" onclick="openWorkProofAdmin()">فتح متابعة العمل الآن</button>
+</div>
+<div id="adminWorkProofContent" style="display:none"></div>
+</div>
+</div>
+</div>
+</section>

@@ -605,6 +605,7 @@
     }
   },true);
   function scheduleMount() { if (mountPending) return; mountPending = true; requestAnimationFrame(() => { mountPending = false; mount(); }); }
+  document.addEventListener('mosh:page-mounted',mount);
   window.addEventListener('mosh:r19-change',scheduleMount);
   document.addEventListener('mosh:r19-change',scheduleMount);
   document.addEventListener('mosh:refreshed',() => { initialAttemptIdentity = ''; generation++; reads.clear(); scheduleMount(); });

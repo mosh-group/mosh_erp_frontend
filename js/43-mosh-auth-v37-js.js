@@ -84,7 +84,7 @@ function modulePerm(app,action,u=activeUser){
  if(!u||u.active===false)return false;
  // v40: the main employee dashboard is the universal home for every active account.
  // Department permissions still decide which department shortcuts/pages are available from it.
- if(app==='dashboard')return true;
+ if(app==='dashboard'||(app==='employeePortal'&&action==='view'))return true;
  if(isRoot(u))return true;const r=roleOf(u);let base=!!r?.modules?.[app]?.[action];
  const da=deptApp(u.department);
  if(r?.scope==='all')base=true;
@@ -261,14 +261,22 @@ function applyPermissions(){
  const panel=$('#auth37SettingsPanel');if(panel)panel.style.display=(globalPerm('manageUsers')||globalPerm('managePermissions'))?'':'none';updateIdentity();
  const app=currentApp();if(app&&!modulePerm(app,'dashboard')&&modulePerm(app,'running'))setTimeout(()=>{try{if(currentApp()===app&&typeof openProductiveRunningTasksPage==='function')openProductiveRunningTasksPage(app)}catch(e){}},0);
 }
-function blockUnauthorizedClick(e){if(!activeUser)return;if(e.target.closest?.('dialog[id^=c09]'))return;if(e.target.closest?.('#r14UnsavedDialog'))return;if(e.target.closest('#marketingSocialHubContent .ig28,.ig28-dialog,#it31Body,#it31Tabs,.it31-dialog'))return;if(e.target.closest('#moshAuthGate,#moshAuthAdmin,#moshAccountModal,#moshAuthEditor'))return;const el=e.target.closest('button,a,[role="button"],[onclick]');if(!el)return;const target=navigationApp(el);if(target&&!modulePerm(target,'view')){e.preventDefault();e.stopImmediatePropagation();safeToast('لا تملك صلاحية الدخول إلى هذا القسم.',true);return}if(el.classList.contains('r35-ui-navigation'))return;const oc=el.getAttribute('onclick')||'';if(el.closest('#moshNoticeDialog52,#moshNoticeStrip52')||oc.includes('openEmployeeAnnouncements(')||el.matches('[data-es11-notices],[data-m15="notice-read"]'))return;
+function blockUnauthorizedClick(e){if(!activeUser)return;if(e.target.closest?.('dialog[id^=c09]'))return;if(e.target.closest?.('#r14UnsavedDialog'))return;if(e.target.closest('#marketingSocialHubContent .ig28,.ig28-dialog,#it31Body,#it31Tabs,.it31-dialog'))return;if(e.target.closest('#moshAuthGate,#moshAuthAdmin,#moshAccountModal,#moshAuthEditor'))return;const el=e.target.closest('button,a,[role="button"],[onclick]');if(!el)return;
+ if(el.id==='standaloneTaskModal'||el.closest('#standaloneTaskModal')&&el.getAttribute('onclick')==='cancelStandaloneTask()')return;
+ if(el.id==='standaloneTaskCreateBtn'){
+  const destination=deptApp($('#standaloneTaskDepartment')?.value||'');
+  if(!globalPerm('createTasks')&&!modulePerm(destination,'create')){e.preventDefault();e.stopImmediatePropagation();safeToast('لا تملك صلاحية إنشاء مهمة لهذا القسم.',true);}
+  return;
+ }
+ const target=navigationApp(el);if(target&&!modulePerm(target,'view')){e.preventDefault();e.stopImmediatePropagation();safeToast('لا تملك صلاحية الدخول إلى هذا القسم.',true);return}if(el.classList.contains('r35-ui-navigation'))return;const oc=el.getAttribute('onclick')||'';if(el.closest('#moshNoticeDialog52,#moshNoticeStrip52')||oc.includes('openEmployeeAnnouncements(')||el.matches('[data-es11-notices],[data-m15="notice-read"]'))return;
  const app=currentApp();if(!app)return;const ac=specialAction(el)||semanticAction(el);if(ac&&!modulePerm(app,ac)){e.preventDefault();e.stopImmediatePropagation();safeToast('لا تملك صلاحية تنفيذ هذا الإجراء.',true)}}
 function startObserver(){if(observer)return;document.addEventListener('click',blockUnauthorizedClick,true);observer=new MutationObserver(()=>{clearTimeout(observer._t);observer._t=setTimeout(applyPermissions,60)});observer.observe(document.body,{childList:true,subtree:true});['mousemove','keydown','click','touchstart'].forEach(ev=>document.addEventListener(ev,touchSession,{passive:true}));setInterval(()=>{if(!activeUser)return;const d=loadDb(),u=d.users.find(x=>x.id===activeUser.id),s=session();if(!sessionValid(s,u,d)){alert('انتهت جلسة الدخول بسبب الخمول.');logout()}},60000)}
 function wrapNavigation(){try{const old=window.goApp;if(typeof old==='function'&&!old.__auth37){const fn=function(app){if(!activeUser)return false;if(!modulePerm(app,'view')){safeToast('لا تملك صلاحية الدخول إلى هذا القسم.',true);return false}const r=old.apply(this,arguments);setTimeout(applyPermissions,0);return r};fn.__auth37=true;window.goApp=fn;}}catch(e){}}
 function autoLinkEmployeeAccounts(){return false;}
 function init(){buildGate();wrapNavigation();document.documentElement.classList.remove('mosh-auth-pending');if(MoshApi.bootError){renderLogin(MoshApi.bootError.message);return;}if(MoshApi.status?.setupRequired){renderSetup();return;}if(MoshApi.user){activeUser=MoshApi.user;setSession(activeUser);activate(activeUser,false);}else{clearSession();renderLogin();}}
 function publicUser(u){if(!u)return null;const x=clone(u);delete x.password;delete x.failed;delete x.lockUntil;return x}
-window.MoshAuth37={openAdmin,openMyAccount,logout,can:globalPerm,canModule:modulePerm,current:()=>publicUser(activeUser),taskScope:()=>taskScopeOf(activeUser),landing:()=>landingOf(activeUser),departmentApp:()=>deptApp(activeUser?.department||''),db:()=>{const d=clone(loadDb());if(!isRoot())d.users=d.users.map(publicUser);return d}};
+window.MoshAuth37={openAdmin,openMyAccount,logout,can:globalPerm,canModule:modulePerm,current:()=>publicUser(activeUser),taskScope:()=>taskScopeOf(activeUser),landing:()=>landingOf(activeUser),departmentApp:(department=activeUser?.department||'')=>deptApp(department),db:()=>{const d=clone(loadDb());if(!isRoot())d.users=d.users.map(publicUser);return d}};
 document.addEventListener('mosh:refreshed',refreshPermissions);
+document.addEventListener('mosh:page-mounted',()=>queueMicrotask(applyPermissions));
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

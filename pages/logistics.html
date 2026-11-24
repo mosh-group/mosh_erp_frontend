@@ -1,0 +1,12 @@
+<section id="logisticsApp" class="view">
+<div class="menu-strip">
+<div class="menu"><button id="logisticsDistributionTab" class="design-menu-btn" onclick="document.getElementById('logisticsRequestsContent').style.display='none';openProductiveDistributionPage('logistics')">القائمة الرئيسية لقسم اللوجستيات <span id="logisticsDistributionBadge" class="design-menu-badge"></span></button></div>
+<div class="menu"><button id="logisticsRunningTab" class="design-menu-btn" onclick="document.getElementById('logisticsRequestsContent').style.display='none';openProductiveRunningTasksPage('logistics')">مهام قسم الخدمات الإدارية</button></div>
+<div class="menu"><button onclick="openSupportRequestsPage('logistics')">الطلبات اللوجستية <span id="logisticsRequestsBadge" class="support-menu-badge"></span></button></div>
+<div class="menu"><button type="button" onclick="openDeptExecReportStep3('logistics','اللوجستيات')">إرسال تقرير للمدير التنفيذي</button></div>
+</div>
+<div id="logisticsAppContent" style="display:none">
+<div id="logisticsAppTasks"></div>
+</div>
+<div id="logisticsRequestsContent" style="display:none"><div id="logisticsRequestsWorkspace"></div></div>
+</section>

@@ -64,6 +64,7 @@
   try{DEPTS.forEach(syncOne);syncBadges();}finally{lock=false;}
  }
  function schedule(){clearTimeout(timer);timer=setTimeout(install,70)}
+ document.addEventListener('mosh:page-mounted',install);
  window.MoshManagerInline32E={install,syncBadges,departments:DEPTS.map(x=>x.key),version:'32E'};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{install();setTimeout(install,250);setTimeout(install,1200);},{once:true});
  else {install();setTimeout(install,250);setTimeout(install,1200);}

@@ -17,3 +17,23 @@ test('R9 changed login cannot receive a response belonging to the previous accou
 test('R9 later server version is not replaced by a delayed creation response',()=>{const {a,c}=fixture();a.acceptCreatedTask({...saved(),_version:2,employeeState:'received'},'U1');a.acceptCreatedTask(saved(),'U1');assert.equal(c.state.salesTasks[0]._version,2);assert.equal(c.state.salesTasks[0].employeeState,'received');});
 test('R9 newer confirmed projection preserves existing task editor draft',()=>{const {a,c}=fixture();a.acceptCreatedTask(saved(),'U1');c.state.salesTasks[0].title='draft title';a.acceptCreatedTask({...saved(),_version:2,employeeState:'received'},'U1');assert.equal(c.state.salesTasks[0].title,'draft title');assert.equal(c.state.salesTasks[0].employeeState,'received');});
 test('R9 nonregistered task still cannot bypass the server baseline guard',async()=>{const {a,c,sent}=fixture();c.state.salesTasks.push(saved());await assert.rejects(a.commitWorkdesk(()=>[{resource:'tasks',action:'update',id:'CREATED-SERVER-ID',data:{employeeState:'received'}}]),/السجل غير متاح/);assert.equal(sent.length,0);});
+test('approval from an older session uses the latest history and version', async () => {
+ const {a,c}=fixture(),old=saved();
+ a.acceptCreatedTask(old,'U1');
+ const fresh={...old,_version:5,employeeState:'submitted',history:[{text:'employee submitted'}]};
+ const calls=[];
+ a.request=async(url,options)=>{
+  calls.push(options.method||'GET');
+  if(!options.method)return fresh;
+  assert.equal(options.body._version,5);
+  assert.equal(options.body.history[0].text,'employee submitted');
+  return {id:old.id,outcome:'follow_up'};
+ };
+ const result=await a.commitTask(old.id,t=>{
+  assert.equal(t.employeeState,'submitted');
+  return {history:t.history,employeeState:'finished'};
+ },{latest:true});
+ assert.deepEqual(calls,['GET','PATCH']);
+ assert.equal(result.department,'المهمات');
+ assert.equal(c.state.salesTasks.length,0);
+});

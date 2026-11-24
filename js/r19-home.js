@@ -36,7 +36,11 @@
   }
   if (typeof window.openEmployeePortal === 'function') {
     const open = window.openEmployeePortal;
-    window.openEmployeePortal = function () { const result = open.apply(this, arguments); decoratePortal(); return result; };
+    window.openEmployeePortal = function () {
+      const result = open.apply(this, arguments);
+      const decorate = value => { if (value !== false) decoratePortal(); return value; };
+      return typeof result?.then === 'function' ? result.then(decorate) : decorate(result);
+    };
   }
   let scheduled = false;
   const schedule = () => { if (scheduled) return; scheduled = true; requestAnimationFrame(() => { scheduled = false; mount(); }); };

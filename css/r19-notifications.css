@@ -90,3 +90,28 @@
 #mr49ReturnDialog #mr49ReturnError{white-space:pre-wrap;overflow-wrap:anywhere}
 #mr49ReturnDialog [hidden]{display:none!important}
 @media(max-width:680px){#r19Alerts .r19-dialog-body{padding:15px!important}.r19-alert-filters{grid-template-columns:1fr}.r19-alert-toolbar{align-items:flex-start;gap:10px}.r19-alert-preferences{width:100%}.r19-alert-row{padding:13px}.r19-alert-row-foot{align-items:flex-start;flex-direction:column;gap:8px}.r19-alert-detail h3{font-size:20px}.r19-alert-detail-meta time{width:100%;margin:3px 0 0}.r19-alert-message{font-size:16px}.r19-alert-detail footer{flex-wrap:wrap}.r19-task-status-panel{align-items:flex-start;flex-direction:column}.r19-task-status-panel>button{align-self:flex-end}.r19-notice-feature{align-items:flex-start;flex-direction:column;gap:10px}.r19-notice-open{align-self:flex-end}.r19-notice-head{align-items:flex-start}.r19-notice-head>button{font-size:12px!important;padding:6px 8px}#moshNoticeStrip52.r19-unified-strip{padding:13px!important}}
+
+/* Five-second notification cards; the bell remains the durable inbox. */
+#r19IncomingPopup.r19-incoming-popup{position:fixed;inset:auto auto max(20px,env(safe-area-inset-bottom)) 20px;margin:0;width:min(380px,calc(100vw - 40px));max-height:calc(100dvh - 40px);overflow:auto;box-sizing:border-box;padding:15px 17px 13px;border:1px solid #aa904e;border-inline-start:4px solid #dbb941;border-radius:14px;background:linear-gradient(135deg,#172329,#10191e);color:#f3ead8;box-shadow:0 10px 35px #0006;z-index:2147483001;text-align:start;font-family:inherit;font-size:14px;line-height:1.7;animation:r19-popup-enter .2s ease-out}
+#r19IncomingPopup::backdrop{background:transparent;pointer-events:none}
+#r19IncomingPopup .r19-popup-heading{display:flex;align-items:center;gap:8px;color:#e5c975;font-size:12px;font-weight:700}
+#r19IncomingPopup .r19-popup-icon{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;border-radius:9px;background:#bfa3471c;flex:none}
+#r19IncomingPopup .r19-popup-icon svg{width:18px;height:18px}
+#r19IncomingPopup .r19-popup-close{margin-inline-start:auto;display:grid;place-items:center;min-width:30px;min-height:30px;padding:0;border:1px solid #526169;border-radius:8px;background:transparent;color:#dfddd1;font:22px/1 sans-serif;cursor:pointer}
+#r19IncomingPopup .r19-popup-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#r19IncomingPopup h3{font-family:inherit;font-weight:700;font-size:15px;line-height:1.7;margin:9px 0 4px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#r19IncomingPopup p{font-family:inherit;font-size:14px;line-height:1.8;margin:0 0 10px;color:#c5d0d1;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#r19IncomingPopup footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#r19IncomingPopup footer small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#aebdbf;font-size:12px}
+#r19IncomingPopup footer button{flex:none;padding:5px 9px;border:1px solid #a18a4e;border-radius:8px;background:#c8ae711a;color:#f2dba3;font-family:inherit;font-weight:700;font-size:12px;line-height:1.7;cursor:pointer}
+#r19IncomingPopup button:focus-visible{outline:2px solid #f0ce69;outline-offset:3px}
+#r19IncomingPopup.is-urgent{border-inline-start-color:#f49386}
+#r19IncomingPopup .r19-popup-progress{display:block;position:absolute;bottom:0;inset-inline:0;height:3px;background:#d2b04d;transform-origin:right;animation:r19-popup-countdown 5s linear forwards}
+html[data-mosh-theme=light] #r19IncomingPopup{background:linear-gradient(135deg,#fffdf6,#f2f5f3);color:#172c34;box-shadow:0 8px 28px #283c4426}
+html[data-mosh-theme=light] #r19IncomingPopup :is(.r19-popup-heading,footer button){color:#6b501b}
+html[data-mosh-theme=light] #r19IncomingPopup :is(p,footer small){color:#4b616a}
+html[data-mosh-theme=light] #r19IncomingPopup .r19-popup-close{color:#344c55}
+@keyframes r19-popup-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes r19-popup-countdown{to{transform:scaleX(0)}}
+@media(prefers-reduced-motion:reduce){#r19IncomingPopup,#r19IncomingPopup .r19-popup-progress{animation:none}}
+@media(max-width:480px){#r19IncomingPopup.r19-incoming-popup{left:12px;bottom:max(12px,env(safe-area-inset-bottom));width:calc(100vw - 24px)}}

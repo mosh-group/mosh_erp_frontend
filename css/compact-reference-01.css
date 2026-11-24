@@ -216,3 +216,10 @@ html.mosh-compact01 #moshAiLauncher {border-color:#9f8031!important;background:#
  html.mosh-compact01 #appShell #employeeSpaceV11 #dashboardLiveTime{font-size:21px!important}
  html.mosh-compact01 #appShell #employeeSpaceV11 .wd51-home-task{flex-wrap:wrap!important}
 }
+
+/* Keep desktop labels, icons and controls in proportion as the shell grows. */
+@media screen and (min-width: 1100px) {
+  html.mosh-compact01 {
+    zoom: 1.15;
+  }
+}

@@ -49,12 +49,15 @@ const menu = make('div', 'pv-menu-host'), menuToggle = make('button', 'pv-menu-t
 // DOM insertion differs from flex order; the sidebar must follow the visible header.
 for (const [index, node] of [dashboard, running, approval, tools, menu].entries()) node.style.order = String(index + 1);
 bar.append(menu, tools, approval, running, dashboard, make('span', '', 'قسم التسويق'));
+const assignment = button('توزيع المهام', 'header-assign', 'assign'); bar.append(assignment);
 const originalHeaderNodes = [...bar.children];
 const rail = make('nav', 'mk33-rail'); app.append(rail);
 const customer = button('عملاء التسويق', 'marketingCustomersTab'), discovery = button('◉ جلسة اكتشاف العميل', '');
 const plan = button('☷ الخطة التسويقية', ''), tasks = button('✓ مهمات التسويق', '');
-discovery.onclick = () => visits.push('discovery'); plan.onclick = () => visits.push('plan'); tasks.onclick = () => visits.push('marketing-tasks');
-rail.append(discovery, plan, tasks); app.append(customer);
+discovery.dataset.mk33View = 'discovery'; discovery.onclick = () => visits.push('discovery'); plan.onclick = () => visits.push('plan'); tasks.onclick = () => visits.push('marketing-tasks');
+const nativeMenu = make('div', 'menu-strip');
+nativeMenu.append(customer);
+rail.append(discovery, plan, tasks); app.append(nativeMenu);
 const groups = [{name: 'العملاء والمتابعة', rows: [customer]}, {name: 'ملف العميل والخطط', rows: [discovery, plan]}, {name: 'مهام التسويق', rows: [tasks]}];
 const permissions = new Set(['view', 'dashboard', 'running', 'approvals', 'assign']);
 const allowed = node => !!node && node.isConnected && !node.hidden && !node.disabled && !node.closest('.mosh-auth-hidden');
@@ -66,17 +69,23 @@ const sandbox = {
   auth: () => ({canModule: (section, action) => permissions.has(action)}), toast() {}, restoring: false,
   navigateSafely: action => action(), remember() {}, schedule() {},
   openDepartmentTaskView: (app, mode) => visits.push('assignment-' + app + '-' + mode),
-  window: {MoshGrouped35: {allowed, sources: () => groups.flatMap(g => g.rows).filter(allowed), groups: () => groups.map(g => ({...g, rows: g.rows.filter(allowed)}))}, goApp: () => {goCount++; if (rebuildOnGo) {tree.signature = ''; context.refreshMarketingTree(tree);} return true;}}
+  window: {MoshMarketingV33: {openView: view => visits.push(view)}, MoshGrouped35: {allowed, sources: () => groups.flatMap(g => g.rows).filter(allowed), groups: () => groups.map(g => ({...g, rows: g.rows.filter(allowed)}))}, goApp: () => {goCount++; if (rebuildOnGo) {tree.signature = ''; context.refreshMarketingTree(tree);} return true;}}
 };
 const context = vm.createContext(sandbox);
 vm.runInContext(between('function hrMenuLabel(', 'function hrSidebarRows('), context);
 vm.runInContext(between('function salesDropdownId(', 'function salesMenuSection('), context);
 vm.runInContext(between('function departmentHeaderRows(', 'function refreshTree('), context);
 const rows = context.marketingSidebarRows();
-assert.deepEqual(Array.from(rows, r => r.name), ['لوحة التحكم', 'مهام قسم التسويق', 'توزيع المهام', 'اعتماد المدير', 'أدوات المدير', 'قائمة القسم']);
+assert.deepEqual(Array.from(rows, r => r.name), ['لوحة التحكم', 'مهام قسم التسويق', 'المهام الفرعية', 'اعتماد المدير', 'أدوات المدير', 'قائمة القسم']);
 assert.deepEqual(Array.from(rows[4].children, r => r.name), toolLabels);
 assert.deepEqual(Array.from(rows[5].children, r => r.name), groups.map(g => g.name));
+assert.equal(rows[5].children[0].children[0].name, 'عملاء التسويق');
 assert.equal(rows[5].children[1].children[0].name, 'جلسة اكتشاف العميل');
+menu.hidden = true;
+const rowsWithoutHeaderMenu = context.marketingSidebarRows();
+assert.deepEqual(Array.from(rowsWithoutHeaderMenu, row => row.name), Array.from(rows, row => row.name));
+assert.deepEqual(Array.from(rowsWithoutHeaderMenu[5].children, group => group.name), groups.map(group => group.name));
+menu.hidden = false;
 context.refreshMarketingTree(tree);
 const rootMenu = name => box.children.find(n => n.tagName === 'DETAILS' && n.querySelector('summary').textContent === name);
 const leaf = name => box.querySelectorAll('button').find(n => n.textContent === name);
@@ -93,13 +102,14 @@ rootMenu('قائمة القسم').querySelector('summary').click();
 assert.equal(rootMenu('أدوات المدير').open, false);
 const clientFiles = rootMenu('قائمة القسم').querySelectorAll('details').find(n => n.querySelector('summary').textContent === 'ملف العميل والخطط');
 clientFiles.querySelector('summary').click(); rebuildOnGo = true;
-leaf('جلسة اكتشاف العميل').click(); rebuildOnGo = false;
+const beforeClientOpen=goCount; leaf('جلسة اكتشاف العميل').click(); rebuildOnGo = false;
+if(rows[5].children[1].children[0].marketingView)assert.equal(goCount,beforeClientOpen,'Opening a client view does not reopen the active section');
 assert.equal(visits.at(-1), 'discovery');
 assert.equal(rootMenu('قائمة القسم').open, true, 'Navigation preserves open department menu');
 assert.equal(rootMenu('قائمة القسم').querySelectorAll('details').find(n => n.querySelector('summary').textContent === 'ملف العميل والخطط').open, true);
 leaf('لوحة التحكم').click(); assert.equal(visits.at(-1), 'header-dashboard');
-leaf('مهام قسم التسويق').click(); assert.equal(visits.at(-1), 'header-running');
-leaf('توزيع المهام').click(); assert.equal(visits.at(-1), 'assignment-marketing-assign');
+leaf('مهام قسم التسويق').click(); assert.equal(visits.at(-1), 'assignment-marketing-running');
+assert.equal(leaf('توزيع المهام'), undefined); assignment.click(); assert.equal(visits.at(-1), 'header-assign');
 leaf('اعتماد المدير4').click(); assert.equal(visits.at(-1), 'mgr32eApproval_marketing');
 // The manager header recreates its item buttons during synchronization.
 const replacement = button('متابعة الطلبات', ''); replacement.onclick = () => visits.push('new-tool-target');

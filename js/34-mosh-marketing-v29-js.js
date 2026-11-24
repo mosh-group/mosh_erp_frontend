@@ -120,6 +120,10 @@ if(typeof originalRunning==='function')window.openProductiveRunningTasksPage=fun
 const originalOpenTask=window.openTaskDetails;
 if(typeof originalOpenTask==='function')window.openTaskDetails=function(id){const r=originalOpenTask.apply(this,arguments);setTimeout(()=>injectTaskGuide(id),0);return r};
 window.MoshMarketingV29={approvalCount,openDashboard,openCustomer,openTab,search,saveDiscovery,addQuestion,removeQuestion,saveGuide,addNote,deleteNote,newPlan,editPlan,duplicatePlan,savePlan,submitPlan,backPlans,decidePlan,openDistribution,refresh:openDashboard,version:'29.0'};
-function init(){ensureRoot();const top=document.getElementById('marketingDistributionTab');if(top)top.textContent='لوحة التحكم';const reportBtn=document.querySelector('#marketingApp .menu-strip button[onclick*="openDeptExecReportStep3"]');if(reportBtn&&reportBtn.parentElement)reportBtn.parentElement.style.display='none';document.addEventListener('click',e=>{if(e.target.closest('#mgr28Tab_marketing'))setTimeout(enrichApprovalModal,30)},true);setInterval(refreshApprovalBadge,1200);setTimeout(refreshApprovalBadge,300);}
+function mountMarketing(){
+ if(window.MoshPages?.pending('marketing'))return;
+ ensureRoot();const top=document.getElementById('marketingDistributionTab');if(top)top.textContent='لوحة التحكم';const reportBtn=document.querySelector('#marketingApp .menu-strip button[onclick*="openDeptExecReportStep3"]');if(reportBtn&&reportBtn.parentElement)reportBtn.parentElement.style.display='none';
+}
+function init(){mountMarketing();document.addEventListener('mosh:page-mounted',event=>{if(event.detail.app==='marketing')mountMarketing();});document.addEventListener('click',e=>{if(e.target.closest('#mgr28Tab_marketing'))setTimeout(enrichApprovalModal,30)},true);setInterval(refreshApprovalBadge,1200);setTimeout(refreshApprovalBadge,300);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

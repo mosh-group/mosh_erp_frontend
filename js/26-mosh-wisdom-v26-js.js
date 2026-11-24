@@ -192,6 +192,7 @@
   // Keep the existing banner markup/style untouched: only its paragraph text changes.
   try{localStorage.removeItem('mosh_wisdom_runtime_v32b');}catch(e){}
   ensureUI();applyBanner();
+  document.addEventListener('mosh:page-mounted',event=>{if(event.detail.app==='hr')ensureUI();});
   setInterval(applyBanner,60000);
   window.addEventListener('storage',e=>{if(e.key===KEY){applyBanner();render();}});
   const oldOpenHR=window.openHRPro;if(typeof oldOpenHR==='function')window.openHRPro=function(){hideWisdom();return oldOpenHR.apply(this,arguments);};

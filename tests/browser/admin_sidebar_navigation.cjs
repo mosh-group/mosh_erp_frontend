@@ -119,7 +119,8 @@ async function main() {
       await page.waitForTimeout(350);
       assert.equal(await page.locator('#adminProductiveWorkspace').isVisible(), true);
 
-      await assignment.click();
+      assert.equal(await assignment.count(), 0);
+      await page.evaluate(() => window.MoshAdministration24.openTasks('assign'));
       await page.locator('#adminProductiveWorkspace').waitFor({state: 'visible'});
       assert.equal(await page.locator('#adminTabDistribution').isChecked(), true);
       assert.equal(await page.locator('#adminProductiveWorkspace .db9').count(), 0);

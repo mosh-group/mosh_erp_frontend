@@ -354,5 +354,5 @@ function install(){const app=$('adminApp');if(!app)return;
  document.addEventListener('mosh:r24-admin-updated',()=>{clearLoaded();});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-window.MoshAdministration24={open:()=>{window.goApp?.('admin')},openAlert:async(id)=>{window.goApp?.('admin');await go('alerts',true);if(id)alertDetail(id)},refresh:()=>S.taskView?openTasks(S.taskView):go(S.active,true),enter,openTasks,version:'r36.2-admin-task-navigation'};
+window.MoshAdministration24={open:()=>{window.goApp?.('admin')},openAlert:async(id)=>{if(await window.goApp?.('admin')===false)return;await go('alerts',true);if(id)alertDetail(id)},refresh:()=>S.taskView?openTasks(S.taskView):go(S.active,true),enter,openTasks,version:'r36.2-admin-task-navigation'};
 })();

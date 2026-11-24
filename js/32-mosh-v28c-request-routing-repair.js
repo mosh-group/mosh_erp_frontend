@@ -23,10 +23,9 @@ function repairOne(r){
    if(!clean(r.employeeId)&&p.id!=null){r.employeeId=String(p.id);changed=true;}
    if((!clean(r.employeeName)||same(r.employeeName,p.username)||same(r.employeeName,p.email))&&clean(p.name)){r.employeeName=p.name;changed=true;}
    if(!clean(r.department)&&clean(p.department)){r.department=p.department;changed=true;}
-   if(!clean(r.manager)){const dm=clean(p.directManager)?p.directManager:clean(deptManager(p.department)?.name);if(dm){r.manager=dm;changed=true;}}
  }
  const cfg=requestCfg(r.type),cfgRoute=arr(cfg?.route);r.route=arr(r.route);
- if(r.status==='pending'&&cfgRoute.includes('المدير المباشر')&&!r.route.includes('المدير المباشر')&&(Number(r.stageIndex)||0)===0&&!r.managerDecision){r.route=[...cfgRoute];changed=true;}
+ if(r.status==='pending'&&!r.route.length&&cfgRoute.length&&(Number(r.stageIndex)||0)===0&&!r.managerDecision){r.route=[...cfgRoute];changed=true;}
  if(r.status==='pending'&&r.route.includes('المدير المباشر')&&!clean(r.manager)){
    const dm=clean(p?.directManager)||clean(deptManager(r.department)?.name);if(dm){r.manager=dm;changed=true;}
  }

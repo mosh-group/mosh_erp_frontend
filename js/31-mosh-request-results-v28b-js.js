@@ -60,7 +60,7 @@ function markFinal(id){
  renderEmployeeResult();refreshHrBadge();return true;
 }
 async function seen(id){const r=arr(state.hrProRequests).find(x=>String(x.id)===String(id));if(!r)return;const beforeAt=r.resultSeenAt,beforeBy=r.resultSeenBy;r.resultSeenAt=now();r.resultSeenBy=name();if(await saveSafe()){renderEmployeeResult();return;}r.resultSeenAt=beforeAt;r.resultSeenBy=beforeBy;renderEmployeeResult();}
-function openMyRequests(){try{openEmployeePortal()}catch(e){};setTimeout(()=>{document.getElementById('employeePortalRequests')?.scrollIntoView({behavior:'smooth',block:'start'});},80)}
+async function openMyRequests(){if(await openEmployeePortal()===false)return;setTimeout(()=>{document.getElementById('employeePortalRequests')?.scrollIntoView({behavior:'smooth',block:'start'});},80)}
 
 const approve=window.hrProApproveRequest;
 if(typeof approve==='function')window.hrProApproveRequest=function(id){const result=approve.apply(this,arguments);setTimeout(()=>{markFinal(id);refreshHrBadge();},0);return result;};

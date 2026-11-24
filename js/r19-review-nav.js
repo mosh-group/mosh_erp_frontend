@@ -46,6 +46,7 @@
   if(host.hidden){menu.hidden=true;host.querySelector('.r23-manager-tools-toggle').setAttribute('aria-expanded','false')}
  }
  function sync(){DEPTS.forEach(syncOne)}
+ document.addEventListener('mosh:page-mounted',event=>{if(DEPTS.includes(event.detail.app))syncOne(event.detail.app);});
  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;sync()})}
  document.addEventListener('click',e=>{if(!e.target.closest?.('.r23-manager-tools'))closeAll();setTimeout(schedule,0)},true);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});

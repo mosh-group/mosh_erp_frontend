@@ -12,7 +12,15 @@
   const busy=new Set(), errors=new Map();
   let homeTab='',homeOwner='',homeQuery='';
   let cardSignature='',listSignature='',listTab='all',listQuery='',listPage=1,previousFocus=null,refreshBusy=false,lastRefresh=0,refreshError='';
+  let tracking={owner:'',rows:[],loading:false,error:''};
+  let receiptNoticeOwner='';
   const user=()=>window.MoshAuth37?.current?.()||null;
+  function canTrackMarketing(){
+    const account=user(),auth=window.MoshAuth37;
+    if(!account?.employeeId||!auth?.canModule?.('marketing','view'))return false;
+    const manager=typeof getDepartmentManager==='function'?getDepartmentManager('التسويق'):null;
+    return auth.departmentApp?.(account.department)==='marketing'||String(manager?.id||'')===String(account.employeeId);
+  }
   const task=id=>list(state.salesTasks).find(t=>String(t.id)===String(id))||null;
   const app=t=>depMap[text(t?.sharedDepartment||t?.department)]||window.MoshAuth37?.departmentApp?.()||'';
   const mine=t=>!!t&&!!user()&&!!window.MoshEmployeeTasks41?.isMine?.(t);
@@ -21,6 +29,16 @@
   function groups(){return model.group(myRows());}
   function fmtDate(value){if(!value)return '—';const d=new Date(value);return Number.isFinite(d.getTime())?d.toLocaleString('ar-SY',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):text(value);}
   function setStatusError(id,value){if(value)errors.set(String(id),value);else errors.delete(String(id));}
+  function finishMessage(t){
+    if(t?.department==='المهمات'&&t.employeeState==='finished')return 'تم إنهاء المهمة وإرسالها إلى المهمات للمتابعة.';
+    if(t?.status==='awaiting_invoice')return 'تم إنهاء المهمة. بانتظار الفوترة.';
+    if(t?.employeeState==='finished'&&t.status==='in_progress')return 'تم إنهاء المهمة في القسم الحالي.';
+    if(t?.employeeState==='finished'||t?.status==='completed')return 'تم إنهاء المهمة.';
+    if(t?.employeeState==='submitted')return t.reviewManager
+      ? `تم إرسال المهمة إلى ${t.reviewManager} للاعتماد.`
+      : 'تم إرسال المهمة لمراجعة مدير القسم.';
+    return '';
+  }
   function cyclePanel(t){
     const evs=model.events(t),cycle=model.currentCycle(t),reason=model.reason(t);
     const returned=t.returnedForRevision?'<div class="mr49-return-note"><b>↩ مُعادة من المدير'+(model.category(t)==='new'?' — يلزم استلامها مجدداً':'')+'</b><p>'+esc(reason||'تعديلات مطلوبة. راجع ملاحظات المدير في سجل المهمة.')+'</p></div>':'';
@@ -38,11 +56,11 @@
     else if(group==='new')html='<button type="button" class="emp48-btn primary" data-emp48-action="receive">✓ تم استلام المهمة</button>';
     else if(group==='review')html='<p class="emp48-wait">أرسلت المهمة للمراجعة؛ ليست ضمن مهامك الجارية. إذا أُعيدت لك ستظهر في «مهام جديدة».</p>';
     else if(group==='active') {
-      if(st==='working')html='<button type="button" class="emp48-btn pause" data-emp48-action="pause">إيقاف مؤقت</button><button type="button" class="emp48-btn finish" data-emp48-action="finish">إنهاء المهمة وإرسال للمراجعة</button>';
+      if(st==='working')html='<button type="button" class="emp48-btn pause" data-emp48-action="pause">إيقاف مؤقت</button><button type="button" class="emp48-btn finish" data-emp48-action="finish">إنهاء المهمة</button>';
       else {
         const first=model.label(t).includes('بانتظار البدء');
         html='<button type="button" class="emp48-btn primary" data-emp48-action="start">'+(first?'بدء المهمة':'استئناف المهمة')+'</button>';
-        if(st==='paused'&&!first)html+='<button type="button" class="emp48-btn finish" data-emp48-action="finish">إنهاء المهمة وإرسال للمراجعة</button>';
+        if(st==='paused'&&!first)html+='<button type="button" class="emp48-btn finish" data-emp48-action="finish">إنهاء المهمة</button>';
       }
     } else html='<p class="emp48-note">انتهت مرحلة تنفيذ هذه المهمة.</p>';
     const error=errors.get(id);
@@ -54,15 +72,17 @@
   }
   async function perform(kind,id){
     id=String(id);if(busy.has(id))return false;
-    let t=task(id);if(!t)return false;
+    const t=task(id);if(!t)return false;
+    const sourceDepartment=t.department;
     const action=kind==='finish'?'submit':kind;
     let detail='';
+    let saved;
     try{
       validateOwn(t);
-      if(action==='submit'&&!confirm('إنهاء التنفيذ وإرسال المهمة إلى مدير القسم للمراجعة؟'))return false;
+      if(action==='submit'&&!confirm('تأكيد إنهاء تنفيذ المهمة؟'))return false;
       if(action==='pause'){const answer=prompt('سبب الإيقاف المؤقت (اختياري):','');if(answer===null)return false;detail=text(answer);}
-      busy.add(id);setStatusError(id,'');window.MoshEmployeeTaskWorkflow48?.render?.(true);
-      await MoshApi.commitTask(id, fresh=>{
+      busy.add(id);setStatusError(id,'');window.MoshTaskWorkspace08?.schedule();window.MoshEmployeeTaskWorkflow48?.render?.(true);
+      saved=await MoshApi.commitTask(id, fresh=>{
         validateOwn(fresh);
         const category=model.category(fresh),st=text(fresh.employeeState)||'new',patch={};
         if(action==='receive'){
@@ -87,14 +107,18 @@
         patch.workChat=[...list(fresh.workChat),model.message(action,fresh,user()?.name||user()?.username,detail)];
         return patch;
       });
+      if(action==='submit')window.MoshUI19?.toast?.(finishMessage(saved)||'تم حفظ إجراء المهمة.');
       return true;
     }catch(error){
       setStatusError(id,error.status===409?'تغيّرت المهمة على الخادم. أغلقها وحدّث المهام قبل المحاولة مجدداً.':error.message||'تعذر حفظ الإجراء. لم يتم تأكيد أي تغيير.');
       return false;
     }finally{
-      busy.delete(id);cardSignature='';listSignature='';renderHome();renderList();
-      const cur=window.MoshEmployeeTaskOverlay47?.current?.();
-      if(String(cur?.id||'')===id){window.MoshEmployeeTaskOverlay47?.open?.(id);setTimeout(()=>window.MoshEmployeeTaskWorkflow48?.render?.(true),0);}
+      busy.delete(id);window.MoshTaskWorkspace08?.schedule();cardSignature='';listSignature='';renderHome();renderList();
+      const overlay=window.MoshEmployeeTaskOverlay47;
+      if(String(overlay?.current?.()?.id||'')===id){
+        if(saved&&action==='submit'&&(saved.department!==sourceDepartment||saved.status!=='in_progress'))overlay.close();
+        else {overlay.open(id);setTimeout(()=>window.MoshEmployeeTaskWorkflow48?.render?.(true),0);}
+      }
     }
   }
   function canReturn(t){return !!t&&!!user()&&allowed(t,'approve')&&allowed(t,'view')&&t.status==='in_progress'&&t.employeeState==='submitted'&&!!text(t.assignee);}
@@ -413,9 +437,20 @@
     return '<div class="mr49-task-row'+(returned?' mr49-returned':'')+'"><div class="mr49-task-copy">'+(returned?'<span class="mr49-return-badge">↩ مُعادة من المدير</span>':'')+'<b>'+esc(t.title||'مهمة بلا عنوان')+'</b><small class="wd53-task-client">'+esc(t.customer||'لم يُحدَّد عميل')+'</small>'+(t.dueDate?'<small class="wd53-task-due">الموعد: '+esc(t.dueDate)+'</small>':'')+''+(returned&&model.reason(t)?'<p>'+esc(model.reason(t))+'</p>':'')+'</div><div class="mr49-task-actions"><button type="button" data-mr49-open="'+esc(t.id)+'" '+(disabled?'disabled title="لا توجد صلاحية فتح التفاصيل"':'aria-label="فتح '+esc(t.title||'المهمة')+'"')+'>فتح ←</button>'+(model.category(t)!=='review'?'<button type="button" data-wd50-select="'+esc(t.id)+'" '+(disabled?'disabled':'')+'>لوحة عملي</button>':'')+'</div></div>';
   }
   function renderHome(){
-    if(!user())return;
+    const account=user();
+    if(!account){receiptNoticeOwner='';return;}
+    const g=groups(),uid=String(account.id);
+    if(receiptNoticeOwner&&receiptNoticeOwner!==uid)receiptNoticeOwner='';
+    if(!receiptNoticeOwner&&window.MoshUI19?.toast){
+      const pending=g.new.filter(task=>allowed(task,'view')&&allowed(task,'details'));
+      if(pending.length){
+        receiptNoticeOwner=uid;
+        window.MoshUI19.toast(pending.length===1
+          ?'عندك مهمة بانتظار الاستلام: '+(pending[0].title||'مهمة بلا عنوان')
+          :'عندك '+pending.length+' مهام بانتظار الاستلام.');
+      }
+    }
     const card=document.querySelector('.es11-card.es11-task');if(!card)return;
-    const g=groups(),uid=String(user().id);
     if(homeOwner!==uid){homeOwner=uid;homeTab='';homeQuery='';cardSignature='';}
     if(!homeTab)homeTab=g.new.length?'new':g.active.length?'active':'review';
     if(!card.querySelector('#mr49Inbox')){
@@ -448,19 +483,52 @@
     d.addEventListener('close',()=>{listSignature='';previousFocus?.focus?.();});return d;
   }
   function showList(kind='all',page=1){
-    const d=ensureList();previousFocus=document.activeElement;listTab=['all','new','active','review'].includes(kind)?kind:'all';listPage=Math.max(1,Number(page)||1);listQuery='';$('mr49ListSearch').value='';listSignature='';renderList(true);if(!d.open)d.showModal();$('mr49ListSearch').focus();return true;
+    const d=ensureList();previousFocus=document.activeElement;listTab=['all','new','active','review','tracking'].includes(kind)?kind:'all';listPage=Math.max(1,Number(page)||1);listQuery='';$('mr49ListSearch').value='';listSignature='';renderList(true);if(!d.open)d.showModal();$('mr49ListSearch').focus();if(listTab==='tracking')loadTracking();return true;
+  }
+  async function loadTracking(){
+    if(!canTrackMarketing())return;
+    const owner=String(user().id);
+    if(tracking.owner===owner&&tracking.loading)return;
+    const pending={owner,rows:tracking.owner===owner?tracking.rows:[],loading:true,error:''};
+    tracking=pending;renderList();
+    try{
+      const result=await MoshApi.request('/marketing/task-tracking');
+      if(String(user()?.id)===owner)pending.rows=list(result.tasks);
+    }catch(_){
+      pending.error='تعذر تحديث متابعة المهام. جرّب مرة ثانية.';
+    }finally{
+      pending.loading=false;
+      if(tracking===pending&&String(user()?.id)===owner)renderList();
+    }
+  }
+  function renderTrackingRows(rows,numberFrom){
+    const labels={awaiting_invoice:'بانتظار الفوترة',completed:'منتهية',invoiced:'تمت الفوترة',archived_invoiced:'تمت الفوترة',archived_no_invoice:'مؤرشفة',cancelled:'ملغاة'};
+    const feedback=tracking.loading?'جارٍ تحديث متابعة المهام…':tracking.error;
+    const cards=rows.map((t,index)=>{
+      const label=labels[t.status]||(t.employeeState==='finished'?'منتهية في القسم الحالي':model.label(t));
+      const number=(numberFrom+index).toLocaleString('ar-SY',{numberingSystem:'arab'})+'. ';
+      return '<article class="mr49-list-item"><div class="mr49-task-copy"><b>'+number+esc(t.title||'مهمة بلا عنوان')+'</b><small>القسم الحالي: '+esc(t.department||'غير محدد')+' · '+esc(label)+'</small></div></article>';
+    }).join('');
+    return (feedback?'<p role="status">'+esc(feedback)+'</p>':'')+(cards||(!feedback?'<p class="mr49-list-empty">لا توجد مهام تسويق مطابقة.</p>':''));
   }
   function renderList(force=false){
     const d=$('mr49ListDialog');if(!d||(!d.open&&!force))return;
     const g=groups(),all=[...g.new,...g.active,...g.review];
-    let rows=listTab==='all'?all:g[listTab];
+    const allowTracking=canTrackMarketing();
+    if(listTab==='tracking'&&!allowTracking)listTab='all';
+    const trackingTab=listTab==='tracking',trackingRows=tracking.owner===String(user()?.id)?tracking.rows:[];
+    let rows=trackingTab?trackingRows:listTab==='all'?all:g[listTab];
     const q=text(listQuery).toLocaleLowerCase('ar');
-    if(q)rows=rows.filter(t=>[t.title,t.customer,t.taskNo,t.number].some(v=>text(v).toLocaleLowerCase('ar').includes(q)));
+    if(q)rows=rows.filter(t=>[t.title,t.customer,t.taskNo,t.number,trackingTab?t.department:''].some(v=>text(v).toLocaleLowerCase('ar').includes(q)));
     const pages=Math.max(1,Math.ceil(rows.length/20));listPage=Math.min(pages,Math.max(1,listPage));
-    const signature=JSON.stringify([listTab,listQuery,listPage,all.map(t=>[t.id,t._version,t.employeeState,t.returnedForRevision,t.title,t.workChat?.at(-1)?.id])]);
+    const signature=JSON.stringify([listTab,listQuery,listPage,allowTracking,trackingTab?[tracking.owner,tracking.loading,tracking.error,trackingRows]:all.map(t=>[t.id,t._version,t.employeeState,t.returnedForRevision,t.title,t.workChat?.at(-1)?.id])]);
     if(!force&&signature===listSignature)return;listSignature=signature;
-    $('mr49ListTabs').innerHTML=[['new','مهام جديدة',g.new.length],['active','مهام جارية',g.active.length],['review','بانتظار المراجعة',g.review.length],['all','الكل',all.length]].map(([k,label,n])=>'<button type="button" data-mr49-tab="'+k+'" aria-pressed="'+String(listTab===k)+'" class="'+(listTab===k?'active':'')+'">'+label+' <b>'+n+'</b></button>').join('');
-    $('mr49ListRows').innerHTML=rows.slice((listPage-1)*20,listPage*20).map(t=>'<article class="mr49-list-item">'+taskRow(t)+'<small class="mr49-list-state">'+esc(t.sharedDepartment||t.department)+' · '+esc(model.label(t))+'</small></article>').join('')||'<p class="mr49-list-empty">لا توجد مهام ضمن هذا العرض.</p>';
+    const tabs=[['new','مهام جديدة',g.new.length],['active','مهام جارية',g.active.length],['review','بانتظار المراجعة',g.review.length],['all','الكل',all.length]];
+    if(allowTracking)tabs.push(['tracking','متابعة مهام التسويق',null]);
+    $('mr49ListTabs').innerHTML=tabs.map(([k,label,n])=>'<button type="button" data-mr49-tab="'+k+'" aria-pressed="'+String(listTab===k)+'" class="'+(listTab===k?'active':'')+'">'+label+(n===null?'':' <b>'+n+'</b>')+'</button>').join('')
+      +(trackingTab?'<button type="button" data-mr49-track-refresh '+(tracking.loading?'disabled':'')+'>تحديث المتابعة</button>':'');
+    const visibleRows=rows.slice((listPage-1)*20,listPage*20);
+    $('mr49ListRows').innerHTML=trackingTab?renderTrackingRows(visibleRows,(listPage-1)*20+1):visibleRows.map(t=>'<article class="mr49-list-item">'+taskRow(t)+'<small class="mr49-list-state">'+esc(t.sharedDepartment||t.department)+' · '+esc(model.label(t))+'</small></article>').join('')||'<p class="mr49-list-empty">لا توجد مهام ضمن هذا العرض.</p>';
     $('mr49ListPage').textContent=rows.length+' مهمة · صفحة '+listPage+' من '+pages;
     d.querySelector('[data-mr49-page="-1"]').disabled=listPage<=1;d.querySelector('[data-mr49-page="1"]').disabled=listPage>=pages;
   }
@@ -473,21 +541,74 @@
     finally{refreshBusy=false;renderHome();renderList();}
   }
   window.addEventListener('click',e=>{
-    const b=e.target.closest?.('[data-mr49-open],[data-mr49-list],[data-mr49-refresh],[data-mr49-list-close],[data-mr49-tab],[data-mr49-page],[data-mr49-return-close]');
+    const b=e.target.closest?.('[data-mr49-open],[data-mr49-list],[data-mr49-refresh],[data-mr49-track-refresh],[data-mr49-list-close],[data-mr49-tab],[data-mr49-page],[data-mr49-return-close]');
     if(!b||b.disabled)return;e.preventDefault();e.stopImmediatePropagation();
     if(b.hasAttribute('data-mr49-open'))openTask(b.dataset.mr49Open);
     else if(b.hasAttribute('data-mr49-list'))showList(b.dataset.mr49List);
     else if(b.hasAttribute('data-mr49-refresh'))refreshTasks(true);
     else if(b.hasAttribute('data-mr49-list-close'))$('mr49ListDialog')?.close();
     else if(b.hasAttribute('data-mr49-return-close'))closeReturn();
-    else if(b.hasAttribute('data-mr49-tab')){listTab=b.dataset.mr49Tab;listPage=1;listSignature='';renderList();}
+    else if(b.hasAttribute('data-mr49-track-refresh'))loadTracking();
+    else if(b.hasAttribute('data-mr49-tab')){listTab=b.dataset.mr49Tab;listPage=1;listSignature='';if(listTab==='tracking')loadTracking();else renderList();}
     else if(b.hasAttribute('data-mr49-page')){listPage+=Number(b.dataset.mr49Page);renderList();}
   },true);
   document.addEventListener('input',e=>{if(e.target.id==='mr49ReturnReason')e.target.setCustomValidity('');});
   ['mosh:saved','mosh:refreshed','mosh:tasks-refreshed'].forEach(name=>document.addEventListener(name,()=>{if(name==='mosh:refreshed')refreshError='';renderHome();renderList();window.MoshEmployeeTaskWorkflow48?.render?.(true);}));
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshTasks(false);});
+  function installDepartmentFollowUp(){
+    const followUpPanel=$('marketingFollowUpPanel'),tasksView=$('tasksApp');
+    if(!followUpPanel||!tasksView||followUpPanel.dataset.bound)return;
+    const toggle=$('marketingFollowUpToggle'),panel=$('marketingFollowUpList');
+    followUpPanel.dataset.bound='1';
+    let requestNumber=0;
+    const box=followUpPanel.querySelector('[data-follow-up-rows]'),pageKey='marketing_follow_up';
+    let loadedRows=null;
+    function renderFollowUpTable(){
+      if(panel.hidden||!loadedRows)return;
+      const activeSearch=box.querySelector('.app-list-search')===document.activeElement;
+      const page=filterAndPageAppList(pageKey,loadedRows,t=>[t.title,t.customer,t.department,t.assignee].join(' '));
+      const statuses={awaiting_invoice:'بانتظار الفوترة',invoiced:'تمت الفوترة',completed:'منتهية',archived_invoiced:'مؤرشفة بعد الفوترة',archived_no_invoice:'مؤرشفة دون فوترة',cancelled:'ملغاة'};
+      const lines=page.items.map((t,i)=>{
+        const status=statuses[t.status]||(t.employeeState==='finished'&&t.department==='المهمات'?'بانتظار المتابعة':model.label(t));
+        return '<tr>'+[(page.start+i+1).toLocaleString('ar-SY',{numberingSystem:'arab'}),t.title,t.customer,t.department,t.assignee,status].map(value=>'<td>'+esc(value||'—')+'</td>').join('')+'</tr>';
+      });
+      box.innerHTML='<div style="overflow-x:auto"><table class="list-table" aria-label="مهام المتابعة"><thead><tr>'+
+        ['تسلسل','عنوان المهمة','العميل','القسم الحالي','الموظف','الحالة'].map(label=>'<th scope="col">'+label+'</th>').join('')+
+        '</tr></thead><tbody>'+(lines.join('')||'<tr><td colspan="6">لا توجد مهام مطابقة.</td></tr>')+'</tbody></table></div>'+
+        appListPagerHtml(pageKey,page,{placeholder:'بحث بالمهمة أو العميل أو القسم أو الموظف'});
+      if(activeSearch)box.querySelector('.app-list-search')?.focus({preventScroll:true});
+    }
+    document.addEventListener('mosh:page-follow-up',renderFollowUpTable);
+    async function showDepartmentFollowUp(){
+      const request=++requestNumber,actor=user();
+      const manager=typeof getDepartmentManager==='function'&&getDepartmentManager('التسويق');
+      const visible=tasksView.classList.contains('active')&&canTrackMarketing()&&String(manager?.id)===String(actor?.employeeId);
+      followUpPanel.hidden=!visible;
+      if(!visible)toggle.setAttribute('aria-expanded','false');
+      panel.hidden=!visible||toggle.getAttribute('aria-expanded')!=='true';
+      if(panel.hidden){loadedRows=null;box.replaceChildren();return;}
+      box.textContent='جارٍ تحميل المهام…';
+      try{
+        const response=await MoshApi.request('/marketing/task-tracking?followUp=1');
+        if(request!==requestNumber||actor.id!==user()?.id)return;
+        loadedRows=list(response.tasks);
+        renderFollowUpTable();
+      }catch(_){if(request===requestNumber)box.textContent='تعذّر تحميل مهام المتابعة.';}
+    }
+    toggle.addEventListener('click',()=>{
+      toggle.setAttribute('aria-expanded',String(toggle.getAttribute('aria-expanded')!=='true'));
+      showDepartmentFollowUp();
+    });
+    new MutationObserver(showDepartmentFollowUp).observe(tasksView,{attributes:true,attributeFilter:['class']});
+    for(const event of ['mosh:saved','mosh:refreshed','mosh:permissions-applied','mosh:logout-complete'])document.addEventListener(event,showDepartmentFollowUp);
+    showDepartmentFollowUp();
+  }
+  document.addEventListener('mosh:page-mounted',event=>{
+    if(event.detail.app==='tasks')installDepartmentFollowUp();
+  });
+  installDepartmentFollowUp();
   window.addEventListener('focus',()=>refreshTasks(false));
-  window.MoshTaskInbox49={version:'task-inbox-r1',model,renderHome,showList,renderList,openTask,perform,requestReturn,actionHtml,cyclePanel,isBusy:id=>busy.has(String(id)),error:id=>errors.get(String(id))||'',refreshTasks};
+  window.MoshTaskInbox49={version:'task-inbox-r1',model,renderHome,showList,renderList,openTask,perform,requestReturn,actionHtml,cyclePanel,finishMessage,canTrackMarketing,isBusy:id=>busy.has(String(id)),error:id=>errors.get(String(id))||'',refreshTasks};
   renderHome();
   setInterval(()=>{renderHome();renderList();},1500);
   setInterval(()=>refreshTasks(false),30000);

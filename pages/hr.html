@@ -1,0 +1,27 @@
+<section id="hrApp" class="view">
+<div class="hr-pro-nav" id="hrProNav">
+<button id="hrDistributionTab" class="active" type="button" onclick="openProductiveDistributionPage('hr')">القائمة الرئيسية لقسم الموارد البشرية <span id="hrDistributionBadge" class="design-menu-badge"></span></button>
+<button id="hrRunningTab" type="button" onclick="openProductiveRunningTasksPage('hr')">مهام قسم الموارد البشرية</button>
+<button data-hr-view="employees" onclick="openHRPro('employees',this)">الموظفون</button>
+<button data-hr-view="attendance" onclick="openHRPro('attendance',this)">الدوام والإجازات</button>
+<button data-hr-view="recruitment" onclick="openHRPro('recruitment',this)">التوظيف</button>
+<button data-hr-view="performance" onclick="openHRPro('performance',this)">الأداء والتطوير</button>
+<button data-hr-view="requests" onclick="openHRPro('requests',this)">الطلبات والموافقات</button>
+<button id="hrCommunicationsTab" data-hr-view="communications" type="button" onclick="openHRPro('communications',this)">التعاميم والتنبيهات</button>
+<button id="hrHandbookTab" type="button" onclick="goApp('instructions',this)">دليل وسياسات الموارد البشرية</button>
+<button data-hr-view="reports" onclick="openHRPro('reports',this)">التقارير</button>
+<button type="button" onclick="openDeptExecReportStep3('hr','الموارد البشرية')">إرسال تقرير للمدير التنفيذي</button>
+</div>
+<div id="hrProContent"></div>
+<div id="hrAppContent" style="display:none">
+<div id="hrAppTasks"></div>
+</div>
+<div id="hrStaffConfigContent" style="display:none">
+<div class="toolbar">
+<div class="toolbar-left"><h2 style="margin:0">ملفات الموظفين</h2></div>
+<div class="toolbar-right"><button class="btn" onclick="openHRPro('employees')">رجوع إلى الموظفين</button></div>
+</div>
+<div id="staffWorkflowConfig"></div>
+</div>
+<div id="hrStandaloneContent" style="display:none"></div>
+</section>

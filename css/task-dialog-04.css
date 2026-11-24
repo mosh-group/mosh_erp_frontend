@@ -106,3 +106,8 @@ html.mosh-compact01 #standaloneTaskModal .r40-task-required>span{color:var(--tas
 }
 @media(max-width:360px){html.mosh-compact01 #standaloneTaskModal .r38-creator-field{flex-direction:column!important;align-items:stretch!important}}
 @media(pointer:coarse){html.mosh-compact01 #standaloneTaskModal :is(.btn,.attachment-icon-btn){min-height:44px!important}}
+
+#standaloneTaskModal .task-create-tabs{display:flex;gap:8px;flex-wrap:wrap}
+#standaloneTaskModal .task-create-tabs [aria-pressed=true]{border-color:var(--accent,#d4af37)}
+#standaloneTaskModal [data-create-panel=details]{display:grid;gap:16px}
+#standaloneTaskModal [data-create-panel][hidden]{display:none!important}

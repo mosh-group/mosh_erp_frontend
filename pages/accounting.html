@@ -1,0 +1,32 @@
+<section id="accountingApp" class="view"><div class="menu-strip"><div class="menu"><button id="accountingDistributionTab" class="design-menu-btn" onclick="resetDepartmentLanding('accounting');openProductiveDistributionPage('accounting')">القائمة الرئيسية لقسم المحاسبة <span id="accountingDistributionBadge" class="design-menu-badge"></span></button></div><div class="menu"><button id="accountingRunningTab" class="design-menu-btn" onclick="resetDepartmentLanding('accounting');openProductiveRunningTasksPage('accounting')">مهام قسم المحاسبة</button></div><div class="menu"><button onclick="toggleDrop('accountingMenuDrop')">المحاسبة ▾</button><div id="accountingMenuDrop" class="dropdown"><button onclick="openAccountingSection('packages')">قائمة الباقات</button><button onclick="openAccountingSection('billing')">مهام بانتظار الفوترة</button><button onclick="openAccountingSection('invoices')">فواتير العملاء</button></div></div><div class="menu"><button type="button" onclick="openDeptExecReportStep3('accounting','المحاسبة')">إرسال تقرير للمدير التنفيذي</button></div></div><div id="accountingTasksContent" style="display:none"><div id="accountingDepartmentTasks"></div></div>
+<div id="accountingPackagesContent" style="display:none">
+<div id="accountingPackagesWorkspace"></div>
+</div>
+<div id="accountingBillingContent" style="display:none">
+<div class="toolbar"><div class="toolbar-left"><h2 style="margin:0">قسم المحاسبة / مهام بانتظار الفوترة</h2></div></div>
+<div class="panel" style="margin-bottom:14px">
+<table class="list-table">
+<thead><tr><th class="mt54-reference" hidden aria-hidden="true">رقم المهمة</th><th>المهمة</th><th>العميل</th><th>مرجع أمر المبيعات</th><th>القسم الأخير</th><th>الحالة</th><th></th></tr></thead>
+<tbody id="billingTaskRows"></tbody>
+</table>
+<div class="empty" id="billingTaskEmpty">لا يوجد مهام بانتظار الفوترة.</div>
+</div>
+</div>
+<div id="accountingInvoicesContent" style="display:none">
+<div class="toolbar"><div class="toolbar-left"><h2 style="margin:0">قسم المحاسبة / فواتير العملاء</h2></div></div>
+<div class="accounting-cards">
+<div class="metric"><div class="muted">ذمم العملاء</div><div class="n" id="arTotal">0</div></div>
+<div class="metric"><div class="muted">فواتير العملاء</div><div class="n" id="invCount">0</div></div>
+<div class="metric"><div class="muted">الصندوق</div><div class="n">0</div></div>
+<div class="metric"><div class="muted">البنك</div><div class="n">0</div></div>
+</div>
+<div class="panel">
+<div class="toolbar" style="padding:12px;margin:0"><div class="toolbar-left"><h3 style="margin:0">فواتير العملاء</h3></div><button class="btn primary" type="button" data-f21="new-invoice">+ فاتورة عميل</button></div>
+<table class="list-table">
+<thead><tr><th>الرقم</th><th>العميل</th><th>المصدر</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+<tbody id="invoiceRows"></tbody>
+</table>
+<div class="empty" id="invoiceEmpty">لا يوجد فواتير حتى الآن.</div>
+</div>
+</div>
+</section>

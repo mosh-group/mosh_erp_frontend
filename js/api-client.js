@@ -26,7 +26,7 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     const date = Date.parse(value);
     return Number.isFinite(date) ? Math.max(Date.now(), date) : 0;
   };
-  api.request = async function (path, options = {}) {
+  api.request = async function (path, options = {}, retryLogin = true) {
     const headers = new Headers(options.headers || {});
     headers.set('Accept', 'application/json');
     const method = options.method || 'GET';
@@ -63,6 +63,10 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
       if (response.status === 401 && !publicAuthPath(path)) {
         document.dispatchEvent(new CustomEvent('mosh:session-expired'));
       }
+      if (response.status === 419 && path === '/auth/login' && method === 'POST' && retryLogin) {
+        const status = await api.request('/auth/status', {cache:'no-store', signal:controller.signal});
+        if (status?.csrfToken) return await api.request(path, {...options, signal:controller.signal}, false);
+      }
       if (response.status === 419) {
         error.message = 'انتهت صلاحية الجلسة. حدّث الصفحة وسجّل الدخول من جديد.';
         document.dispatchEvent(new CustomEvent('mosh:session-expired'));
@@ -79,13 +83,29 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     const message = error?.message || String(error);
     if (typeof window.toast === 'function') window.toast(message, true); else window.alert(message);
   };
-  api.bootstrap = async function (options = {}) {
-    const data = await api.request('/bootstrap', {...options, cache:'no-store'});
+  const readySections = new Set();
+  const sectionRequests = new Map();
+  let refreshTail = Promise.resolve();
+  const activeSection = () => document.querySelector('.view.active')?.id.replace(/App$/, '') || 'dashboard';
+
+  async function readBootstrap(section, options) {
+    const data = await api.request('/bootstrap?section='+encodeURIComponent(section), {...options, cache:'no-store', timeoutMs:60000});
     data.state.departmentManagers = Object.assign({}, data.state.departmentManagers || {});
     if (data.settings?.['department-managers']) data.settings['department-managers'].value = Object.assign({}, data.settings['department-managers'].value || {});
-    api.initialState = data.state; api.resources = data.resources; api.settingPaths = data.settingPaths; api.settings = data.settings;
+    return data;
+  }
+  function applyBootstrapAccount(data) {
+    api.resources = data.resources; api.settingPaths = data.settingPaths; api.settings = data.settings;
     api.auth = {version: 2, users: data.users, roles: data.roles, security: data.security, audit: api.auth.audit || []};
-    api.user = data.user; return data;
+    api.user = data.user;
+  }
+  api.bootstrap = async function ({section = 'dashboard', ...options} = {}) {
+    const data = await readBootstrap(section, options);
+    api.initialState = data.state;
+    applyBootstrapAccount(data);
+    readySections.clear();
+    readySections.add(section);
+    return data;
   };
   api.initialize = function () {
     baseline = copy(state); ready = true; wanted = null;
@@ -229,7 +249,7 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
   api.isSaving = () => !!(pending || taskPending || requestWrites);
   api.flush = async () => { while (pending || taskPending) await Promise.all([pending, taskPending].filter(Boolean)); };
   // Narrow, server-confirmed task actions. Existing unrelated records/drafts stay intact.
-  api.commitTask = function (id, buildPatch) {
+  api.commitTask = function (id, buildPatch, {latest = false} = {}) {
     const predecessor = taskPending || Promise.resolve();
     const saving = pending || Promise.resolve();
     const run = predecessor.catch(() => {}).then(() => saving).then(async () => {
@@ -240,10 +260,14 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
       if (!original || !current) throw new Error('المهمة لم تعد متاحة لهذا الحساب.');
       if (typeof buildPatch !== 'function') throw new Error('إجراء المهمة غير صالح.');
       const taskOwner=String(api.user.id);
-      const before = copy(state), data = buildPatch(copy(current));
+      const before = copy(state);
+      const source = latest ? await api.request('/tasks/'+encodeURIComponent(id), {cache:'no-store'}) : current;
+      if(String(api.user?.id)!==taskOwner)throw new Error('تغيّر حساب الدخول أثناء الحفظ.');
+      if(latest && (String(source?.id)!==String(id)||!Number.isInteger(source._version)))throw new Error('تعذّر التحقق من نسخة المهمة الحالية.');
+      const data = buildPatch(copy(source));
       if (!data) return current;
       const key = crypto.randomUUID();
-      const options = {method:'PATCH',headers:{'Idempotency-Key':key},body:{...data,_version:original._version}};
+      const options = {method:'PATCH',headers:{'Idempotency-Key':key},body:{...data,_version:latest?source._version:original._version}};
       let saved;
       try { saved = await api.request('/tasks/'+encodeURIComponent(id), options); }
       catch (error) {
@@ -253,14 +277,15 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
         saved = await api.request('/tasks/'+encodeURIComponent(id), options);
       }
       if(String(api.user?.id||'')!==taskOwner) throw new Error('تغيّر حساب الدخول أثناء الحفظ.');
-      if(!saved||String(saved.id)!==String(id)||!Number.isFinite(Number(saved._version)))throw new Error('لم يؤكد الخادم حفظ المهمة. حدّثها للتحقق.');
-      const change = {resource:'tasks',id:String(id),data:saved};
+      const movedToFollowUp=saved?.outcome==='follow_up';
+      if(!saved||String(saved.id)!==String(id)||(!movedToFollowUp&&!Number.isFinite(Number(saved._version))))throw new Error('لم يؤكد الخادم حفظ المهمة. حدّثها للتحقق.');
+      const change = {resource:'tasks',id:String(id),data:movedToFollowUp?null:saved};
       mergeChange(baseline, change);
       mergeChange(state, change, before);
       if (wanted) mergeChange(wanted, change, before);
       lastSavedStateRaw = JSON.stringify(state);
       document.dispatchEvent(new CustomEvent('mosh:saved',{detail:{changes:[change],taskAction:true}}));
-      return saved;
+      return movedToFollowUp?{id:String(id),department:'المهمات',status:'in_progress',employeeState:'finished'}:saved;
     });
     taskPending = run;
     run.finally(() => { if (taskPending === run) taskPending = null; }).catch(() => {});
@@ -326,7 +351,11 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     try { result=await api.request('/transactions',options); }
     catch(error){if(!error.network&&!(error.status>=500))throw error;result=await api.request('/transactions',options);}
     // A malformed successful response is ambiguous too; never pretend a rollback.
-    if(!result || !Array.isArray(result.changes) || command.operations.some(op=>!result.changes.some(ch=>ch.resource===op.resource&&String(ch.id)===String(op.id)&&ch.data&&Number.isFinite(Number(ch.data._version))))) {
+    if(!result || !Array.isArray(result.changes) || command.operations.some(op=>!result.changes.some(ch=>
+      ch.resource===op.resource&&String(ch.id)===String(op.id)
+      && ((ch.data&&Number.isFinite(Number(ch.data._version)))
+        ||(op.resource==='tasks'&&op.data?.employeeState==='submitted'&&ch.data===null&&ch.outcome==='follow_up'))
+    ))) {
       throw Object.assign(new Error('الخادم لم يُرجع كل السجلات المؤكدة للعملية. يجب التحقق قبل أي تغيير جديد.'),{network:true});
     }
     workdeskUncertain=null;
@@ -493,13 +522,59 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     document.dispatchEvent(new CustomEvent('mosh:saved', {detail:{changes, serverConfirmed:true}}));
     return changes;
   };
-  api.refresh = async function () {
+  function accountAccess(user, roles) {
+    const fields = ['id','roleId','department','employeeId','isRoot','active','mustChange','taskScope','moduleOverrides','globalOverrides'];
+    return [fields.map(field => user?.[field]), roles.find(role => role.id === user?.roleId)];
+  }
+
+  async function refreshSection(section) {
     await api.flush();
     if(workdeskUncertain)await api.resolveWorkdesk();
-    const next = await api.bootstrap(); state = copy(next.state); api.initialize();
+    const before = copy(baseline);
+    const access = accountAccess(api.user, api.auth.roles);
+    const next = await readBootstrap(section);
+    if (!equal(access, accountAccess(next.user, next.roles)) || !Array.isArray(next.loadedResources)) {
+      state = copy(next.state);
+      readySections.clear();
+      applyBootstrapAccount(next);
+      api.initialize();
+    } else {
+      const resourcePaths = next.loadedResources.map(resource => next.resources[resource].statePath);
+      const settingPaths = Object.values(next.settingPaths);
+      const applied = new Set();
+      for (const path of [...resourcePaths, ...settingPaths]) {
+        if (!equal(get(before, path), get(baseline, path)) || !equal(get(state, path), get(baseline, path))) continue;
+        const value = get(next.state, path);
+        if (value === undefined) continue;
+        applied.add(path);
+        set(state, path, copy(value));
+        set(baseline, path, copy(value));
+        if (wanted) set(wanted, path, copy(value));
+      }
+      const priorSettings = api.settings;
+      for (const [key, path] of Object.entries(next.settingPaths)) {
+        if (!applied.has(path)) next.settings[key] = priorSettings[key];
+      }
+      applyBootstrapAccount(next);
+      customersCatalog = state.customers;
+      servicesCatalog = state.services;
+      lastSavedStateRaw = JSON.stringify(baseline);
+    }
+    readySections.add(section);
     document.dispatchEvent(new CustomEvent('mosh:refreshed'));
     return next;
+  }
+
+  api.refresh = function ({section = activeSection()} = {}) {
+    if (sectionRequests.has(section)) return sectionRequests.get(section);
+    const request = refreshTail.then(() => refreshSection(section)).finally(() => sectionRequests.delete(section));
+    sectionRequests.set(section, request);
+    refreshTail = request.catch(() => {});
+    return request;
   };
+
+  api.sectionPending = section => !readySections.has(section);
+  api.ensureSection = section => api.sectionPending(section) ? api.refresh({section}) : Promise.resolve();
   api.saveAccounts = async function (desired) {
     const previous = copy(api.auth);
     for (const kind of ['roles','users']) {

@@ -1,0 +1,56 @@
+<section id="archiveApp" class="view">
+<div class="toolbar">
+<div class="toolbar-left">
+<div>
+<h2 style="margin:0">الأرشيف العام</h2>
+<div class="muted" style="margin-top:5px">المهام المنتهية وسجل تغييرات النظام</div>
+</div>
+</div>
+<div class="toolbar-right">
+<button class="btn" onclick="refreshCurrentArchiveSection()">تحديث</button>
+</div>
+</div>
+<div class="archive-task-tabs">
+<button type="button" id="archiveTabTasks" class="active" onclick="openArchiveSection('tasks')">أرشيف المهمات</button>
+<button type="button" id="archiveTabAudit" onclick="openArchiveSection('audit')">سجل التعديلات</button>
+</div>
+<div id="archiveTaskListsContent">
+<div id="archiveTaskListsWorkspace"></div>
+</div>
+<div id="archiveAuditContent" style="display:none">
+<div class="accounting-cards" style="margin-bottom:14px">
+<div class="metric">
+<div class="muted">إجمالي النسخ المؤرشفة</div>
+<div class="n" id="archiveTotalCount">0</div>
+</div>
+<div class="metric">
+<div class="muted">آخر أرشفة</div>
+<div class="n" id="archiveLatestTime" style="font-size:16px">—</div>
+</div>
+<div class="metric">
+<div class="muted">الحساب الحالي</div>
+<div class="n" id="archiveCurrentUser" style="font-size:16px">—</div>
+</div>
+<div class="metric">
+<div class="muted">الحفظ</div>
+<div class="n" style="font-size:16px">تلقائي</div>
+</div>
+</div>
+<div class="panel">
+<table class="list-table">
+<thead>
+<tr>
+<th>الوقت</th>
+<th>المستخدم</th>
+<th>المكان</th>
+<th>نوع التغيير</th>
+<th>ملخص التغيير</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="archiveRows"></tbody>
+</table>
+<div class="empty" id="archiveEmpty">لا يوجد تعديلات مؤرشفة حتى الآن.</div>
+</div>
+</div>
+</section>

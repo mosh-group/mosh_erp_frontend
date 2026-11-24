@@ -131,8 +131,8 @@ function actionButtons(t){
  if(cat==='new')return b('receive','استلام المهمة','primary');
  if(cat==='review')return '<p class="wd50-empty">بانتظار مراجعة المدير؛ التنفيذ متوقف.</p>';
  if(cat!=='active')return '<p class="wd50-empty">المهمة منتهية.</p>';
- if(st==='working')return (!M.taskTiming(t,now()).valid?b('repair_timer','استئناف التوقيت من الآن','primary'):'')+b('pause','إيقاف مؤقت')+b('finish','إنهاء المهمة وإرسالها للمراجعة',M.taskTiming(t,now()).valid?'primary':'');
- return b('start',R.label(t).includes('بانتظار البدء')?'بدء المهمة':'استئناف المهمة','primary')+(st==='paused'&&!R.label(t).includes('بانتظار البدء')?b('finish','إنهاء المهمة وإرسالها للمراجعة'):'');
+ if(st==='working')return (!M.taskTiming(t,now()).valid?b('repair_timer','استئناف التوقيت من الآن','primary'):'')+b('pause','إيقاف مؤقت')+b('finish','إنهاء المهمة',M.taskTiming(t,now()).valid?'primary':'');
+ return b('start',R.label(t).includes('بانتظار البدء')?'بدء المهمة':'استئناف المهمة','primary')+(st==='paused'&&!R.label(t).includes('بانتظار البدء')?b('finish','إنهاء المهمة'):'');
 }
 function renderTask(force=false){
  let t=find(selected);if(!t||!own(t)){selected=String(running()[0]?.id||presence().record?.pausedTaskId||'');t=find(selected);if(t&&!own(t)){t=null;selected='';}}
@@ -251,14 +251,14 @@ async function taskAction(kind,id){return perform(kind,id);}
 async function perform(kind,id){
  if(busy)return false;resetOwner();const e=employee();if(!user()||!e){lastError='اربط الحساب بملف الموظف أولاً، دون تغيير صلاحياته.';render();return false;}
  if(A.workdeskUncertain()){lastError='نتيجة الحفظ السابق غير مؤكدة. اضغط «التحقق من الحفظ».';render();return false;}
- const target=find(id),others=running().filter(t=>String(t.id)!==String(id));
+ const target=find(id),sourceDepartment=target?.department,isFinish=kind==='finish'||kind==='submit',others=running().filter(t=>String(t.id)!==String(id));
  if(kind==='repair_timer'&&!confirm('استئناف التوقيت من لحظة تأكيد الخادم؟ سيُحفظ الوقت المعروف كما هو، وتبقى الفترة القديمة المفقودة للمراجعة دون تخمين.'))return false;
  if((kind==='start'||kind==='repair_timer')&&others.length&&!confirm('إيقاف «'+others.map(t=>t.title||'مهمة').join('، ')+'» مؤقتاً والبدء بـ«'+(target?.title||'المهمة المحددة')+'»؟'))return false;
- if((kind==='finish'||kind==='submit')&&!confirm('إنهاء تنفيذ هذه المهمة وإرسالها إلى المدير للمراجعة؟ يوم العمل يبقى مفتوحاً.'))return false;
+ if((kind==='finish'||kind==='submit')&&!confirm('تأكيد إنهاء تنفيذ المهمة؟ يوم العمل يبقى مفتوحاً.'))return false;
  if(kind==='work_end'&&!confirm('إنهاء العمل؟ ستتوقف المهام النشطة مؤقتاً دون إرسالها للمراجعة، ولا يتم تسجيل بصمة خروج.'))return false;
- busy=true;daySnapshot=null;dayVerifiedAt=0;lastError='';info='';taskSig='';render(true);window.MoshEmployeeTaskWorkflow48?.render?.(true);
+ busy=true;daySnapshot=null;dayVerifiedAt=0;lastError='';info='';taskSig='';window.MoshTaskWorkspace08?.schedule();render(true);window.MoshEmployeeTaskWorkflow48?.render?.(true);
  try{
-  await A.commitWorkdesk(snapshot=>{
+  const result=await A.commitWorkdesk(snapshot=>{
    const p=presence(snapshot),ownTasks=arr(snapshot.salesTasks).filter(own);
    const operations=M.plan({kind,taskId:id,tasks:ownTasks,presence:p.record,presenceId:p.id,employee:e,actor:user()?.name||user()?.username,receiptModel:R,canTask:allowed});
    if(kind==='finish'||kind==='submit'){const t=ownTasks.find(t=>String(t.id)===String(id));const op=operations.find(op=>op.resource==='tasks'&&op.id===String(id));if(t&&op&&typeof getDirectManagerName==='function')op.data.reviewManager=getDirectManagerName(t.assignee,t.department)||'';}
@@ -270,14 +270,22 @@ async function perform(kind,id){
    if(!check.valid)throw new Error('حُفظت حالة المهمة، لكن الخادم لم يُرجع توقيت تنفيذ صالحاً حتى بعد إعادة قراءة التفاصيل. '+check.issues.join(' ')+' لا علاقة لذلك ببصمة الدخول.');
   }
   revision++;reportData=null;daySnapshot=null;dayVerifiedAt=0;observePresence();
-  if(id)selected=String(id);
-  info=({repair_timer:'حُفظ توقيت التنفيذ على الخادم. أي فترة قديمة ناقصة بقيت للمراجعة.',receive:'تم استلام المهمة؛ لم يبدأ مؤقّت التنفيذ.',start:'بدأ مؤقّت المهمة وحُفظت حالة العمل.',pause:'المهمة متوقفة. أي وقت غير مغطّى بحالة مسجلة ضمن البصمة يدخل في الوقت غير المسجّل.',finish:'أُرسلت المهمة للمراجعة. اختر مهمتك التالية أو سجّل حالتك.',submit:'أُرسلت المهمة للمراجعة.',work_start:'بدأ العمل؛ اختر مهمة وابدأها ليُسجّل وقت التنفيذ.',break:'بدأت الاستراحة وتوقف مؤقّت المهمة.',no_work:'سُجّلت حالة «لا يوجد عمل لدي»، وتوقّف مؤقّت المهمة.',work_end:'سُجّل انتهاء العمل. تُسجّل بصمة الخروج بصورة مستقلة.'})[kind]||'تم الحفظ.';
+  const change=isFinish?result.changes.find(row=>row.resource==='tasks'&&String(row.id)===String(id)):null;
+  const movedToFollowUp=change?.outcome==='follow_up';
+  if(id)selected=movedToFollowUp?'':String(id);
+  const finishFeedback=movedToFollowUp?'تم إنهاء المهمة وإرسالها إلى المهمات للمتابعة.':isFinish?window.MoshTaskInbox49?.finishMessage?.(change?.data):'';
+  if(isFinish&&(movedToFollowUp||(change?.data&&(change.data.department!==sourceDepartment||change.data.status!=='in_progress')))){
+   const overlay=window.MoshEmployeeTaskOverlay47;
+   if(String(overlay?.current?.()?.id||'')===String(id))overlay.close();
+  }
+  if(finishFeedback)window.MoshUI19?.toast?.(finishFeedback);
+  info=finishFeedback||({repair_timer:'حُفظ توقيت التنفيذ على الخادم. أي فترة قديمة ناقصة بقيت للمراجعة.',receive:'تم استلام المهمة؛ لم يبدأ مؤقّت التنفيذ.',start:'بدأ مؤقّت المهمة وحُفظت حالة العمل.',pause:'المهمة متوقفة. أي وقت غير مغطّى بحالة مسجلة ضمن البصمة يدخل في الوقت غير المسجّل.',work_start:'بدأ العمل؛ اختر مهمة وابدأها ليُسجّل وقت التنفيذ.',break:'بدأت الاستراحة وتوقف مؤقّت المهمة.',no_work:'سُجّلت حالة «لا يوجد عمل لدي»، وتوقّف مؤقّت المهمة.',work_end:'سُجّل انتهاء العمل. تُسجّل بصمة الخروج بصورة مستقلة.'})[kind]||'تم الحفظ.';
   infoUntil=Date.now()+5000;
   document.dispatchEvent(new CustomEvent('mosh:workdesk-transition',{detail:{kind,taskId:id||null}}));
   channel?.postMessage({type:'changed'});setTimeout(()=>loadReport(today(),true),80);return true;
  }catch(error){
   lastError=A.workdeskUncertain()?'لم نتأكد من نتيجة الحفظ. قد تكون العملية نُفّذت؛ لا نكررها بمفتاح جديد. اضغط «التحقق من الحفظ».':error.status===409?'تغيّرت البيانات بجلسة أخرى. حدّث حالة العمل ثم أعد المحاولة.':error.message||'تعذر الحفظ؛ لم تؤكد الواجهة تغيير الحالة.';return false;
- }finally{busy=false;taskSig='';render(true);window.MoshTaskInbox49?.renderHome?.();window.MoshTaskInbox49?.renderList?.();window.MoshEmployeeTaskWorkflow48?.render?.(true);}
+ }finally{busy=false;taskSig='';window.MoshTaskWorkspace08?.schedule();render(true);window.MoshTaskInbox49?.renderHome?.();window.MoshTaskInbox49?.renderList?.();window.MoshEmployeeTaskWorkflow48?.render?.(true);}
 }
 async function refresh(){if(busy)return;busy=true;lastError='';render();try{if(A.workdeskUncertain())await A.resolveWorkdesk();await A.refresh();revision++;observePresence();await loadReport(today(),true);info='تم تحديث لوحة العمل والمهام.';infoUntil=Date.now()+4000;}catch(e){lastError=e.message;}finally{busy=false;taskSig='';render(true);}}
 async function resolve(){if(busy)return;busy=true;render();try{await A.resolveWorkdesk();lastError='';revision++;observePresence();info='تأكد حفظ العملية السابقة. تم تحديث حالتك.';infoUntil=Date.now()+4000;await loadReport(today(),true);}catch(e){lastError=e.message;}finally{busy=false;taskSig='';render(true);window.MoshEmployeeTaskWorkflow48?.render?.(true);}}

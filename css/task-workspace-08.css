@@ -1,4 +1,5 @@
 /* Shared task workspace. No global dashboard/navigation layout changes. */
+.subtask-parent-view-hidden{display:none!important}
 .mw08-workspace{--mw08-gap:20px;--mw08-panel:#101a1e;--mw08-field:#0c1418;--mw08-line:#34474f;--mw08-muted:#b0bdc1;direction:rtl;color:#eef1ed;font-size:14px;min-width:0}
 .mw08-workspace *{box-sizing:border-box}
 .mw08-workspace [hidden]{display:none!important}
@@ -8,6 +9,8 @@
 .mw08-workspace .mw08-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:16px 20px;margin-bottom:20px;border:1px solid var(--mw08-line);border-radius:12px;background:var(--mw08-panel)}
 .mw08-workspace .mw08-identity{min-width:0;flex:1}
 .mw08-workspace .mw08-identity h2{margin:0!important;font-size:23px!important;line-height:1.5;overflow-wrap:anywhere}
+.mw08-workspace .mw08-identity .mw08-parent-title{margin:0;font-size:clamp(24px,3vw,32px);line-height:1.35;overflow-wrap:anywhere}
+.mw08-workspace .mw08-identity .mw08-subtask-title{margin:4px 0 0;font-size:clamp(18px,2vw,21px);line-height:1.45;overflow-wrap:anywhere}
 .mw08-workspace .mw08-meta{margin:5px 0 0;color:var(--mw08-muted);font-size:12px!important}
 .mw08-workspace .mw08-status{padding:5px 9px;color:#f1d58e;background:#302918;border-radius:6px;font-size:12px}
 .mw08-workspace .mw08-head-actions,.mw08-workspace .mw08-save-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -119,3 +122,20 @@
 .mgr28-modal .mgr28-task-review-actions{justify-content:flex-start;flex-shrink:1;padding-bottom:12px;border-bottom:1px solid #34474f}
 .mgr28-modal .mgr28-task-review-actions .btn{min-height:42px;white-space:normal;line-height:1.5}
 .mgr28-modal .mgr28-task-review-actions .btn.primary{background:#e4bb40;color:#171407;border-color:#e4bb40;font-weight:700}
+
+.mw08-workspace .mw08-chrome{flex-wrap:wrap}
+.mw08-workspace .mw08-chrome>.mw08-workflow-actions{width:auto;flex:1 1 auto}
+.mw08-chrome>.mw08-workflow-actions[hidden]{display:none}
+
+.mw08-task-tabs{display:flex;direction:rtl;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line)}
+.mw08-task-tabs [aria-pressed=true]{border-color:var(--accent,#caa549);font-weight:700}
+.mw08-task-files{padding:16px;overflow-wrap:anywhere}
+.mw08-file-row{padding:12px 0;border-bottom:1px solid var(--line)}
+/* The compact shell also forces the conversation to display with !important. */
+:is(#appShell,#emp47TaskOverlay) .mw08-workspace[data-task-tab]:not([data-task-tab=messages]) .r34-chat,
+.mw08-workspace[data-task-tab]:not([data-task-tab=messages]) .r34-chat,
+.mw08-workspace[data-task-tab]:not([data-task-tab=files]) .mw08-task-files,
+.mw08-workspace[data-task-tab=files]>.sales-task-card>:not(.mw08-task-files),
+.mw08-workspace[data-task-tab=messages]>.sales-task-card>:not(.r34-chat),
+.mw08-workspace[data-task-tab]:not([data-task-tab=details])>.mw08-execution,
+.mw08-workspace[data-task-tab] .r34-chat>.mw08-chat-head{display:none!important}

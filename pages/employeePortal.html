@@ -1,0 +1,32 @@
+<section id="employeePortalApp" class="view">
+<div class="employee-portal-shell">
+<div class="employee-portal-head">
+<div>
+<div class="eyebrow">EMPLOYEE SELF-SERVICE</div>
+<h2>بوابة الموظف</h2>
+<p>ملفك اليومي، أرصدتك، طلباتك، واحتياجاتك الإدارية من مكان واحد.</p>
+</div>
+<button class="btn" type="button" onclick="closeEmployeePortal()">العودة للرئيسية</button>
+</div>
+<div class="employee-portal-profile" id="employeePortalProfile"></div>
+<div class="employee-portal-kpis" id="employeePortalKpis"></div>
+<div class="employee-portal-grid">
+<div class="employee-portal-card employee-portal-card-wide">
+<div class="employee-portal-card-head"><div><b>خدماتي</b><span>طلبات مباشرة بدون الدخول إلى الموارد البشرية</span></div></div>
+<div class="employee-portal-services">
+<button onclick="hrProOpenRequestForm('annual_leave','self')"><b>إجازة سنوية</b><small>طلب أيام من رصيدك</small></button>
+<button onclick="hrProOpenRequestForm('hourly_leave','self')"><b>إجازة ساعية</b><small>إذن خروج أو ساعات</small></button>
+<button onclick="hrProOpenRequestForm('attendance_correction','self')"><b>تصحيح دوام</b><small>نسيان بصمة أو تعديل وقت</small></button>
+<button onclick="hrProOpenRequestForm('advance','self')"><b>طلب سلفة</b><small>سلفة على الراتب</small></button>
+<button onclick="hrProOpenRequestForm('salary_certificate','self')"><b>شهادة راتب</b><small>تعريف أو شهادة عمل</small></button>
+<button onclick="hrProOpenRequestForm('document_update','self')"><b>تحديث وثيقة</b><small>هوية، جواز أو بيانات</small></button>
+</div>
+</div>
+<div class="employee-portal-card"><div class="employee-portal-card-head"><div><b>إجازاتي</b><span>الرصيد والاستخدام الحالي</span></div></div><div id="employeePortalLeaveDetails"></div></div>
+<div class="employee-portal-card"><div class="employee-portal-card-head"><div><b>الدوام</b><span>ملخص الحضور والتأخير</span></div></div><div id="employeePortalAttendance"></div></div>
+<div class="employee-portal-card employee-portal-card-wide"><div class="employee-portal-card-head"><div><b>طلباتي</b><span>آخر الطلبات وحالة كل طلب</span></div></div><div id="employeePortalRequests"></div></div>
+<div class="employee-portal-card"><div class="employee-portal-card-head"><div><b>وثائقي</b><span>المحفوظة ضمن ملف الموظف</span></div></div><div id="employeePortalDocuments"></div></div>
+<div class="employee-portal-card"><div class="employee-portal-card-head"><div><b>قريباً</b><span>نوسع البوابة مع تقدم النظام</span></div></div><div class="employee-portal-coming">الراتب والمستحقات · العهد · التقييمات · الشهادات · سجل الترقيات والإجراءات</div></div>
+</div>
+</div>
+</section>

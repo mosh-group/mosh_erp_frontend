@@ -59,6 +59,7 @@ function openTask(id){
   // Some shared tasks keep department='المهمات', so fall back to the account's own department.
   if(app&&window.MoshAuth37?.canModule&&window.MoshAuth37.canModule(app,'view')===false&&accountApp)app=accountApp;
   if(app){
+    if(window.MoshPages?.pending(app))return window.MoshPages.open(app,()=>openTask(id));
    try{if(typeof window.goApp==='function')window.goApp(app)}catch(e){console.warn('v46 goApp before task details',e)}
    setTimeout(()=>{
     try{

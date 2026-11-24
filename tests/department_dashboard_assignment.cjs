@@ -134,4 +134,43 @@ sandbox.MoshDepartmentDashboard.openAssignment('marketing');
 const marketingAssignment = elements.marketingTaskWorkspace.innerHTML;
 sandbox.ensureMarketingDashboard();
 assert.equal(elements.marketingTaskWorkspace.innerHTML, marketingAssignment);
+
+const manager = {id: 'manager', name: 'Manager'};
+const colleague = {id: 'employee', name: 'Employee'};
+const managedDashboard = {
+  ...sandbox,
+  PRODUCTIVE_DEPARTMENTS: configs,
+  state: {salesTasks: [], staffProfiles: [manager, colleague]},
+  getDepartmentManager: () => manager,
+  getStaffProfileByName: name => [manager, colleague].find(profile => profile.name === name),
+  isStaffAssignable: () => true,
+  productiveTaskStateLabel: () => 'Working',
+  openProductiveDistributionPage: key => managedDashboard.renderProductiveDistributionBoard(key),
+  MoshTaskUI: {title: task => task.title}
+};
+managedDashboard.window = managedDashboard;
+vm.runInNewContext(dashboards, managedDashboard);
+for (const key of ['marketing', 'social']) {
+  const {department, workspaceId} = configs[key];
+  const task = (title, attributes) => ({id: title, title, department, status: 'in_progress', ...attributes});
+  managedDashboard.state.salesTasks.push(
+    task(key + ' manager fixture', {assigneeId: manager.id, assignee: 'Previous manager name'}),
+    task(key + ' legacy manager fixture', {assignee: manager.name}),
+    task(key + ' same name fixture', {assigneeId: colleague.id, assignee: manager.name}),
+    task(key + ' unassigned dashboard fixture', {}),
+    task(key + ' completed fixture', {assigneeId: manager.id, assignee: manager.name, department: 'Accounting', closedFromDepartment: department, status: 'completed', completedAt: Date.now()})
+  );
+  managedDashboard.MoshDepartmentDashboard.openDashboard(key);
+  const html = elements[workspaceId].innerHTML;
+  assert.ok(html.includes(key + ' manager fixture'));
+  assert.ok(html.includes(key + ' legacy manager fixture'));
+  assert.ok(!html.includes(key + ' same name fixture'));
+  assert.ok(!html.includes(key + ' unassigned dashboard fixture'));
+  assert.doesNotMatch(html, /data-field="employee"/);
+  const summary = managedDashboard.MoshDepartmentDashboard.inspect(key);
+  assert.equal(summary.active, 2);
+  assert.equal(summary.completed, 1);
+}
+managedDashboard.getDepartmentManager = () => null;
+assert.equal(managedDashboard.MoshDepartmentDashboard.inspect('social').active, 0);
 console.log('PASS: ' + Object.keys(configs).length + ' departments; actual dashboard/assignment HTML, task filtering, redraw, refresh, return, permissions, unchanged records; IT, finance and Marketing shells. No browser/network.');

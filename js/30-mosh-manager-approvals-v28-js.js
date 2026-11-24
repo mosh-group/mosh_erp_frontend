@@ -251,7 +251,7 @@ function insertTab(d){
 function installTabs(){DEPTS.forEach(insertTab);refreshBadges();}
 
 function close(){document.getElementById('mgr28Modal')?.remove();document.querySelectorAll('.mgr28-tab.active').forEach(x=>x.classList.remove('active'));}
-function openTaskQueue(key){close();try{goApp(key)}catch(e){};setTimeout(()=>{try{openProductiveRunningTasksPage(key)}catch(e){}},40)}
+function openTaskQueue(key){close();return openAppWith(key,()=>openProductiveRunningTasksPage(key));}
 // Open the selected review directly instead of sending the manager to a generic task list.
 function taskReviewContext(key,id,action='details'){
  const d=deptByKey(key),t=arr(state.salesTasks).find(row=>String(row.id)===String(id));
@@ -267,6 +267,7 @@ function reviewTask(key,id,action='details'){
  if(!['details','approve','return'].includes(action))return false;
  const context=taskReviewContext(key,id,action);if(!context)return false;
  if(typeof window.openProductiveTaskDetails!=='function')return false;
+ if(window.MoshPages?.pending(key))return window.MoshPages.open(key,()=>reviewTask(key,id,action));
  close();try{goApp(key);window.openProductiveRunningTasksPage?.(key);window.openProductiveTaskDetails(key,String(context.t.id),'running');}catch(error){console.error('Manager review open failed',error);return false;}
  if(action==='details')return true;
  // Use the actual rendered native button, including its original confirmation and permission gate.
@@ -288,7 +289,7 @@ function taskReviewActions(key,t){
  let html='<button type="button" class="btn r35-ui-navigation" onclick="'+call('details')+'">مراجعة تفاصيل المهمة</button>';
  if(taskReviewContext(key,t.id,'approve')){
   const packageParent=!t.parentTaskId&&typeof getSubTasks==='function'&&getSubTasks(t.id).length>=2;
-  if(!packageParent)html='<button type="button" class="btn primary r35-ui-navigation" onclick="'+call('approve')+'">'+(t.parentTaskId?(t.sharedDistributionChild?'اعتماد وإنهاء الدور':'اعتماد وإنهاء الخدمة الفرعية'):'اعتماد وإنهاء للفوترة')+'</button>'+html;
+  if(!packageParent)html='<button type="button" class="btn primary r35-ui-navigation" onclick="'+call('approve')+'">'+(t.parentTaskId?(t.sharedDistributionChild?'اعتماد وإنهاء الدور':'اعتماد وإنهاء الخدمة الفرعية'):(taskFinishesToFollowUp(t)?'اعتماد وإرسال للمتابعة':'اعتماد وإنهاء للفوترة'))+'</button>'+html;
   if(taskReviewContext(key,t.id,'return'))html+='<button type="button" class="btn r35-ui-navigation" onclick="'+call('return')+'">إعادة للتعديل</button>';
  }
  return '<div class="mgr28-item-actions mgr28-task-review-actions" role="group" aria-label="إجراءات مراجعة المهمة">'+html+'</div>';
@@ -314,6 +315,7 @@ function quick(id,decision){
 function refreshOpenManagerModal(){const active=document.querySelector('.mgr28-tab.active');if(!active)return;const key=active.id.replace('mgr28Tab_','');open(key);}
 
 window.MoshManagerApprovals28={open,close,quick,refresh:refreshBadges,openTasks:openTaskQueue,reviewTask,countFor,version:'28.0'};
+document.addEventListener('mosh:page-mounted',installTabs);
 function init(){installTabs();try{hrProUpdateEmployeeServiceStatus()}catch(e){};setTimeout(installTabs,400);setTimeout(installTabs,1500);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 setInterval(refreshBadges,5000);

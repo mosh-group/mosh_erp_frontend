@@ -263,10 +263,16 @@ if(mode==='packages'){const el=document.getElementById('accountingPackagesConten
 if(mode==='billing'){const el=document.getElementById('accountingBillingContent');if(el)el.style.display='block';document.getElementById('crumb').innerHTML='<b>قسم المحاسبة</b> / مهام بانتظار الفوترة';renderBillingTasks();return;}
 if(mode==='invoices'){const el=document.getElementById('accountingInvoicesContent');if(el)el.style.display='block';document.getElementById('crumb').innerHTML='<b>قسم المحاسبة</b> / فواتير العملاء';renderInvoices();}
 }
+function openAppWith(app,action){
+ const result=goApp(app);
+ const onEntered=entered=>entered!==false&&document.getElementById(app+'App')?.classList.contains('active')?action():false;
+ return typeof result?.then==='function'?result.then(onEntered):onEntered(result);
+}
 function goApp(app,link,addHistory=true){if(app==='archive' && !hasPermission('viewArchive')){alert('ليس لديك صلاحية لعرض الأرشيف العام.');return;}
+closeSubTaskWorkspace();
 if(addHistory){const active=document.querySelector('.view.active');if(active){const id=active.id;if(id==='dashboardApp')pushHistory({type:'app',app:'dashboard'});else if(id==='salesApp')pushHistory({type:'quotes'});else if(id==='tasksApp')pushHistory({type:'app',app:'tasks'});else if(id==='adminApp')pushHistory({type:'app',app:'admin'});else if(id==='hrApp')pushHistory({type:'app',app:'hr'});else if(id==='designApp')pushHistory({type:'app',app:'design'});else if(id==='photoApp')pushHistory({type:'app',app:'photo'});else if(id==='editingApp')pushHistory({type:'app',app:'editing'});else if(id==='marketingApp')pushHistory({type:'app',app:'marketing'});else if(id==='socialApp')pushHistory({type:'app',app:'social'});else if(id==='purchasesApp')pushHistory({type:'app',app:'purchases'});else if(id==='promotionApp')pushHistory({type:'app',app:'promotion'});else if(id==='logisticsApp')pushHistory({type:'app',app:'logistics'});else if(id==='accountingApp')pushHistory({type:'app',app:'accounting'});else if(id==='instructionsApp')pushHistory({type:'app',app:'instructions'});else if(id==='platformApp')pushHistory({type:'app',app:'platform'});else if(id==='archiveApp')pushHistory({type:'app',app:'archive'});}
 }
-document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(app+'App').classList.add('active');document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));if(link)link.classList.add('active');document.getElementById('crumb').innerHTML='<b>'+({it:'قسم تكنولوجيا المعلومات',dashboard:'اللوحة الرئيسية',tasks:'المهمات',admin:'قسم الإدارة',hr:'قسم الموارد البشرية',sales:'قسم المبيعات',marketing:'قسم التسويق',social:'قسم السوشال ميديا',design:'قسم التصميم',photo:'قسم التصوير',editing:'قسم المونتاج',promotion:'قسم الترويج',logistics:'قسم اللوجستيات',purchases:'قسم المشتريات',accounting:'قسم المحاسبة',instructions:'تعليمات إدارية عامة',platform:'منصة MOSH GROUP',archive:'الأرشيف العام'}[app])+'</b>';if(MENU_FIRST_DEPARTMENT_APPS.has(app))resetDepartmentLanding(app);if(PRODUCTIVE_DEPARTMENTS[app]&&app!=='admin'&&app!=='it')openProductiveDistributionPage(app);if(app==='tasks')renderAllTasks();if(app==='archive'){archiveTaskSection='tasks';openArchiveSection('tasks')}
+document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(app+'App').classList.add('active');document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));if(link)link.classList.add('active');document.getElementById('crumb').innerHTML='<b>'+({it:'قسم تكنولوجيا المعلومات',dashboard:'اللوحة الرئيسية',employeePortal:'بوابة الموظف',tasks:'المهمات',admin:'قسم الإدارة',hr:'قسم الموارد البشرية',sales:'قسم المبيعات',marketing:'قسم التسويق',social:'قسم السوشال ميديا',design:'قسم التصميم',photo:'قسم التصوير',editing:'قسم المونتاج',promotion:'قسم الترويج',logistics:'قسم اللوجستيات',purchases:'قسم المشتريات',accounting:'قسم المحاسبة',instructions:'تعليمات إدارية عامة',platform:'منصة MOSH GROUP',archive:'الأرشيف العام'}[app])+'</b>';if(MENU_FIRST_DEPARTMENT_APPS.has(app))resetDepartmentLanding(app);if(PRODUCTIVE_DEPARTMENTS[app]&&app!=='admin'&&app!=='it')openProductiveDistributionPage(app);if(app==='tasks')renderAllTasks();if(app==='archive'){archiveTaskSection='tasks';openArchiveSection('tasks')}
 }
 function toggleDrop(id){document.querySelectorAll('.dropdown').forEach(d=>{if(d.id!==id)d.classList.remove('show')});document.getElementById(id).classList.toggle('show');}
 document.addEventListener('click',e=>{if(!e.target.closest('.menu'))document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('show'))});const salesReportState={reportType:'customer',lockedType:'',query:'',dateFrom:'',dateTo:'',status:'',customer:'',salesperson:'',service:'',salesTeam:'',quoteNumber:'',generalSearch:'',totalMin:'',totalMax:'',groupBy:''
@@ -651,7 +657,7 @@ function setAppListPageSize(key,size){const st=getAppListState(key),parsed=Numbe
 function queueAppListSearch(key,value){const st=getAppListState(key);st.search=String(value||'');st.page=1;clearTimeout(appListSearchTimers[key]);appListSearchTimers[key]=setTimeout(()=>refreshPagedAppView(key),220)}
 function clearAppListSearch(key){const st=getAppListState(key);st.search='';st.page=1;refreshPagedAppView(key)}
 function appListPagerHtml(key,result,{search=true,placeholder='بحث...'}={}){const st=getAppListState(key),first=result.total?result.start+1:0,last=result.end;return `<div class="app-list-performance-bar"><div class="app-list-performance-left">${search?`<input class="app-list-search" value="${esc(st.search||'')}" placeholder="${esc(placeholder)}" oninput="queueAppListSearch('${esc(key)}',this.value)">${st.search?`<button class="btn" onclick="clearAppListSearch('${esc(key)}')">مسح البحث</button>`:''}`:''}<span class="app-page-info">عرض ${first}-${last} من ${result.total}${result.rawTotal!==result.total?` (من أصل ${result.rawTotal})`:''}</span></div><div class="app-list-performance-right"><span class="performance-note">عدد السجلات بالصفحة</span><select class="app-page-size" onchange="setAppListPageSize('${esc(key)}',this.value)">${APP_LIST_PAGE_SIZES.map(n=>`<option value="${n}" ${st.pageSize===n?'selected':''}>${n}</option>`).join('')}</select><div class="app-pager"><button class="btn" ${result.page<=1?'disabled':''} onclick="setAppListPage('${esc(key)}',1)">الأولى</button><button class="btn" ${result.page<=1?'disabled':''} onclick="setAppListPage('${esc(key)}',${Math.max(1,result.page-1)})">السابق</button><span class="app-pager-page">صفحة ${result.page} / ${result.totalPages}</span><button class="btn" ${result.page>=result.totalPages?'disabled':''} onclick="setAppListPage('${esc(key)}',${Math.min(result.totalPages,result.page+1)})">التالي</button><button class="btn" ${result.page>=result.totalPages?'disabled':''} onclick="setAppListPage('${esc(key)}',${result.totalPages})">الأخيرة</button></div></div></div>`}
-function refreshPagedAppView(key){if(key==='purchase_requests')return renderSupportRequestsPage('purchase');if(key==='logistics_requests')return renderSupportRequestsPage('logistics');if(key==='hr_staff')return renderStaffWorkflowConfig();if(key.startsWith('prod_')){const m=key.match(/^prod_([^_]+)_(distribution|running)$/);if(m){return m[2]==='running'?renderProductiveRunningTasks(m[1]):renderProductiveDistributionBoard(m[1])}}if(key==='quotes')return renderQuotationList(false);if(key==='orders')return renderOrdersList(false);if(key==='cancelledquotes')return renderCancelledQuotesList(false);if(key==='customers')return salesList('customergroup');if(key==='editcustomers')return renderEditCustomerList();if(key==='services')return renderServiceList();if(key==='editservices')return renderEditServiceList();if(key==='servicecontracts')return renderServiceContracts();if(key==='alltasks')return renderAllTasks();if(key==='billingtasks')return renderBillingTasks();if(key==='invoices')return renderInvoices();if(key==='archive_tasks')return renderArchivedTasks();if(key==='archive')return renderArchive();if(key==='report_general')return renderGeneralSalesReport(true);if(key==='report_specific')return renderSalesReport(salesReportState.reportType,true);if(key.startsWith('dept|')){const parts=key.split('|'),containerId=parts[1]||'',department=decodeURIComponent(parts.slice(2).join('|')||'');return renderDepartmentTasks(department,containerId)}}
+function refreshPagedAppView(key){if(key==='marketing_follow_up')return document.dispatchEvent(new Event('mosh:page-follow-up'));if(key==='purchase_requests')return renderSupportRequestsPage('purchase');if(key==='logistics_requests')return renderSupportRequestsPage('logistics');if(key==='hr_staff')return renderStaffWorkflowConfig();if(key.startsWith('prod_')){const m=key.match(/^prod_([^_]+)_(distribution|running)$/);if(m){return m[2]==='running'?renderProductiveRunningTasks(m[1]):renderProductiveDistributionBoard(m[1])}}if(key==='quotes')return renderQuotationList(false);if(key==='orders')return renderOrdersList(false);if(key==='cancelledquotes')return renderCancelledQuotesList(false);if(key==='customers')return salesList('customergroup');if(key==='editcustomers')return renderEditCustomerList();if(key==='services')return renderServiceList();if(key==='editservices')return renderEditServiceList();if(key==='servicecontracts')return renderServiceContracts();if(key==='alltasks')return renderAllTasks();if(key==='billingtasks')return renderBillingTasks();if(key==='invoices')return renderInvoices();if(key==='archive_tasks')return renderArchivedTasks();if(key==='archive')return renderArchive();if(key==='report_general')return renderGeneralSalesReport(true);if(key==='report_specific')return renderSalesReport(salesReportState.reportType,true);if(key.startsWith('dept|')){const parts=key.split('|'),containerId=parts[1]||'',department=decodeURIComponent(parts.slice(2).join('|')||'');return renderDepartmentTasks(department,containerId)}}
 function salesList(type){if(['newcustomer','editcustomer'].includes(type)&&!hasPermission(type==='newcustomer'?'createCustomers':'editCustomers')){alert('حسابك لا يملك صلاحية '+(type==='newcustomer'?'إضافة':'تعديل')+' العملاء.');return;}document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('show'));currentSalesMode=type;if(type==='quotes'){renderQuotationList();return}
 if(type==='orders'){renderOrdersList();return}
 if(type==='cancelledquotes'){renderCancelledQuotesList();return}
@@ -2224,10 +2230,10 @@ function taskIdleReturnControlsHtml(t,containerId,department){const a=ensureTask
    <span class="workflow-status returned">الوقت متوقف تلقائياً حتى تصنّف فترة الغياب</span>
   </div>
  </div>`;}
-['mousemove','keydown','click','scroll','touchstart'].forEach(evt=>{document.addEventListener(evt,()=>registerTaskUserActivity(),{passive:true});});setInterval(taskIdleCheck,30000);function workflowEmployeeLabel(t){if(window.MoshReceiptModel49&&(t?.returnedForRevision||['new','received'].includes(t?.employeeState)))return MoshReceiptModel49.label(t);if(!t)return '-';if(t.status==='awaiting_invoice')return 'بانتظار الفوترة';if(t.status==='invoiced'||t.status==='archived_invoiced')return 'تمت الفوترة';if(t.status==='archived_no_invoice')return 'غير بحاجة للفوترة';if(t.department==='المهمات'&&!t.assignee)return 'ضمن المهمات';if(!t.assignee)return 'مهمة جديدة — بانتظار توزيع المدير';if(t.employeeState==='received')return 'تم استلام المهمة';if(t.employeeState==='working')return t.returnedForRevision?'جارٍ العمل — تعديل':'جارٍ العمل';if(t.employeeState==='paused')return t.returnedForRevision?'متوقفة مؤقتاً — للتعديل':'إيقاف مؤقت';if(t.employeeState==='submitted'){return t.assignmentMode==='manager_self'
+['mousemove','keydown','click','scroll','touchstart'].forEach(evt=>{document.addEventListener(evt,()=>registerTaskUserActivity(),{passive:true});});setInterval(taskIdleCheck,30000);function workflowEmployeeLabel(t){if(window.MoshReceiptModel49&&(t?.returnedForRevision||['new','received'].includes(t?.employeeState)))return MoshReceiptModel49.label(t);if(!t)return '-';if(t.status==='awaiting_invoice')return 'بانتظار الفوترة';if(t.status==='invoiced'||t.status==='archived_invoiced')return 'تمت الفوترة';if(t.status==='archived_no_invoice')return 'غير بحاجة للفوترة';if(t.department==='المهمات'&&!t.assignee)return t.employeeState==='finished'?'بانتظار المتابعة':'ضمن المهمات';if(!t.assignee)return 'مهمة جديدة — بانتظار توزيع المدير';if(t.employeeState==='received')return 'تم استلام المهمة';if(t.employeeState==='working')return t.returnedForRevision?'جارٍ العمل — تعديل':'جارٍ العمل';if(t.employeeState==='paused')return t.returnedForRevision?'متوقفة مؤقتاً — للتعديل':'إيقاف مؤقت';if(t.employeeState==='submitted'){return t.assignmentMode==='manager_self'
 ? 'منتهية — بانتظار قرار المدير'
 :'منتهية — عند المدير للمراجعة';}
-if(t.employeeState==='finished')return 'مهمة منتهية';return 'بانتظار استلام المهمة';}
+if(t.employeeState==='finished')return 'منتهية';return 'بانتظار استلام المهمة';}
 function workflowStatusClass(t){if(!t||!t.assignee)return 'new';if(t.employeeState==='received')return 'new';if(t.employeeState==='working')return t.returnedForRevision?'returned':'working';if(t.employeeState==='paused')return t.returnedForRevision?'returned':'review';if(t.employeeState==='submitted')return 'review';if(t.employeeState==='finished')return 'done';return 'new';}
 function r37AssignableProfile(employeeName,department,field=null){
  const invalid=message=>{const el=typeof field==='string'?document.getElementById(field):field;if(el&&window.MoshValidation09)MoshValidation09.report([[el,message]]);else window.MoshUI19?.toast(message);return null;};
@@ -2276,8 +2282,13 @@ function employeePauseTask(id,containerId,department){
 }
 function employeeSubmitTask(id,containerId,department){
  if(!window.MoshTaskInbox49)return Promise.resolve(false);
+ const wasInOverlay=document.getElementById('emp47TaskOverlay')?.classList.contains('show');
  return window.MoshTaskInbox49.perform('finish',id).then(ok=>{
-  if(ok&&containerId&&document.getElementById(containerId)&&!document.getElementById('emp47TaskOverlay')?.classList.contains('show'))openDepartmentTaskDetails(id,containerId,department);
+  if(ok&&!wasInOverlay&&containerId&&document.getElementById(containerId)){
+   const saved=(state.salesTasks||[]).find(task=>String(task.id)===String(id));
+   if(saved?.department===department&&saved.status==='in_progress')openDepartmentTaskDetails(id,containerId,department);
+   else if(!refreshProductiveDepartmentAfterAction(containerId,department))renderDepartmentTasks(department,containerId);
+  }
   return ok;
  });
 }
@@ -2296,29 +2307,60 @@ pushAppUndo();if(isDepartmentManager){const old=t.assignee||'';if(old&&(old!==se
 save();const productiveKey=getProductiveContext(containerId,department);if(productiveKey&&productiveTaskViewModes[productiveKey]==='distribution'){openProductiveRunningTasksPage(productiveKey);}else{openDepartmentTaskDetails(t.id,containerId,department);}
 }
 function refreshManagerTransferTarget(id){const dep=document.getElementById('managerTransferDept_'+id)?.value||'';const wrap=document.getElementById('managerTransferAdminWrap_'+id),sel=document.getElementById('managerTransferAdmin_'+id);if(!wrap)return;wrap.style.display=dep==='الإدارة'?'grid':'none';if(dep==='الإدارة'&&sel){const people=getDepartmentStaff('الإدارة').filter(isStaffAssignable);sel.innerHTML='<option value="">— اختر المسؤول الإداري —</option>'+people.map(p=>`<option value="${esc(p.name)}">${esc(p.name)}${p.jobTitle?` · ${esc(p.jobTitle)}`:''}</option>`).join('');}}
-function managerTransferTask(id,containerId,oldDepartment){const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id));if(!t||t.status!=='in_progress')return;const next=document.getElementById('managerTransferDept_'+id)?.value||'';if(!next||next===t.department){alert('اختر قسم مختلف للتحويل.');return;}const adminTarget=next==='الإدارة'?normalizeStaffName(document.getElementById('managerTransferAdmin_'+id)?.value):'';if(next==='الإدارة'&&!adminTarget){alert('اختر المدير أو المسؤول الإداري الذي ستوجّه إليه المهمة.');return;}
+async function managerTransferTask(id,containerId,oldDepartment){const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id));if(!t||t.status!=='in_progress')return;const next=document.getElementById('managerTransferDept_'+id)?.value||'';if(!next||next===t.department){alert('اختر قسم مختلف للتحويل.');return;}const adminTarget=next==='الإدارة'?normalizeStaffName(document.getElementById('managerTransferAdmin_'+id)?.value):'';if(next==='الإدارة'&&!adminTarget){alert('اختر المدير أو المسؤول الإداري الذي ستوجّه إليه المهمة.');return;}
+const ownerId=MoshApi.user?.id;
 pushAppUndo();const prev=t.department;closeTaskWorkSession(t,'transferred');t.department=next;const adminProfile=next==='الإدارة'?getStaffProfileByName(adminTarget):null;t.assignee=next==='الإدارة'?adminTarget:'';t.assigneeId=next==='الإدارة'?(adminProfile?.id||''):'';t.assignmentMode=next==='الإدارة'?'direct':'manager';t.employeeState='new';resetTaskReviewWorkflow(t);t.reviewManager=next==='الإدارة'?'':t.reviewManager;t.history=t.history||[];const newManager=next==='الإدارة'?null:getDepartmentManager(next);t.history.push({text:`نُقلت نفس المهمة بكامل بياناتها ومرفقاتها من ${prev} إلى ${next}${next==='الإدارة'?` وتوجيهها مباشرة إلى ${adminTarget}`:newManager?` وأصبحت بعهدة مدير القسم ${newManager.name}`:''}.`,time:activityTimestamp(),by:currentUserDisplayName()
-});save();if(containerId==='allTasksContainer'){activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};openTaskDetails(t.id);}else if(refreshProductiveDepartmentAfterAction(containerId,oldDepartment)){}else{renderDepartmentTasks(oldDepartment,containerId);}
+});
+try{
+ await save();
+}catch(error){
+ if(MoshApi.user?.id===ownerId)window.MoshUI19?.toast?.(error.message||'تعذر حفظ ترحيل المهمة.');
+ return false;
+}
+if(MoshApi.user?.id!==ownerId)return false;
+const transferred=(state.salesTasks||[]).find(task=>String(task.id)===String(id));
+if(transferred?.department!==next)return false;
+window.MoshUI19?.toast?.('تم ترحيل المهمة إلى '+departmentDisplayName(next)+'.');
+if(containerId==='allTasksContainer'){activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};openTaskDetails(t.id);}else if(refreshProductiveDepartmentAfterAction(containerId,oldDepartment)){}else{renderDepartmentTasks(oldDepartment,containerId);}
 }
 let pendingManagerFinishAction=null;function showManagerFinishMessage(title,text,meta='',canConfirm=false){const modal=document.getElementById('managerFinishConfirmModal');const titleEl=document.getElementById('managerFinishConfirmTitle');const textEl=document.getElementById('managerFinishConfirmText');const metaEl=document.getElementById('managerFinishConfirmMeta');const action=document.getElementById('managerFinishConfirmAction');const icon=document.getElementById('managerFinishConfirmIcon');if(!modal)return;if(titleEl)titleEl.textContent=title||'اعتماد وإنهاء للفوترة';if(textEl)textEl.textContent=text||'';if(metaEl){metaEl.textContent=meta||'';metaEl.style.display=meta?'block':'none';}
-if(action)action.style.display=canConfirm?'inline-flex':'none';if(icon)icon.textContent=canConfirm?'✓':'!';modal.classList.add('show');modal.setAttribute('aria-hidden','false');}
+if(action)action.style.display=canConfirm?'inline-flex':'none';if(icon)icon.textContent=canConfirm||title==='تم الاعتماد والإرسال للمتابعة'?'✓':'!';modal.classList.add('show');modal.setAttribute('aria-hidden','false');}
 function closeManagerFinishConfirm(){const modal=document.getElementById('managerFinishConfirmModal');modal?.classList.remove('show');modal?.setAttribute('aria-hidden','true');pendingManagerFinishAction=null;}
 function managerFinishAndInvoice(id,containerId,department){const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id));if(!t){showManagerFinishMessage('تعذر تنفيذ الإجراء','لم أجد المهمة المطلوبة. أعد فتح المهمة وحاول مرة ثانية.');return false;}
 if(t.status!=='in_progress'){showManagerFinishMessage('المهمة ليست قيد التنفيذ',`الحالة الحالية للمهمة هي: ${t.status||'غير محددة'}. لا يمكن إرسالها للفوترة مرة ثانية.`);return false;}
-const subs=!t.parentTaskId?getSubTasks(t.id):[];const isPackage=subs.length>=2;const incomplete=subs.filter(st=>!isPackageSubTaskDone(st));if(isPackage&&incomplete.length){showManagerFinishMessage('الباقة غير مكتملة بعد',`لا يمكن إنهاء الباقة قبل اكتمال كل الخدمات الفرعية. المتبقي حالياً ${incomplete.length} من أصل ${subs.length}.`,incomplete.slice(0,5).map(st=>st.title||'خدمة فرعية').join(' · ')
+const subs=!t.parentTaskId?getSubTasks(t.id):[];const isPackage=subs.length>=2;const incomplete=subs.filter(st=>!isPackageSubTaskDone(st));if(incomplete.length){showManagerFinishMessage('المهام الفرعية غير مكتملة',`لا يمكن إنهاء الباقة قبل اكتمال كل الخدمات الفرعية. المتبقي حالياً ${incomplete.length} من أصل ${subs.length}.`,incomplete.slice(0,5).map(st=>st.title||'خدمة فرعية').join(' · ')
 );return false;}
 if(isPackage){showManagerFinishMessage('إغلاق الباقة من المحاسبة','بعد اكتمال الخدمات ترجع المهمة الرئيسية إلى «المهمات»، وتبقى الباقة في «قائمة الباقات» بالمحاسبة. المحاسبة وحدها ترسلها إلى مهام بانتظار الفوترة.',`${MoshTaskUI.title(t)}`,false
 );return false;}
 pendingManagerFinishAction={id:String(t.id),containerId:String(containerId||''),department:String(department||t.department||'')
-};const packageText=subs.length
-?`هذه باقة تحتوي على ${subs.length} خدمات فرعية مكتملة. سيتم اعتماد الباقة الرئيسية وتحويلها للمحاسبة بانتظار الفوترة، وتبقى الخدمات الفرعية ضمن سجل الباقة.`
-:'سيتم اعتماد المهمة وإنهاؤها من القسم الحالي وتحويل نفس المهمة إلى المحاسبة بانتظار الفوترة.';showManagerFinishMessage('اعتماد وإنهاء للفوترة',packageText,`${MoshTaskUI.title(t)} · ${t.customer||'بدون عميل'}`,true
-);return false;}
-function confirmManagerFinishAndInvoice(){const pending=pendingManagerFinishAction;if(!pending)return;const t=(state.salesTasks||[]).find(x=>String(x.id)===String(pending.id));if(!t||t.status!=='in_progress'){closeManagerFinishConfirm();return;}
-const containerId=pending.containerId;const department=pending.department||t.department;pushAppUndo();closeTaskWorkSession(t,'manager_final_approval');t.status='awaiting_invoice';t.employeeState='finished';t.closedFromDepartment=t.department;t.department='المحاسبة';t.closedAt=activityTimestamp();t.closedBy=currentUserDisplayName();t.reviewManager='';t.returnedForRevision=false;t.history=t.history||[];t.history.push({text:getSubTasks(t.id).length
-?'اعتمد مدير القسم الباقة بعد اكتمال خدماتها الفرعية، وتم تحويل المهمة الرئيسية إلى المحاسبة بانتظار الفوترة.'
-:'اعتمد مدير القسم المهمة وأنهاها نهائيًا، وتم تحويل نفس المهمة إلى المحاسبة بانتظار الفوترة.',time:t.closedAt,by:currentUserDisplayName()
-});save();closeManagerFinishConfirm();if(typeof renderBillingTasks==='function')renderBillingTasks();if(typeof renderAccountingPackages==='function')renderAccountingPackages();if(containerId==='allTasksContainer'){activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};renderAllTasks();}else if(refreshProductiveDepartmentAfterAction(containerId,department)){}else if(containerId&&document.getElementById(containerId)){renderDepartmentTasks(department,containerId);}
+};const followUp=taskFinishesToFollowUp(t);
+const confirmButton=document.getElementById('managerFinishConfirmAction');if(confirmButton)confirmButton.textContent=followUp?'اعتماد وإرسال للمتابعة':'اعتماد وتحويل للمحاسبة';
+showManagerFinishMessage(followUp?'اعتماد وإرسال للمتابعة':'اعتماد وإنهاء للفوترة',followUp?'سيتم إنهاء المهمة في القسم الحالي وإرسالها إلى «المهمات» للمتابعة.':'سيتم تحويل المهمة إلى المحاسبة بانتظار الفوترة.',`${MoshTaskUI.title(t)} · ${t.customer||'بدون عميل'}`,true);return false;}
+function taskFinishesToFollowUp(t){return !['المهمات','المحاسبة'].includes(t.department)&&!t.parentTaskId&&!t.sharedDistributionRoot&&getSubTasks(t.id).length<2;}
+async function confirmManagerFinishAndInvoice(){
+ const pending=pendingManagerFinishAction;if(!pending)return;
+ const t=(state.salesTasks||[]).find(x=>String(x.id)===String(pending.id));
+ if(!t||t.status!=='in_progress'){closeManagerFinishConfirm();return;}
+ closeManagerFinishConfirm();
+ const followUp=taskFinishesToFollowUp(t);
+ if(!await saveTaskCompletion(t))return;
+ if(!followUp&&document.getElementById('accountingApp')?.classList.contains('active')){renderBillingTasks();renderAccountingPackages();}
+ const {containerId,department}=pending;
+ if(containerId==='allTasksContainer')renderAllTasks();
+ else if(!refreshProductiveDepartmentAfterAction(containerId,department)&&containerId&&document.getElementById(containerId))renderDepartmentTasks(department,containerId);
+ if(followUp)showManagerFinishMessage('تم الاعتماد والإرسال للمتابعة','انتقلت المهمة إلى قسم «المهمات» للمتابعة.',MoshTaskUI.title(t));
+}
+async function saveTaskCompletion(t){
+ const followUp=taskFinishesToFollowUp(t),closedAt=activityTimestamp(),closedBy=currentUserDisplayName();
+ const text=followUp?'تم اعتماد انتهاء التنفيذ في القسم.':'تم إنهاء المهمة وتحويلها إلى المحاسبة بانتظار الفوترة.';
+ try{
+  const saved=await MoshApi.commitTask(t.id,fresh=>{
+   if(fresh.status!=='in_progress'||fresh.department!==t.department||fresh.assigneeId!==t.assigneeId||(!['submitted','finished'].includes(fresh.employeeState)))throw new Error('تغيّرت حالة المهمة. حدّث القائمة.');
+   return {status:'awaiting_invoice',employeeState:'finished',closedFromDepartment:fresh.department,department:'المحاسبة',closedAt,closedBy,reviewManager:'',returnedForRevision:false,history:[...(fresh.history||[]),{text,time:closedAt,by:closedBy}]};
+  },{latest:true});
+  window.MoshUI19?.toast?.(saved.department==='المهمات'?'تم إنهاء المهمة وإرسالها إلى المهمات للمتابعة.':'تم تحويل المهمة إلى المحاسبة بانتظار الفوترة.');
+  return true;
+ }catch(error){window.MoshUI19?.toast?.(error.message||'تعذر حفظ إنهاء المهمة.');return false;}
 }
 function setDepartmentTaskFilter(department,containerId,filter){departmentTaskFilters[containerId]=filter||'all';renderDepartmentTasks(department,containerId);}
 function departmentTaskBucket(t){if(t.employeeState==='submitted')return 'review';if(['received','working','paused'].includes(t.employeeState))return 'working';return 'new';}
@@ -2657,7 +2699,7 @@ syncStaffHierarchyForDepartment(department);getManagedDepartmentsForStaff(savedP
 function deleteStaffProfile(id){if(window.MoshEmployees09)return window.MoshEmployees09.archive(id);window.MoshUI19?.toast('تعذر تحميل الأرشفة. حدّث الصفحة وأعد المحاولة.');return false;}
 function previewEmployeeTasks(id){const p=getStaffProfileById(id);const box=document.getElementById('employeeTaskPreview');if(!p||!box)return;const tasks=(state.salesTasks||[]).filter(t=>normalizeStaffName(t.assignee)===normalizeStaffName(p.name)
 );const newer=tasks.filter(t=>t.status==='in_progress'&&(t.employeeState||'new')==='new');const working=tasks.filter(t=>t.status==='in_progress'&&['received','working','paused'].includes(t.employeeState));const review=tasks.filter(t=>t.status==='in_progress'&&t.employeeState==='submitted');const finished=tasks.filter(t=>t.status!=='in_progress'||t.employeeState==='finished');const managed=getManagedDepartmentsForStaff(p);const list=arr=>arr.length
-?arr.map(t=>`<div class="message" style="cursor:pointer" onclick="goApp('tasks',null);setTimeout(()=>openTaskDetails(${MoshTaskUI.arg(t.id)}),0)">
+?arr.map(t=>`<div class="message" style="cursor:pointer" onclick="openAppWith('tasks',()=>openTaskDetails(${MoshTaskUI.arg(t.id)}))">
     <b class="mt54-task-name">${esc(t.title)}</b>
     <div class="muted">${MoshTaskUI.clientHtml(t)} · ${esc(departmentDisplayName(t.department||''))}</div>
    </div>`).join('')
@@ -2762,14 +2804,19 @@ box.innerHTML=cards.length?cards.join(''):'<div class="muted">لا يوجد مر
 function getNextTaskId(){const ids=(state.salesTasks||[])
 .map(t=>Number(t.id))
 .filter(n=>Number.isFinite(n)&& n>0);return ids.length ? Math.max(...ids)+1:1;}
-function refreshTaskViewAfterCreate(task){if(task?.department==='المهمات'){goApp('tasks',null);renderAllTasks();return;}
+function refreshTaskViewAfterCreate(task){if(task?.department==='المهمات'){return openAppWith('tasks',renderAllTasks);}
 const active=document.querySelector('.view.active');if(!active)return;if(active.id==='tasksApp'){renderAllTasks();return;}
 const productive=Object.entries(PRODUCTIVE_DEPARTMENTS)
 .find(([,cfg])=>cfg.appId===active.id);if(productive && task.department===productive[1].department){refreshProductiveView(productive[0]);return;}
 const departmentViews={adminApp:['الإدارة','adminAppTasks'],hrApp:['الموارد البشرية','hrAppTasks'],accountingApp:['المحاسبة','accountingDepartmentTasks'],purchasesApp:['المشتريات','purchasesAppTasks'],logisticsApp:['اللوجستيات','logisticsAppTasks']
 };const info=departmentViews[active.id];if(info && task.department===info[0]){renderDepartmentTasks(info[0],info[1]);}
 }
-function openStandaloneTaskModal(sourceOrderId=null){setDirtyState(false);standaloneTaskSourceOrderId=sourceOrderId!==null?sourceOrderId:null;standalonePendingAttachments=[];standaloneVoiceChunks=[];stopVoiceTimer();if(standaloneMediaRecorder && standaloneMediaRecorder.state==='recording'){standaloneMediaRecorder.onstop=null;try{standaloneMediaRecorder.stop();}catch(e){}
+function selectTaskCreatePanel(name){
+ const modal=document.getElementById('standaloneTaskModal');
+ for(const panel of modal.querySelectorAll('[data-create-panel]'))panel.hidden=panel.dataset.createPanel!==name;
+ for(const button of modal.querySelectorAll('[data-create-tab]'))button.setAttribute('aria-pressed',String(button.dataset.createTab===name));
+}
+function openStandaloneTaskModal(sourceOrderId=null){selectTaskCreatePanel('details');document.getElementById('standaloneOpeningComment').value='';setDirtyState(false);standaloneTaskSourceOrderId=sourceOrderId!==null?sourceOrderId:null;standalonePendingAttachments=[];standaloneVoiceChunks=[];stopVoiceTimer();if(standaloneMediaRecorder && standaloneMediaRecorder.state==='recording'){standaloneMediaRecorder.onstop=null;try{standaloneMediaRecorder.stop();}catch(e){}
 }
 standaloneMediaRecorder=null;standaloneVoiceMode=null;standaloneVoiceChunks=[];stopStandaloneVoiceStream();renderStandaloneCustomerChoices();const sourceOrder=standaloneTaskSourceOrderId!==null
 ?(state.quotations||[]).find(q=>String(q.id)===String(standaloneTaskSourceOrderId)&& q.status==='order')
@@ -2798,8 +2845,10 @@ let savedTask;
 try{
   const createOwner=String(MoshApi.user?.id||'');
   const payload={...newTask};
+  const openingComment=document.getElementById('standaloneOpeningComment')?.value.trim();
+  if(openingComment)payload.workChat=[{id:crypto.randomUUID(),type:'text',text:openingComment,by:currentUserDisplayName(),time:activityTimestamp()}];
   delete payload.id; delete payload.number; delete payload.taskNo; delete payload.createdAt; delete payload.createdBy; delete payload.history;
-  if(sharedMode){savedTask=await MoshSharedDistribution32.createDistributed(payload,assignmentMode,selected,createOwner);}else{
+  if(sharedMode){savedTask=await MoshSharedDistribution32.createDistributed(payload,assignmentMode,selected,createOwner,null,MoshSharedDistribution32.creationTeams());}else{
   savedTask=await MoshApi.request('/tasks',{method:'POST',headers:{'Idempotency-Key':(typeof moshRandomUUID==='function'?moshRandomUUID():(globalThis.crypto&&typeof globalThis.crypto.randomUUID==='function'?globalThis.crypto.randomUUID():String(Date.now())+'-'+Math.random()))},body:payload});
   // R9: register the confirmed record in the server baseline as well as the UI.
   savedTask=MoshApi.acceptCreatedTask(savedTask,createOwner);}
@@ -2812,7 +2861,7 @@ try{
 standaloneSaveBusy=false;setDirtyState(false);standalonePendingAttachments=[];stopStandaloneVoiceStream();const createdFromOrder=!!sourceOrder;const sourceOrderId=sourceOrder?sourceOrder.id:null;standaloneTaskSourceOrderId=null;const customerEl=document.getElementById('standaloneTaskCustomer');if(customerEl){customerEl.readOnly=false;customerEl.title='';}
 const modalTitle=document.getElementById('standaloneTaskModalTitle');if(modalTitle)modalTitle.textContent='إنشاء مهمة جديدة';closeModal('standaloneTaskModal');if(createdFromOrder){workingQuote=null;openQuote(sourceOrderId,false);}else{refreshTaskViewAfterCreate(newTask);}
 }
-let currentParentTaskId=null;function openSubTaskModal(parentId){const parent=(state.salesTasks||[]).find(t=>t.id===parentId && !t.parentTaskId);if(!parent)return;currentParentTaskId=parentId;setDirtyState(false);document.getElementById('subTaskTitle').value='';document.getElementById('subTaskDepartment').value=parent.department||'التصميم';document.getElementById('subTaskAssignmentMode').value='manager';document.getElementById('subTaskAssignee').value='';refreshSubTaskAssignmentUI();document.getElementById('subTaskDueDate').value='';document.getElementById('subTaskDescription').value='';document.getElementById('subTaskNotes').value='';document.getElementById('subTaskModal').classList.add('show');refreshSaveButtons();}
+let currentParentTaskId=null;function openSubTaskModal(parentId){const parent=(state.salesTasks||[]).find(t=>t.id===parentId && !t.parentTaskId);if(!parent)return;currentParentTaskId=parentId;setDirtyState(false);document.getElementById('subTaskTitle').value='';document.getElementById('subTaskDepartment').value=parent.department||'التصميم';document.getElementById('subTaskAssignmentMode').value='direct';document.getElementById('subTaskAssignee').value='';refreshSubTaskAssignmentUI();document.getElementById('subTaskDueDate').value='';document.getElementById('subTaskDescription').value='';document.getElementById('subTaskNotes').value='';document.getElementById('subTaskModal').classList.add('show');refreshSaveButtons();}
 function cancelSubTask(){setDirtyState(false);currentParentTaskId=null;closeModal('subTaskModal');}
 function saveSubTask(){if(window.MoshDeadline34&&!window.MoshDeadline34.ready('subTaskDueDate'))return;const parent=(state.salesTasks||[]).find(t=>t.id===currentParentTaskId && !t.parentTaskId);if(!parent)return;const title=document.getElementById('subTaskTitle').value.trim();if(!title){window.MoshValidation09?.report([[document.getElementById('subTaskTitle'),'اكتب اسم المهمة أولاً.']]);return;}const id=getNextTaskId();const taskNo='TASK/'+String(id).padStart(5,'0');const subAssignmentMode=document.getElementById('subTaskAssignmentMode')?.value||'manager';const subDepartment=document.getElementById('subTaskDepartment').value;const subAssignee=normalizeStaffName(document.getElementById('subTaskAssignee')?.value);if(subAssignmentMode==='direct'&&!subAssignee){window.MoshValidation09?.report([[document.getElementById('subTaskAssignee'),'اختر الموظف المنفذ أو أرسل المهمة لمدير القسم.']]);return}
 const subProfile=subAssignmentMode==='direct'?r37AssignableProfile(subAssignee,subDepartment,document.getElementById('subTaskAssignee')):null;if(subAssignmentMode==='direct'&&!subProfile)return;pushAppUndo();
@@ -2829,8 +2878,6 @@ task.reviewManager='';task.returnedForRevision=false;task.history=Array.isArray(
 });}
 changed=true;}
 });if(changed)save();return changed;}
-function moveParentToAccountingIfReady(parentId){const parent=(state.salesTasks||[]).find(t=>String(t.id)===String(parentId)&&!t.parentTaskId);if(!parent||parent.status!=='in_progress')return false;const subs=getSubTasks(parentId);if(!subs.length||!subs.every(isPackageSubTaskDone))return false;if(parent.packageReadyForAccounting&&parent.department==='المهمات')return false;closeTaskWorkSession(parent,'package_services_completed');const previousDepartment=parent.department||'';parent.packageReadyForAccounting=true;parent.packageReadyAt=activityTimestamp();parent.packagePreviousDepartment=previousDepartment;parent.department='المهمات';parent.assignee='';parent.assignmentMode='manager';parent.employeeState='new';parent.reviewManager='';parent.returnedForRevision=false;parent.history=parent.history||[];parent.history.push({text:'اكتملت جميع المهام الفرعية. عادت المهمة الرئيسية إلى قسم «المهمات»، وبقيت الباقة ظاهرة في «قائمة الباقات» بالمحاسبة بانتظار الإنهاء والإرسال للفوترة.',time:parent.packageReadyAt,by:currentUserDisplayName()
-});return true;}
 function getSubTaskProgress(parentId){const subs=getSubTasks(parentId);return{total:subs.length,done:subs.filter(isPackageSubTaskDone).length
 };}
 function getSalesTaskForOrder(orderId){return(state.salesTasks||[]).find(t=>!t.parentTaskId && String(t.salesOrderId)===String(orderId));}
@@ -2838,8 +2885,8 @@ function openSalesTaskModal(){const q=getSavedQ();if(!q || q.status!=='order' ||
 function cancelSalesTaskModal(){setDirtyState(false);closeModal('salesTaskModal');}
 function saveSalesTask(){if(window.MoshDeadline34&&!window.MoshDeadline34.ready('taskDueDate'))return;const q=getSavedQ();if(!q || q.status!=='order')return;if(getSalesTaskForOrder(q.id))return;const title=document.getElementById('taskTitle').value.trim();if(!title)return;pushAppUndo();const id=state.salesTasks.length?Math.max(...state.salesTasks.map(t=>t.id))+1:1;state.salesTasks.push({id,number:'TASK/'+String(id).padStart(5,'0'),taskNo:'TASK/'+String(id).padStart(5,'0'),salesOrderId:q.id,salesOrderNo:q.number,origin:'أمر مبيعات',createdBy:currentUserDisplayName(),customer:q.customer,title,description:document.getElementById('taskDescription').value,department:document.getElementById('taskDepartment').value,assignee:document.getElementById('taskAssignee').value,dueDate:document.getElementById('taskDueDate').value,dueRule:window.MoshDeadline34?.ruleFor('taskDueDate')||null,notes:document.getElementById('taskNotes').value,status:'in_progress',createdAt:activityTimestamp(),history:[{text:'تم إنشاء مهمة المبيعات وتحويلها إلى قسم '+document.getElementById('taskDepartment').value,time:activityTimestamp(),by:currentUserDisplayName()}]
 });save();setDirtyState(false);closeModal('salesTaskModal');workingQuote=null;openQuote(q.id,false);}
-function productiveTaskStateKey(t){if(!t)return 'new';if(t.employeeState==='submitted')return 'review';if(t.returnedForRevision)return 'revision';if(['received','working','paused'].includes(t.employeeState))return 'working';return 'new';}
-function productiveTaskStateLabel(t){if(t?.employeeState==='received')return 'تم استلام المهمة';if(t?.employeeState==='paused')return t.returnedForRevision?'متوقفة مؤقتاً — للتعديل':'إيقاف مؤقت';const key=productiveTaskStateKey(t);return{new:'بانتظار الاستلام',working:'جارٍ العمل',revision:'للتعديل',review:'بانتظار مراجعة المدير'
+function productiveTaskStateKey(t){if(!t)return 'new';if(t.employeeState==='finished')return 'finished';if(t.employeeState==='submitted')return 'review';if(t.returnedForRevision)return 'revision';if(['received','working','paused'].includes(t.employeeState))return 'working';return 'new';}
+function productiveTaskStateLabel(t){if(t?.employeeState==='received')return 'تم استلام المهمة';if(t?.employeeState==='paused')return t.returnedForRevision?'متوقفة مؤقتاً — للتعديل':'إيقاف مؤقت';const key=productiveTaskStateKey(t);return{new:'بانتظار الاستلام',working:'جارٍ العمل',revision:'للتعديل',review:'بانتظار مراجعة المدير',finished:'منتهية'
 }[key]||'بانتظار الاستلام';}
 function getProductiveConfig(key){return PRODUCTIVE_DEPARTMENTS[key]||null;}
 function getProductiveAssignablePeople(key){const cfg=getProductiveConfig(key);if(!cfg)return[];const manager=getDepartmentManager(cfg.department);const people=[];if(manager&&isStaffAssignable(manager)){people.push({name:normalizeStaffName(manager.name),isManager:true,profile:manager});}
@@ -2854,7 +2901,7 @@ function getProductiveTeamPeople(key){const cfg=getProductiveConfig(key);if(!cfg
 function productiveAssigneeOptions(key,selected=''){const current=normalizeStaffName(selected);return['<option value="">اختر المنفذ</option>']
 .concat(getProductiveAssignablePeople(key).map(p=>`<option value="${esc(p.name)}" ${p.name===current?'selected':''}>${esc(p.name)}${p.isManager?' — مدير القسم':''}</option>`))
 .join('');}
-function productiveTeamReportHtml(key,tasks){const cfg=getProductiveConfig(key);const people=getProductiveTeamPeople(key);if(!cfg)return '';if(!people.length){return `<div class="panel" style="margin-bottom:12px"><div class="empty">لا يوجد فريق ${esc(cfg.label)} معرف بعد. أضف الموظفين ومدير القسم من الموارد البشرية.</div></div>`;}
+function productiveTeamReportHtml(key,tasks,people=getProductiveTeamPeople(key)){const cfg=getProductiveConfig(key);if(!cfg)return '';if(!people.length){return `<div class="panel" style="margin-bottom:12px"><div class="empty">لا يوجد فريق ${esc(cfg.label)} معرف بعد. أضف الموظفين ومدير القسم من الموارد البشرية.</div></div>`;}
 return `<div class="design-team-report">
   ${people.map(p=>{const own=tasks.filter(t=>normalizeStaffName(t.assignee)===p.name);const working=own.filter(t=>['working','revision'].includes(productiveTaskStateKey(t))).length;const review=own.filter(t=>productiveTaskStateKey(t)==='review').length;const fresh=own.filter(t=>productiveTaskStateKey(t)==='new').length;const inactive=p.profile&&!isStaffAssignable(p.profile);return `<div class="design-team-card">
     <div class="name">${esc(p.name)} ${p.isManager?'<span class="manager-tag">مدير القسم</span>':''}${inactive?'<span class="manager-tag" style="opacity:.55">غير متاح للتوزيع</span>':''}</div>
@@ -2882,14 +2929,6 @@ pushAppUndo();if(isManager){const previous=t.assignee||'';if(previous&&(previous
 });}else{if(!assignTaskWorkflow(t,selected)){appUndoStack.pop();return;}
 }
 save();renderProductiveDistributionBoard(key);}
-function departmentAssignmentButtons(key,t){
- if(!window.MoshAuth37?.canModule(key,'assign')||!window.MoshSharedDistribution32||
-    t.status!=='in_progress'||t.assigneeId||normalizeStaffName(t.assignee)||t.employeeState==='finished'||
-    t.sharedDistributionRoot||t.sharedTeamContainer||(t.sharedDistributionChild&&t.sharedNodeType!=='department'))return '';
- const id=MoshTaskUI.arg(t.id);
- const team=`<button type="button" class="btn" onclick="event.stopPropagation();MoshSharedDistribution32.openTeam(${id})">أكثر من موظف</button>`;
- return t.sharedDistributionChild?team:team+` <button type="button" class="btn" onclick="event.stopPropagation();MoshSharedDistribution32.openDepartments(${id})">أكثر من قسم</button>`;
-}
 function renderProductiveDistributionBoard(key){const cfg=getProductiveConfig(key);if(!cfg)return;const box=document.getElementById(cfg.workspaceId);if(!box)return;setProductiveTopTab(key,'distribution');const all=(state.salesTasks||[]).filter(t=>t.department===cfg.department&&t.status==='in_progress');const needs=all.filter(t=>!normalizeStaffName(t.assignee));const assigned=all.filter(t=>normalizeStaffName(t.assignee));const working=assigned.filter(t=>['working','revision'].includes(productiveTaskStateKey(t))).length;const review=assigned.filter(t=>productiveTaskStateKey(t)==='review').length;const pageKey=`prod_${key}_distribution`;const result=filterAndPageAppList(pageKey,needs,t=>[t.taskNo,t.number,t.title,t.customer,t.dueDate,t.origin
 ].join(' '));const manager=getDepartmentManager(cfg.department);box.innerHTML=`
   <div class="design-board-head">
@@ -2932,23 +2971,89 @@ function renderProductiveDistributionBoard(key){const cfg=getProductiveConfig(ke
 
    ${appListPagerHtml(pageKey,result,{placeholder:'بحث ضمن المهام التي بحاجة توزيع...'})}
   </div>`;}
-function setProductiveRunningFilter(key,type,value){const f=productiveRunningFilters[key]||(productiveRunningFilters[key]={employee:'all',status:'all'});if(type==='employee')f.employee=value||'all';if(type==='status')f.status=value||'all';resetAppListPage(`prod_${key}_running`);renderProductiveRunningTasks(key);}
+function productiveTaskCustomer(task){return String(task.customer??'').trim();}
+function productiveCustomerOptions(tasks,selected){
+ const customers=[...new Set([...tasks.map(productiveTaskCustomer),selected].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
+ return '<option value="">كل العملاء</option>'+customers.map(customer=>'<option value="'+esc(customer)+'"'+(selected===customer?' selected':'')+'>'+esc(customer)+'</option>').join('');
+}
+function sharedDepartmentLabel(t){
+ if(!t.sharedDistributionChild||t.sharedNodeType!=='department')return '';
+ const rootId=t.sharedRootTaskId||t.parentTaskId;
+ const departments=(state.salesTasks||[]).filter(unit=>unit.sharedDistributionChild&&unit.sharedNodeType==='department'&&String(unit.parentTaskId)===String(rootId))
+  .map(unit=>unit.sharedDepartment||unit.department).filter(Boolean);
+ const participating=Array.isArray(t.participatingDepartments)&&t.participatingDepartments.length?t.participatingDepartments:departments;
+ return `<small class="muted">توزيع مشترك · ${esc([...new Set(participating)].join('، '))}</small>`;
+}
+function departmentAssignmentButtons(key,t){
+ if(!window.MoshAuth37?.canModule(key,'assign')||!window.MoshSharedDistribution32||
+    t.status!=='in_progress'||t.assigneeId||normalizeStaffName(t.assignee)||t.employeeState==='finished'||
+    t.sharedDistributionRoot||t.sharedTeamContainer||(t.sharedDistributionChild&&t.sharedNodeType!=='department'))return '';
+ const id=MoshTaskUI.arg(t.id);
+ const team=`<button type="button" class="btn" onclick="event.stopPropagation();MoshSharedDistribution32.openTeam(${id})">أكثر من موظف</button>`;
+ return t.sharedDistributionChild?team:team+` <button type="button" class="btn" onclick="event.stopPropagation();MoshSharedDistribution32.openDepartments(${id})">أكثر من قسم</button>`;
+}
+function productiveCustomerTaskCard(customer,tasks,taskAction,start=0){
+ if(!customer||!tasks.length)return '';
+ return `<section class="customer-task-card panel" aria-label="مهام العميل">
+  <div class="customer-task-card-client"><span>العميل</span><strong>${esc(customer)}</strong></div>
+  <div class="customer-task-card-details">
+   <h3>مهام العميل</h3>
+   ${tasks.map((task,index)=>{
+    const description=String(task.caption??'').trim()||String(task.description??'').trim();
+    const status=normalizeStaffName(task.assignee)?productiveTaskStateLabel(task):'بانتظار التوزيع';
+    return `<details class="customer-task-entry"${index===0?' open':''}>
+     <summary>${start+index+1}. ${esc(MoshTaskUI.title(task))}</summary>
+     ${sharedDepartmentLabel(task)}
+     <p class="muted">${esc(status)}${task.dueDate?' · التسليم '+esc(task.dueDate):''}</p>
+     ${description?`<p class="customer-task-description" dir="auto">${esc(description)}</p>`:''}
+     ${taskAction(task)}
+    </details>`;
+   }).join('')}
+  </div>
+ </section>`;
+}
+function productiveRunningTaskKind(key){return document.getElementById(getProductiveConfig(key)?.appId)?.dataset?.departmentTaskKind==='subtask'?'subtask':'main';}
+function getProductiveRunningFilters(key,kind){const scope=kind==='subtask'?`${key}:subtask`:key;return productiveRunningFilters[scope]||(productiveRunningFilters[scope]={employee:'all',status:'all'});}
+function setProductiveRunningFilter(key,type,value){const f=getProductiveRunningFilters(key,productiveRunningTaskKind(key));if(type==='employee')f.employee=value||'all';if(type==='status')f.status=value||'all';if(type==='customer')f.customer=value;resetAppListPage(`prod_${key}_running`);renderProductiveRunningTasks(key);}
 function canViewUnassignedMarketingTasks(){
  const auth=window.MoshAuth37,u=window.MoshApi?.user;
  if(!u||!auth?.canModule?.('marketing','view'))return false;
  const manager=getDepartmentManager('التسويق');
  return !!(u.isRoot||auth.isRoot?.()||auth.canModule?.('marketing','approve')||auth.canModule?.('marketing','assign')||(manager&&String(u.employeeId||'')===String(manager.id)));
 }
-function renderProductiveRunningTasks(key){const cfg=getProductiveConfig(key);if(!cfg)return;const box=document.getElementById(cfg.workspaceId);if(!box)return;setProductiveTopTab(key,'running');const includeUnassigned=key==='marketing'&&canViewUnassignedMarketingTasks();const all=(state.salesTasks||[]).filter(t=>
-t.department===cfg.department&&t.status==='in_progress'&&(normalizeStaffName(t.assignee)||includeUnassigned)
-);const filters=productiveRunningFilters[key]||(productiveRunningFilters[key]={employee:'all',status:'all'});const employee=filters.employee||'all';const status=filters.status||'all';const selected=all.filter(t=>{if(employee!=='all'&&normalizeStaffName(t.assignee)!==employee)return false;if(status!=='all'&&(status==='unassigned'?!!normalizeStaffName(t.assignee):productiveTaskStateKey(t)!==status))return false;return true;});const pageKey=`prod_${key}_running`;const result=filterAndPageAppList(pageKey,selected,t=>[t.taskNo,t.number,t.title,t.customer,t.assignee,t.dueDate,productiveTaskStateLabel(t),t.parentTaskTitle
-].join(' '));const people=getProductiveTeamPeople(key);const counts={all:all.length,new:all.filter(t=>normalizeStaffName(t.assignee)&&productiveTaskStateKey(t)==='new').length,working:all.filter(t=>productiveTaskStateKey(t)==='working'&&normalizeStaffName(t.assignee)).length,revision:all.filter(t=>productiveTaskStateKey(t)==='revision'&&normalizeStaffName(t.assignee)).length,review:all.filter(t=>productiveTaskStateKey(t)==='review'&&normalizeStaffName(t.assignee)).length
+function departmentEmployeeTaskFilter(user,department,includeManagers){
+ const manager=getDepartmentManager(department);
+ const isManager=profile=>String(profile.id)===String(user.employeeId||'')||
+  String(profile.id)===String(manager?.id||'')||normalizeStaffName(profile.name)===normalizeStaffName(user.name);
+ const employees=(state.staffProfiles||[]).filter(profile=>isManager(profile)?includeManagers:profile.department===department);
+ const ids=new Set(employees.map(profile=>String(profile.id)));
+ const names=new Set(employees.map(profile=>normalizeStaffName(profile.name)).filter(Boolean));
+ return {
+  names,
+  includes(task){return task.assigneeId?ids.has(String(task.assigneeId)):names.has(normalizeStaffName(task.assignee));}
+ };
+}
+function renderProductiveRunningTasks(key){const cfg=getProductiveConfig(key);if(!cfg)return;const box=document.getElementById(cfg.workspaceId);if(!box)return;setProductiveTopTab(key,'running');const kind=productiveRunningTaskKind(key),subtasks=kind==='subtask';
+const user=window.MoshAuth37?.current?.()||window.MoshApi?.user;
+const employeeTasks=['design','photo','editing'].includes(key)&&normalizeStaffName(user?.name)==='وليد حداد'
+ ?departmentEmployeeTaskFilter(user,cfg.department,subtasks):null;
+const includeUnassigned=key==='marketing'&&canViewUnassignedMarketingTasks();
+const all=(state.salesTasks||[]).filter(t=>{
+ if(t.department!==cfg.department||t.status!=='in_progress')return false;
+ // A department allocation has a parent for tracking, but is the department's main task.
+ const departmentAllocation=key==='marketing'&&t.sharedDistributionChild&&t.sharedNodeType==='department';
+ const isSubtask=Boolean(t.parentTaskId)&&!departmentAllocation;
+ return isSubtask===subtasks&&(employeeTasks?employeeTasks.includes(t):normalizeStaffName(t.assignee)||includeUnassigned);
+});
+const filters=getProductiveRunningFilters(key,kind);const people=getProductiveTeamPeople(key).filter(person=>!employeeTasks||employeeTasks.names.has(person.name));const employee=employeeTasks&&!employeeTasks.names.has(filters.employee)?'all':filters.employee||'all';const status=filters.status||'all';const customer=filters.customer||'';const selected=all.filter(t=>{if(customer&&productiveTaskCustomer(t)!==customer)return false;if(employee!=='all'&&normalizeStaffName(t.assignee)!==employee)return false;if(status!=='all'&&(status==='unassigned'?!!normalizeStaffName(t.assignee):productiveTaskStateKey(t)!==status))return false;return true;});const pageKey=`prod_${key}_running`;const result=filterAndPageAppList(pageKey,selected,t=>[t.taskNo,t.number,t.title,t.customer,t.assignee,t.dueDate,productiveTaskStateLabel(t),t.parentTaskTitle
+].join(' '));const counts={all:all.length,new:all.filter(t=>normalizeStaffName(t.assignee)&&productiveTaskStateKey(t)==='new').length,working:all.filter(t=>productiveTaskStateKey(t)==='working'&&normalizeStaffName(t.assignee)).length,revision:all.filter(t=>productiveTaskStateKey(t)==='revision'&&normalizeStaffName(t.assignee)).length,review:all.filter(t=>productiveTaskStateKey(t)==='review'&&normalizeStaffName(t.assignee)).length
 };box.innerHTML=`
   <div class="design-board-head">
    <div>
-    <h2>مهام ${esc(cfg.label)} الجارية</h2>
-    <div class="muted">${includeUnassigned?'تظهر المهام الموزعة وغير الموزعة للمخوّلين بالتوزيع، مع متابعة العمل حسب الحالة.':'تظهر المهام الموزعة حسب حالة المهمة وحمل كل موظف.'}</div>
+    <h2>${subtasks?'المهام الفرعية':'المهام الرئيسية'} · ${esc(cfg.label)}</h2>
+    <div class="muted">${employeeTasks?(subtasks?'تظهر المهام المسندة إلى مدير القسم والموظفين.':'تظهر المهام المسندة إلى موظفي القسم.'):includeUnassigned?'تظهر المهام الموزعة وغير الموزعة للمخوّلين بالتوزيع، مع متابعة العمل حسب الحالة.':'تظهر المهام الموزعة حسب حالة المهمة وحمل كل موظف.'}</div>
    </div>
+   ${key==='marketing'&&window.MoshTaskInbox49?.canTrackMarketing?.()?'<button type="button" class="btn r35-ui-navigation" data-mr49-list="tracking">متابعة مهام التسويق</button>':''}
   </div>
 
   <details class="r38-task-insights"><summary aria-label="فتح ملخص المهام وتوزيعها">ملخص المهام وتوزيعها <span class="r38-chevron" aria-hidden="true">⌄</span></summary><div class="r38-insights-body"><div class="design-report-grid">
@@ -2958,7 +3063,7 @@ t.department===cfg.department&&t.status==='in_progress'&&(normalizeStaffName(t.a
    <div class="design-report-card"><div class="label">بانتظار مراجعة المدير</div><div class="value">${counts.review}</div></div>
   </div>
 
-  ${productiveTeamReportHtml(key,all)}</div></details>
+  ${productiveTeamReportHtml(key,all,people)}</div></details>
 
   <div class="panel">
    <div class="design-running-filter">
@@ -2970,6 +3075,12 @@ t.department===cfg.department&&t.status==='in_progress'&&(normalizeStaffName(t.a
      </select>
     </div>
     <div class="filter-field">
+     <label for="productiveCustomerFilter_${key}">العميل</label>
+     <select id="productiveCustomerFilter_${key}" onchange="setProductiveRunningFilter('${key}','customer',this.value)">
+      ${productiveCustomerOptions(all,customer)}
+     </select>
+    </div>
+    <div class="filter-field">
      <label>حالة المهمة</label>
      <select onchange="setProductiveRunningFilter('${key}','status',this.value)">
       <option value="all" ${status==='all'?'selected':''}>كل الحالات</option>
@@ -2978,18 +3089,19 @@ t.department===cfg.department&&t.status==='in_progress'&&(normalizeStaffName(t.a
       <option value="working" ${status==='working'?'selected':''}>قيد العمل</option>
       <option value="revision" ${status==='revision'?'selected':''}>قيد التعديل</option>
       <option value="review" ${status==='review'?'selected':''}>بانتظار مراجعة المدير</option>
+      <option value="finished" ${status==='finished'?'selected':''}>منتهية</option>
      </select>
     </div>
    </div>
 
-   ${result.total?`<table class="list-table">
-    <thead><tr><th class="mt54-reference" hidden aria-hidden="true">رقم المهمة</th><th>المهمة</th><th>العميل</th><th>الموظف</th><th>الحالة</th><th>الموعد</th></tr></thead>
+   ${customer&&result.total?productiveCustomerTaskCard(customer,result.items,task=>departmentAssignmentButtons(key,task)+(window.MoshAuth37?.canModule?.(key,'details')?`<button type="button" class="btn" onclick="openProductiveTaskDetails('${key}',${MoshTaskUI.arg(task.id)},'running')">فتح التفاصيل</button>`:''),result.start):result.total?`<table class="list-table">
+    <thead><tr><th scope="col">تسلسل</th><th class="mt54-reference" hidden aria-hidden="true">رقم المهمة</th><th>المهمة</th><th>العميل</th><th>الموظف</th><th>الحالة</th><th>الموعد</th></tr></thead>
     <tbody>
-     ${result.items.map(t=>`<tr class="data" onclick="openProductiveTaskDetails('${key}',${MoshTaskUI.arg(t.id)},'running')">
-      <td class="mt54-reference" hidden aria-hidden="true">${esc(t.taskNo||t.number)}</td>
-      <td class="mt54-task-name">${esc(t.title||'-')}${t.parentTaskId?` <span class="muted">— ${esc(t.parentTaskTitle||'-')}</span>`:''}</td>
+     ${result.items.map((t,index)=>`<tr class="data" onclick="openProductiveTaskDetails('${key}',${MoshTaskUI.arg(t.id)},'running')">
+      <td>${result.start+index+1}</td><td class="mt54-reference" hidden aria-hidden="true">${esc(t.taskNo||t.number)}</td>
+      <td class="mt54-task-name">${esc(t.title||'-')} ${sharedDepartmentLabel(t)||(t.parentTaskId?`<span class="muted">— ${esc(t.parentTaskTitle||'-')}</span>`:'')}</td>
       <td class="mt54-client-name">${esc(t.customer||'-')}</td>
-      <td>${esc(t.assignee||'غير موزعة')}</td>
+      <td>${esc(t.assignee||'غير موزعة')} ${departmentAssignmentButtons(key,t)}</td>
       <td><span class="workflow-status ${workflowStatusClass(t)}"><span class="design-state-dot ${productiveTaskStateKey(t)}"></span>${esc(!normalizeStaffName(t.assignee)?'بانتظار التوزيع':productiveTaskStateLabel(t))}</span></td>
       <td>${esc(t.dueDate||'-')}</td>
      </tr>`).join('')}
@@ -2997,7 +3109,8 @@ t.department===cfg.department&&t.status==='in_progress'&&(normalizeStaffName(t.a
    </table>`:`<div class="empty">لا يوجد مهام مطابقة لهذه الفلترة.</div>`}
 
    ${appListPagerHtml(pageKey,result,{placeholder:'بحث بالمهمة أو العميل أو الموظف...'})}
-  </div>`;}
+  </div>`;
+}
 function openProductiveTaskDetails(key,id,mode){const cfg=getProductiveConfig(key);if(!cfg)return;productiveTaskViewModes[key]=mode==='running'?'running':'distribution';activeTaskViewContext={source:'department',containerId:cfg.workspaceId,department:cfg.department,productiveKey:key,productiveMode:productiveTaskViewModes[key]
 };openTaskDetails(id);}
 function getProductiveContext(containerId,department=''){return Object.entries(PRODUCTIVE_DEPARTMENTS).find(([,cfg])=>
@@ -3050,7 +3163,7 @@ function transferDepartmentTask(id,containerId,oldDepartment){return managerTran
 function finishDepartmentTask(id,containerId,department){return managerFinishAndInvoice(id,containerId,department)}
 let activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};function openTaskDetailsFromAll(id){activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};openTaskDetails(id);}
 function fullTaskBackAction(){const ctx=activeTaskViewContext||{};if(ctx.returnTo==='adminTasks')return 'MoshR29.returnToAdminTasks()';if(ctx.source==='workproof'){return 'openWorkProofAdmin()';}
-if(ctx.source==='accountingPackages'){return `goApp('accounting',null);setTimeout(()=>openAccountingSection('packages'),0)`;}
+if(ctx.source==='accountingPackages'){return `openAppWith('accounting',()=>openAccountingSection('packages'))`;}
 if(ctx.source==='department'&&ctx.productiveKey){return ctx.productiveMode==='running'
 ?`openProductiveRunningTasksPage('${String(ctx.productiveKey).replace(/'/g,"\\'")}')`
 :`openProductiveDistributionPage('${String(ctx.productiveKey).replace(/'/g,"\\'")}')`;}
@@ -3134,11 +3247,25 @@ const url=URL.createObjectURL(rec.blob);if(kind==='image')box.innerHTML=`<img cl
 function ensureTaskImageLightbox(){let box=document.getElementById('taskImageLightbox');if(box)return box;box=document.createElement('div');box.id='taskImageLightbox';box.className='task-image-lightbox';box.innerHTML='<button type="button" class="task-image-lightbox-close" aria-label="إغلاق">×</button><img alt="">';box.addEventListener('click',e=>{if(e.target===box||e.target.classList.contains('task-image-lightbox-close'))closeTaskChatImage();});document.body.appendChild(box);return box;}
 function openTaskChatImage(src,name='صورة'){const box=ensureTaskImageLightbox();const img=box.querySelector('img');img.src=src||'';img.alt=name||'صورة';box.classList.add('show');}
 function closeTaskChatImage(){document.getElementById('taskImageLightbox')?.classList.remove('show');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTaskChatImage()});function managerFinishPackageSubTask(id,parentId,containerId,department){const task=(state.salesTasks||[]).find(x=>String(x.id)===String(id)&&String(x.parentTaskId)===String(parentId));if(!task||task.status!=='in_progress')return false;pushAppUndo();closeTaskWorkSession(task,'subtask_completed');task.status='completed';task.employeeState='finished';task.reviewManager='';task.returnedForRevision=false;task.completedAt=activityTimestamp();task.completedBy=currentUserDisplayName();task.history=Array.isArray(task.history)?task.history:[];task.history.push({text:'اعتمد مدير القسم انتهاء الخدمة الفرعية ضمن الباقة.',time:task.completedAt,by:currentUserDisplayName()
-});moveParentToAccountingIfReady(parentId);save();if(refreshProductiveDepartmentAfterAction(containerId,department)){return true;}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTaskChatImage()});async function confirmSubTaskCompletion(id,parentId,message){
+ try{
+  await MoshApi.commitTask(id,t=>{
+   if(String(t.parentTaskId)!==String(parentId)||t.status!=='in_progress')throw new Error('تغيّرت حالة المهمة. حدّث القائمة.');
+   const time=activityTimestamp(),by=currentUserDisplayName();
+   closeTaskWorkSession(t,'subtask_completed');
+   return {status:'completed',employeeState:'finished',reviewManager:'',returnedForRevision:false,completedAt:time,completedBy:by,workTiming:t.workTiming,history:[...(t.history||[]),{text:message,time,by}]};
+  });
+ }catch(error){window.MoshUI19?.toast?.(error.status===403?'هذا الحساب غير مخوّل بإنهاء المهمة الفرعية.':error.message||'تعذّر تأكيد إنهاء المهمة الفرعية.');return false;}
+ try{await MoshApi.refreshTasks();}catch{window.MoshUI19?.toast?.('تم حفظ الإنهاء، وتعذّر تحديث قائمة المهام.');}
+ return true;
+}
+async function managerFinishPackageSubTask(id,parentId,containerId,department){
+ const task=(state.salesTasks||[]).find(x=>String(x.id)===String(id));
+ if(!task||!await confirmSubTaskCompletion(id,parentId,task.sharedDistributionChild?'اعتمد مدير القسم انتهاء دوره في المهمة المشتركة.':'اعتمد مدير القسم انتهاء الخدمة الفرعية.'))return false;
+window.MoshUI19?.toast?.('تم اعتماد وإنهاء الخدمة الفرعية.');if(refreshProductiveDepartmentAfterAction(containerId,department)){return true;}
 if(containerId&&document.getElementById(containerId)){renderDepartmentTasks(department,containerId);}
 return true;}
-function taskManagerStatusBannerHtml(t){const labels={new:'بانتظار الاستلام',received:'تم استلام المهمة',working:'المهمة قيد العمل',paused:'المهمة متوقفة مؤقتاً',submitted:'بانتظار مراجعة المدير',finished:'منتهية'};const hints={new:'بانتظار الموظف لبدء دورة التنفيذ',received:'تم الاستلام ويمكن بدء احتساب الوقت',working:'الوقت الفعلي قيد الاحتساب الآن',paused:'يمكن المتابعة أو إنهاء المهمة',submitted:'تم إنهاء التنفيذ وإرسالها للمراجعة',finished:'انتهت دورة التنفيذ'};const st=t.employeeState||'new';const icon=st==='working'?'▶':st==='paused'?'Ⅱ':st==='submitted'?'✓':'◷';return `<div class="time-status-banner"><div class="time-status-icon">${icon}</div><div><b>${esc(labels[st]||workflowEmployeeLabel(t))}</b><span>${esc(hints[st]||'متابعة حالة تنفيذ المهمة')}</span></div></div>`;}
+function taskManagerStatusBannerHtml(t){const labels={new:'بانتظار الاستلام',received:'تم استلام المهمة',working:'المهمة قيد العمل',paused:'المهمة متوقفة مؤقتاً',submitted:'بانتظار مراجعة المدير',finished:'منتهية'};const hints={new:'بانتظار الموظف لبدء دورة التنفيذ',received:'تم الاستلام ويمكن بدء احتساب الوقت',working:'الوقت الفعلي قيد الاحتساب الآن',paused:'يمكن المتابعة أو إنهاء المهمة',submitted:'تم إنهاء التنفيذ وإرسالها للمراجعة',finished:t.status==='in_progress'?'انتهى التنفيذ في القسم الحالي':'انتهت دورة التنفيذ'};const st=t.employeeState||'new';const icon=st==='working'?'▶':st==='paused'?'Ⅱ':st==='submitted'?'✓':'◷';return `<div class="time-status-banner"><div class="time-status-icon">${icon}</div><div><b>${esc(labels[st]||workflowEmployeeLabel(t))}</b><span>${esc(hints[st]||'متابعة حالة تنفيذ المهمة')}</span></div></div>`;}
 function taskManagerEmployeeCardsHtml(t){const rows=taskEmployeeWorkTotals(t);if(!rows.length)return `<div class="empty" style="padding:14px">لم يبدأ تسجيل وقت لأي موظف بعد.</div>`;const assignee=normalizeStaffName(t.assignee||'');return `<div class="time-employee-grid">${rows.map(row=>{const name=normalizeStaffName(row.employeeName||'')||'غير محدد';const current=name===assignee;const active=current&&t.employeeState==='working';const stateText=active?'يعمل الآن':current&&t.employeeState==='paused'?'متوقف مؤقتاً':current&&t.employeeState==='submitted'?'بانتظار المراجعة':'سجل محفوظ';const initial=(name.trim().charAt(0)||'م').toUpperCase();return `<div class="time-employee-card ${current?'active':''}"><div class="time-employee-top"><div class="time-employee-name"><div class="time-employee-avatar">${esc(initial)}</div><b>${esc(name)}</b></div><span class="time-employee-state ${active?'active':''}">${stateText}</span></div><div class="time-employee-stats"><div class="time-employee-stat"><div class="label">إجمالي وقت الموظف</div><div class="value" data-task-employee-time="${esc(t.id)}" data-employee-id="${esc(row.employeeId||'')}" data-employee-name="${esc(name)}">${formatTaskWorkDuration(row.workedMs)}</div></div><div class="time-employee-stat"><div class="label">عدد جلسات العمل</div><div class="value">${row.sessionCount}</div></div></div></div>`;}).join('')}</div>`;}
 function taskManagerControlsHtml(t,containerId){const department=t.department||'';const manager=getDepartmentManager(department);const staff=getDepartmentStaff(department);const isManagerSelf=t.assignmentMode==='manager_self';const waitingManager=t.employeeState==='submitted';const currentAssignee=normalizeStaffName(t.assignee||'');const people=[];if(manager&&manager.active!==false){people.push({name:normalizeStaffName(manager.name),isManager:true
 });}
@@ -3194,14 +3321,16 @@ const isPackageParent=!t.parentTaskId&&getSubTasks(t.id).length>=2;const decisio
     <label>المسؤول الإداري</label><select id="managerTransferAdmin_${t.id}"><option value="">— اختر المسؤول الإداري —</option></select>
    </div>
    <button type="button" class="btn" onclick="managerTransferTask(${esc(JSON.stringify(String(t.id)))},'${containerId}','${department}')">ترحيل لقسم آخر</button>
-   ${t.parentTaskId
-?`<button type="button" id="managerFinishBtn_${t.id}" class="btn primary manager-finish-btn" onclick="return managerFinishPackageSubTask(${MoshTaskUI.arg(t.id)},${t.parentTaskId},'${containerId}','${department}')">اعتماد وإنهاء الخدمة الفرعية</button>`
+   ${t.employeeState==='finished'?'':t.parentTaskId
+?`<button type="button" id="managerFinishBtn_${t.id}" class="btn primary manager-finish-btn" onclick="return managerFinishPackageSubTask(${MoshTaskUI.arg(t.id)},${MoshTaskUI.arg(t.parentTaskId)},'${containerId}','${department}')">اعتماد وإنهاء الخدمة الفرعية</button>`
 :isPackageParent
 ?`<span class="workflow-status review">إغلاق الباقة وإرسالها للفوترة يتم من المحاسبة</span>`
-:`<button type="button" id="managerFinishBtn_${t.id}" class="btn primary manager-finish-btn" onclick="return managerFinishAndInvoice(${MoshTaskUI.arg(t.id)},'${containerId}','${department}')">اعتماد وإنهاء للفوترة</button>`}
+:`<button type="button" id="managerFinishBtn_${t.id}" class="btn primary manager-finish-btn" onclick="return managerFinishAndInvoice(${MoshTaskUI.arg(t.id)},'${containerId}','${department}')">${taskFinishesToFollowUp(t)?'اعتماد وإرسال للمتابعة':'اعتماد وإنهاء للفوترة'}</button>`}
   </div>
  </div>`;const idleReturnControls=taskIdleReturnControlsHtml(t,containerId,department);const activity=taskActivityStats(t);const employeeRows=taskEmployeeWorkTotals(t);return `<div class="task-manager-controls time-dashboard">
   <div class="time-head"><div><div class="time-head-title">إدارة وتنفيذ المهمة</div><div class="time-head-sub">متابعة الوقت، توزيع العمل، وحالة التنفيذ بشكل واضح</div></div>${taskManagerStatusBannerHtml(t)}</div>
+  ${execution}
+  ${idleReturnControls}
   <details class="r371-task-time-details">
    <summary>حسابات ووقت المهمة <span aria-hidden="true">⌄</span></summary>
    <div class="time-overview">
@@ -3219,8 +3348,6 @@ const isPackageParent=!t.parentTaskId&&getSubTasks(t.id).length>=2;const decisio
   <div class="time-employees"><div class="time-section-head"><div><b>توزيع وقت المهمة على الموظفين</b><div><span>وقت كل موظف محفوظ بشكل مستقل داخل نفس المهمة</span></div></div></div>${taskManagerEmployeeCardsHtml(t)}</div>
   </details>
   <div class="time-assignment-block"><div class="time-section-head"><div><b>توزيع المهمة</b><div><span>حدد الموظف المسؤول الحالي عن التنفيذ</span></div></div></div><div class="task-manager-row" style="grid-template-columns:minmax(220px,1fr) auto"><div class="task-manager-field"><label>الموظف المنفذ</label><select id="managerAssignee_${t.id}">${employeeOptions}</select></div><button type="button" class="btn" onclick="managerAssignTask(${esc(JSON.stringify(String(t.id)))},'${containerId}','${department}')">توزيع</button></div></div>
-  ${idleReturnControls}
-  ${execution}
   ${decision}
  </div>`;}
 function supportRequestTypeLabel(type){return type==='logistics'?'طلب لوجستي':'طلب شراء'}
@@ -3243,18 +3370,19 @@ function supportAttachmentsHtml(r){const a=Array.isArray(r.attachments)?r.attach
 function openSupportRequestDetails(id,manage=false){const r=getSupportRequestById(id);if(!r)return;const isPurchase=r.type==='purchase',modal=document.getElementById('supportRequestDetailsModal'),body=document.getElementById('supportRequestDetailsBody');document.getElementById('supportRequestDetailsTitle').textContent=`${supportRequestTypeLabel(r.type)} ${r.requestNo||''}`;document.getElementById('supportRequestDetailsMeta').textContent=`المهمة ${MoshTaskUI.relatedTitle(r)} · من ${departmentDisplayName(r.sourceDepartment)||r.sourceDepartment}`;body.innerHTML=`<div class="support-detail-grid"><div class="support-detail-item"><div class="label">الحالة</div><div class="value"><span class="support-status ${r.status}">${esc(supportRequestStatusLabel(r))}</span></div></div><div class="support-detail-item"><div class="label">الأولوية</div><div class="value">${esc(supportRequestPriorityLabel(r.priority))}</div></div>${isPurchase?`<div class="support-detail-item"><div class="label">المادة / الخدمة</div><div class="value">${esc(r.item||'-')}</div></div><div class="support-detail-item"><div class="label">الكمية</div><div class="value">${esc(r.quantity||'-')}</div></div>`:`<div class="support-detail-item"><div class="label">نوع الطلب</div><div class="value">${esc(r.logisticsType||'-')}</div></div><div class="support-detail-item"><div class="label">الموقع</div><div class="value">${esc(r.location||'-')}</div></div>`}<div class="support-detail-item"><div class="label">مطلوب بتاريخ</div><div class="value">${esc(r.neededDate||'-')}${r.neededTime?` · ${esc(r.neededTime)}`:''}</div></div><div class="support-detail-item full"><div class="label">التفاصيل</div><div class="value">${esc(r.details||'-')}</div></div><div class="support-detail-item full"><div class="label">المرفقات</div><div class="value">${supportAttachmentsHtml(r)}</div></div>${r.responseNote?`<div class="support-detail-item full"><div class="label">رد القسم المستلم</div><div class="value">${esc(r.responseNote)}</div></div>`:''}</div><div style="margin-top:10px"><button type="button" class="btn" onclick="openSourceTaskFromSupport('${r.id}')">فتح المهمة الأصلي</button></div>${manage?`<div class="support-manage-box"><h3 style="margin:0 0 8px">تنفيذ الطلب</h3><div class="support-manage-grid"><div class="field"><label>المسؤول</label><select id="supportManageAssignee">${supportRequestAssigneeOptions(r)}</select></div><div class="field"><label>الحالة</label><select id="supportManageStatus"><option value="new" ${r.status==='new'?'selected':''}>طلب جديد</option><option value="in_progress" ${r.status==='in_progress'?'selected':''}>قيد التنفيذ</option><option value="completed" ${r.status==='completed'?'selected':''}>${isPurchase?'تم الشراء / التأمين':'تم التنفيذ'}</option><option value="cancelled" ${r.status==='cancelled'?'selected':''}>ملغي / متعذر</option></select></div>${isPurchase?`<div class="field"><label>المورد</label><input id="supportManageSupplier" value="${esc(r.supplier||'')}"></div><div class="field"><label>التكلفة الفعلية</label><input id="supportManageActualCost" value="${esc(r.actualCost||'')}"></div><div class="field"><label>مرجع الشراء / الفاتورة</label><input id="supportManageReference" value="${esc(r.purchaseReference||'')}"></div>`:''}<div class="field full"><label>ملاحظة القسم المستلم</label><textarea id="supportManageNote" rows="3">${esc(r.responseNote||'')}</textarea></div></div><div class="modal-actions" style="padding:10px 0 0;margin:0"><button type="button" class="btn primary" onclick="saveSupportRequestManagement('${r.id}')">حفظ تحديث الطلب</button></div></div>`:''}`;modal?.classList.add('show')}
 function closeSupportRequestDetails(){document.getElementById('supportRequestDetailsModal')?.classList.remove('show')}
 function saveSupportRequestManagement(id){const r=getSupportRequestById(id);if(!r)return;const oldStatus=r.status,oldAssignee=normalizeStaffName(r.assignedTo);r.status=document.getElementById('supportManageStatus')?.value||r.status;r.assignedTo=normalizeStaffName(document.getElementById('supportManageAssignee')?.value);r.responseNote=String(document.getElementById('supportManageNote')?.value||'').trim();if(r.type==='purchase'){r.supplier=String(document.getElementById('supportManageSupplier')?.value||'').trim();r.actualCost=String(document.getElementById('supportManageActualCost')?.value||'').trim();r.purchaseReference=String(document.getElementById('supportManageReference')?.value||'').trim()}r.updatedAt=activityTimestamp();r.updatedBy=currentUserDisplayName();const task=(state.salesTasks||[]).find(t=>String(t.id)===String(r.taskId));if(task&&(oldStatus!==r.status||oldAssignee!==r.assignedTo)){task.history=Array.isArray(task.history)?task.history:[];task.history.push({text:`تحديث ${supportRequestTypeLabel(r.type)} ${r.requestNo}: ${supportRequestStatusLabel(r)}${r.assignedTo?` — ${r.assignedTo}`:''}.`,time:activityTimestamp(),by:currentUserDisplayName()});task.workChat=Array.isArray(task.workChat)?task.workChat:[];task.workChat.push({id:'SYS/'+Date.now(),kind:'text',text:`${r.type==='purchase'?'🛒':'🚚'} ${r.requestNo}: ${supportRequestStatusLabel(r)}${r.responseNote?` — ${r.responseNote}`:''}`,by:currentUserDisplayName(),time:activityTimestamp(),system:true})}save();refreshSupportRequestBadges();openSupportRequestDetails(r.id,true);renderSupportRequestsPage(r.type)}
-function openSourceTaskFromSupport(id){const r=getSupportRequestById(id);if(!r)return;closeSupportRequestDetails();goApp('tasks',null);setTimeout(()=>openTaskDetails(Number(r.taskId)||r.taskId),0)}
+function openSourceTaskFromSupport(id){const r=getSupportRequestById(id);if(!r)return;closeSupportRequestDetails();return openAppWith('tasks',()=>openTaskDetails(Number(r.taskId)||r.taskId))}
 function supportRequestFilterStatus(type,value){supportRequestFilters[type].status=value||'open';resetAppListPage(type==='purchase'?'purchase_requests':'logistics_requests');renderSupportRequestsPage(type)}
 function supportRequestFilterAssignee(type,value){supportRequestFilters[type].assignee=value||'all';resetAppListPage(type==='purchase'?'purchase_requests':'logistics_requests');renderSupportRequestsPage(type)}
 function openSupportRequestsPage(type){const p=type==='purchase',app=document.getElementById(p?'purchasesAppContent':'logisticsAppContent'),req=document.getElementById(p?'purchasesRequestsContent':'logisticsRequestsContent');if(app)app.style.display='none';if(req)req.style.display='block';document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('show'));document.getElementById('crumb').innerHTML=`<b>${p?'قسم المشتريات':'قسم اللوجستيات'}</b> / ${p?'طلبات الشراء':'الطلبات اللوجستية'}`;renderSupportRequestsPage(type)}
 function renderSupportRequestsPage(type){const p=type==='purchase',box=document.getElementById(p?'purchasesRequestsWorkspace':'logisticsRequestsWorkspace');if(!box)return;const all=(state.supportRequests||[]).filter(r=>r.type===type).slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||''))),f=supportRequestFilters[type]||{status:'open',assignee:'all'},filtered=all.filter(r=>{if(f.status==='open'&&!['new','in_progress'].includes(r.status))return false;if(!['open','all'].includes(f.status)&&r.status!==f.status)return false;if(f.assignee!=='all'&&normalizeStaffName(r.assignedTo)!==f.assignee)return false;return true}),key=p?'purchase_requests':'logistics_requests',result=filterAndPageAppList(key,filtered,r=>[r.requestNo,r.taskNo,r.taskTitle,r.customer,r.sourceDepartment,supportRequestSummary(r),r.assignedTo,r.status,r.neededDate].join(' ')),dep=p?'المشتريات':'اللوجستيات',manager=getDepartmentManager(dep),people=[];if(manager&&isStaffAssignable(manager))people.push(manager);getDepartmentStaff(dep).forEach(x=>{if(!people.some(y=>String(y.id)===String(x.id)))people.push(x)});const c={new:all.filter(r=>r.status==='new').length,progress:all.filter(r=>r.status==='in_progress').length,completed:all.filter(r=>r.status==='completed').length,cancelled:all.filter(r=>r.status==='cancelled').length};box.innerHTML=`<div class="support-inbox-head"><div><h2>${p?'طلبات الشراء':'الطلبات اللوجستية'}</h2><div class="muted">طلبات مساندة من المهام. المهمة الأصلي لا ينتقل من قسمه.</div></div><span class="task-manager-chip">مدير القسم <b>${esc(manager?.name||'غير محدد')}</b></span></div><div class="support-summary-grid"><div class="support-summary-card"><div class="label">طلبات جديدة</div><div class="value">${c.new}</div></div><div class="support-summary-card"><div class="label">قيد التنفيذ</div><div class="value">${c.progress}</div></div><div class="support-summary-card"><div class="label">${p?'تم الشراء / التأمين':'تم التنفيذ'}</div><div class="value">${c.completed}</div></div><div class="support-summary-card"><div class="label">ملغي / متعذر</div><div class="value">${c.cancelled}</div></div></div><div class="panel"><div class="support-inbox-filters"><div><label>الحالة</label><select onchange="supportRequestFilterStatus('${type}',this.value)"><option value="open" ${f.status==='open'?'selected':''}>الطلبات المفتوحة</option><option value="new" ${f.status==='new'?'selected':''}>طلب جديد</option><option value="in_progress" ${f.status==='in_progress'?'selected':''}>قيد التنفيذ</option><option value="completed" ${f.status==='completed'?'selected':''}>${p?'تم الشراء / التأمين':'تم التنفيذ'}</option><option value="cancelled" ${f.status==='cancelled'?'selected':''}>ملغي / متعذر</option><option value="all" ${f.status==='all'?'selected':''}>كل الطلبات</option></select></div><div><label>المسؤول</label><select onchange="supportRequestFilterAssignee('${type}',this.value)"><option value="all">كل المسؤولين</option><option value="" ${f.assignee===''?'selected':''}>غير موزع</option>${people.map(x=>`<option value="${esc(x.name)}" ${f.assignee===normalizeStaffName(x.name)?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div></div>${result.total?`<table class="list-table"><thead><tr><th>رقم الطلب</th><th>المهمة</th><th>القسم الطالب</th><th>الطلب</th><th>المطلوب</th><th>المسؤول</th><th>الحالة</th></tr></thead><tbody>${result.items.map(r=>`<tr class="data" onclick="openSupportRequestDetails('${r.id}',true)"><td><b>${esc(r.requestNo||'')}</b></td><td>${MoshTaskUI.nameHtml({title:MoshTaskUI.relatedTitle(r)})}</td><td>${esc(departmentDisplayName(r.sourceDepartment)||r.sourceDepartment||'-')}</td><td>${esc(supportRequestSummary(r))}<div class="muted">${esc(supportRequestPriorityLabel(r.priority))}</div></td><td>${esc(r.neededDate||'-')}</td><td>${esc(r.assignedTo||'غير موزع')}</td><td><span class="support-status ${r.status}">${esc(supportRequestStatusLabel(r))}</span></td></tr>`).join('')}</tbody></table>`:'<div class="empty">لا يوجد طلبات مطابقة.</div>'}${appListPagerHtml(key,result,{placeholder:'بحث برقم الطلب، المهمة أو محتوى الطلب...'})}</div>`;refreshSupportRequestBadges()}
 function taskWorkflowPanelHtml(t,containerId){if(!t||t.status!=='in_progress')return '';const isDepartment=activeTaskViewContext?.source==='department';return `<div class="panel" style="margin-top:16px">
   ${isDepartment?taskManagerControlsHtml(t,containerId):''}
+  ${!isDepartment&&t.department==='المهمات'&&t.employeeState==='finished'&&!t.packageReady&&window.MoshAuth37?.canModule?.('tasks','approve')?`<button type="button" class="btn primary" onclick="finishAllTask(${MoshTaskUI.arg(t.id)})">اعتماد المتابعة وإرسال للمحاسبة</button>`:''}
   ${isDepartment?taskSupportRequestsHtml(t):''}
   ${taskRunningChatHtml(t)}
  </div>`;}
-function renderAllTasks(){activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};const box=document.getElementById('allTasksContainer');if(!box)return;const allTasks=(state.salesTasks||[]).filter(t=>!t.parentTaskId&&!['archived_invoiced','archived_no_invoice'].includes(t.status));const result=filterAndPageAppList('alltasks',allTasks,t=>[t.taskNo,t.number,t.title,t.customer,t.department,t.assignee,t.status,t.origin,workflowEmployeeLabel(t)].join(' '));box.innerHTML=`<div class="panel">${result.total?`<table class="list-table"><thead><tr><th class="mt54-reference" hidden aria-hidden="true">رقم المهمة</th><th>عنوان المهمة</th><th>العميل</th><th>القسم الحالي</th><th>الموظف</th><th>الحالة</th></tr></thead><tbody>${result.items.map(t=>`<tr class="data" onclick="openTaskDetailsFromAll(${MoshTaskUI.arg(t.id)})"><td class="mt54-reference" hidden aria-hidden="true">${esc(t.taskNo||t.number)}</td><td class="mt54-task-name">${esc(t.title)}</td><td class="mt54-client-name">${esc(t.customer||'-')}</td><td>${esc(departmentDisplayName(t.department)||'-')}</td><td>${esc(t.assignee||'-')}</td><td>${t.status==='awaiting_invoice'?'<span class="workflow-status review">بانتظار الفوترة</span>':t.status==='invoiced'?'<span class="workflow-status done">تمت الفوترة</span>':`<span class="workflow-status ${workflowStatusClass(t)}">${esc(workflowEmployeeLabel(t))}</span>`}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">لا يوجد مهام مطابقة.</div>'}${appListPagerHtml('alltasks',result,{placeholder:'بحث بالمهمة، العميل، القسم، الموظف...'})}</div>`;}
-function openTaskDetails(id){setDirtyState(false);const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id));if(!t)return;const ctx=activeTaskViewContext||{source:'all',containerId:'allTasksContainer',department:''};const containerId=ctx.containerId||'allTasksContainer';const box=document.getElementById(containerId);if(!box)return;const backAction=fullTaskBackAction();const isWorkProofView=ctx.source==='workproof';const isDepartmentView=ctx.source==='department'||isWorkProofView;const departmentLocked=isDepartmentView?'disabled':'';const assigneeLocked=isDepartmentView?'readonly':'';const basicReadonly=isDepartmentView?'readonly':'';box.innerHTML=`
+function renderAllTasks(){activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};const box=document.getElementById('allTasksContainer');if(!box)return;const allTasks=(state.salesTasks||[]).filter(t=>!t.parentTaskId&&!['archived_invoiced','archived_no_invoice'].includes(t.status));const result=filterAndPageAppList('alltasks',allTasks,t=>[t.taskNo,t.number,t.title,t.customer,t.department,t.assignee,t.status,t.origin,workflowEmployeeLabel(t)].join(' '));box.innerHTML=`<div class="panel">${result.total?`<table class="list-table"><thead><tr><th scope="col">تسلسل</th><th class="mt54-reference" hidden aria-hidden="true">رقم المهمة</th><th>عنوان المهمة</th><th>العميل</th><th>القسم الحالي</th><th>الموظف</th><th>الحالة</th></tr></thead><tbody>${result.items.map((t,index)=>`<tr class="data" onclick="openTaskDetailsFromAll(${MoshTaskUI.arg(t.id)})"><td>${result.start+index+1}</td><td class="mt54-reference" hidden aria-hidden="true">${esc(t.taskNo||t.number)}</td><td class="mt54-task-name">${esc(t.title)}</td><td class="mt54-client-name">${esc(t.customer||'-')}</td><td>${esc(departmentDisplayName(t.department)||'-')}</td><td>${esc(t.assignee||'-')}</td><td>${t.status==='awaiting_invoice'?'<span class="workflow-status review">بانتظار الفوترة</span>':t.status==='invoiced'?'<span class="workflow-status done">تمت الفوترة</span>':`<span class="workflow-status ${workflowStatusClass(t)}">${esc(workflowEmployeeLabel(t))}</span>`}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">لا يوجد مهام مطابقة.</div>'}${appListPagerHtml('alltasks',result,{placeholder:'بحث بالمهمة، العميل، القسم، الموظف...'})}</div>`;}
+function openTaskDetails(id){setDirtyState(false);const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id));if(!t)return;closeSubTaskWorkspace();const ctx=activeTaskViewContext||{source:'all',containerId:'allTasksContainer',department:''};const containerId=ctx.containerId||'allTasksContainer';const box=document.getElementById(containerId);if(!box)return;const backAction=fullTaskBackAction();const isWorkProofView=ctx.source==='workproof';const isDepartmentView=ctx.source==='department'||isWorkProofView;const departmentLocked=isDepartmentView?'disabled':'';const assigneeLocked=isDepartmentView?'readonly':'';const basicReadonly=isDepartmentView?'readonly':'';box.innerHTML=`
   <div class="toolbar">
    <div class="toolbar-left">
     <button type="button" class="btn" onclick="${backAction}">${ctx.returnTo==='adminTasks'?'رجوع لمهام الإدارة':ctx.source==='workproof'?'رجوع لمتابعة العمل':ctx.source==='accountingPackages'?'رجوع لقائمة الباقات':ctx.source==='department'?'رجوع لمهام القسم':'رجوع للمهمات'}</button>
@@ -3347,7 +3475,15 @@ function openTaskDetails(id){setDirtyState(false);const t=(state.salesTasks||[])
   </div>`;refreshSaveButtons();if(!isDepartmentView && Array.isArray(t.attachments)&&t.attachments.length){hydrateTaskAttachments(t.id,'taskAttachmentsAll_'+t.id);}
 if(isDepartmentView){setTimeout(async()=>{await hydrateTaskChatMedia();const thread=document.getElementById('taskChatThread_'+t.id);if(thread)thread.scrollTop=thread.scrollHeight;},40);}
 }
-function openSubTaskDetails(id,parentId){setDirtyState(false);const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id) && String(x.parentTaskId)===String(parentId));const parent=(state.salesTasks||[]).find(x=>String(x.id)===String(parentId));const containerId=activeTaskViewContext?.containerId||'allTasksContainer';const box=document.getElementById(containerId);if(!t||!parent||!box)return;box.innerHTML=`
+function openSubTaskDetails(id,parentId){const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id) && String(x.parentTaskId)===String(parentId));const parent=(state.salesTasks||[]).find(x=>String(x.id)===String(parentId));const containerId=activeTaskViewContext?.containerId||'allTasksContainer';const parentView=document.getElementById(containerId);if(!t||!parent||!parentView)return;setDirtyState(false);
+let box=document.getElementById('subTaskDetailsWorkspace');
+const opening=box?.nextElementSibling!==parentView;
+if(opening){
+ closeSubTaskWorkspace();
+ box=document.createElement('section');box.id='subTaskDetailsWorkspace';box.setAttribute('aria-label','تفاصيل المهمة الفرعية');
+ parentView.before(box);parentView.classList.add('subtask-parent-view-hidden');
+}
+box.innerHTML=`
   <div class="toolbar">
    <div class="toolbar-left">
     <button class="btn" onclick="openTaskDetails(${MoshTaskUI.arg(parent.id)})">رجوع للمهمة الرئيسية</button>
@@ -3359,10 +3495,6 @@ function openSubTaskDetails(id,parentId){setDirtyState(false);const t=(state.sal
   </div>
 
   <div class="sales-task-card">
-   <div class="panel" style="margin-bottom:14px">
-    <div class="muted">تابعة للمهمة الرئيسية: <b class="mt54-task-name">${esc(MoshTaskUI.title(parent))}</b></div>
-   </div>
-
    <div class="field-grid">
     <div class="field"><label>اسم المهمة</label><input id="taskEditTitle_${t.id}" value="${esc(t.title||'')}"></div>
     <div class="field mt54-reference" hidden aria-hidden="true"><label>رقم المهمة</label><input id="taskEditTaskNo_${t.id}" value="${esc(t.taskNo||t.number||'')}"></div>
@@ -3390,7 +3522,13 @@ function openSubTaskDetails(id,parentId){setDirtyState(false);const t=(state.sal
      ${(t.history||[]).slice().reverse().map(h=>`<div class="message"><div class="meta">${esc(h.time)}</div>${esc(MoshTaskUI.historyText(h.text))}</div>`).join('')|| '<div class="muted" style="padding:10px">لا يوجد نشاطات.</div>'}
     </div>
    </details>
-  </div>`;refreshSaveButtons();}
+  </div>`;refreshSaveButtons();if(opening)box.scrollIntoView?.({block:'start'});}
+function closeSubTaskWorkspace(){
+ const box=document.getElementById('subTaskDetailsWorkspace');
+ if(!box)return;
+ box.nextElementSibling?.classList.remove('subtask-parent-view-hidden');
+ box.remove();
+}
 function saveSubTaskChanges(id,parentId){const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id) && String(x.parentTaskId)===String(parentId));if(!t)return;const title=document.getElementById('taskEditTitle_'+id);const taskNo=document.getElementById('taskEditTaskNo_'+id);const customer=document.getElementById('taskEditCustomer_'+id);const salesOrderNo=document.getElementById('taskEditSalesOrderNo_'+id);const origin=document.getElementById('taskEditOrigin_'+id);const department=document.getElementById('taskEditDepartment_'+id);const assignee=document.getElementById('taskEditAssignee_'+id);const dueDate=document.getElementById('taskEditDueDate_'+id);const description=document.getElementById('taskEditDescription_'+id);const notes=document.getElementById('taskEditNotes_'+id);if(!department)return;const oldDepartment=t.department;const newDepartment=department.value;const nextAssignee=assignee?normalizeStaffName(assignee.value):normalizeStaffName(t.assignee);const staffChanged=nextAssignee!==normalizeStaffName(t.assignee)||newDepartment!==oldDepartment;const nextProfile=nextAssignee?getStaffProfileByName(nextAssignee):null;if(nextAssignee&&staffChanged&&!r37AssignableProfile(nextAssignee,newDepartment,assignee))return;pushAppUndo();if(title)t.title=title.value.trim()|| t.title;if(taskNo){t.taskNo=taskNo.value.trim()|| t.taskNo || t.number;t.number=t.taskNo;}
 if(customer){const catalogCustomer=getCatalogCustomerByName(customer.value);if(!catalogCustomer){alert('العميل غير موجود ضمن قائمة العملاء. اختر عميل موجود من القائمة.');customer.focus();return;}
 t.customer=catalogCustomer.name;}
@@ -3398,7 +3536,7 @@ if(salesOrderNo)t.salesOrderNo=salesOrderNo.value.trim();if(origin)t.origin=orig
 });}else{t.history.push({text:'تم حفظ تعديلات المهمة الفرعية.',time:activityTimestamp(),by:currentUserDisplayName()
 });}
 save();setDirtyState(false);openSubTaskDetails(id,parentId);}
-function finishSubTask(id,parentId){const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id)&& String(x.parentTaskId)===String(parentId));if(!t || t.status!=='in_progress')return;pushAppUndo();closeTaskWorkSession(t,'subtask_completed');t.status='completed';t.employeeState='finished';t.reviewManager='';t.returnedForRevision=false;t.completedAt=activityTimestamp();t.completedBy=currentUserDisplayName();t.history=t.history||[];t.history.push({text:'تم إنهاء المهمة الفرعية.',time:t.completedAt,by:currentUserDisplayName()});moveParentToAccountingIfReady(parentId);save();openTaskDetails(parentId);}
+async function finishSubTask(id,parentId){if(!await confirmSubTaskCompletion(id,parentId,'تم إنهاء المهمة الفرعية.'))return false;window.MoshUI19?.toast?.('تم إنهاء المهمة الفرعية.');openTaskDetails(parentId);}
 let pendingTaskDelete=null;function deleteMainTask(id){const t=(state.salesTasks||[]).find(x=>String(x.id)===String(id)&& !x.parentTaskId);if(!t)return;const subs=getSubTasks(id);pendingTaskDelete={type:'main',id:String(id)};const text=document.getElementById('deleteTaskConfirmText');if(text){text.innerHTML=`هل أنت متأكد من حذف المهمة <b class="mt54-task-name">${esc(t.title)}</b>؟
    ${subs.length?`<div style="margin-top:8px">سيتم أيضًا حذف <b>${subs.length}</b> مهمة فرعية مرتبطة بها.</div>`:''}`;}
 const modal=document.getElementById('deleteTaskConfirmModal');if(modal)modal.classList.add('show');}
@@ -3428,8 +3566,12 @@ t.history=t.history||[];if(oldDepartment!==newDepartment){t.history.push({text:`
 save();setDirtyState(false);if(source==='department'){activeTaskViewContext={source:'department',containerId,department:t.department};openTaskDetails(id);}else if(source==='project'){openProjectDepartment(newDepartment);}else if(source==='subtask'){openSubTaskDetails(id,parentId);}else{openTaskDetails(id);}
 }
 function transferAllTask(id){const t=state.salesTasks.find(x=>x.id===id);if(!t || t.status!=='in_progress')return;const sel=document.getElementById('allTaskDept_'+id);if(!sel)return;const next=sel.value;if(next===t.department)return;pushAppUndo();const prev=t.department;closeTaskWorkSession(t,'transferred');t.department=next;t.assignee='';t.assigneeId='';t.assignmentMode='manager';t.employeeState='new';resetTaskReviewWorkflow(t);t.history=t.history||[];t.history.push({text:`تم تحويل المهمة من ${prev} إلى ${next}`,time:activityTimestamp()});save();renderAllTasks();}
-function finishAllTask(id){const t=state.salesTasks.find(x=>x.id===id);if(!t||t.status!=='in_progress'||t.parentTaskId)return;if(getSubTasks(t.id).length>=2){alert('هذه باقة. إنهاء الباقة وإرسالها للفوترة يتم من «قائمة الباقات» في قسم المحاسبة.');return;}
-if(!confirm('إنهاء المهمة نهائيًا من جميع الأقسام وتحويلها للفوترة؟'))return;pushAppUndo();t.status='awaiting_invoice';t.employeeState='finished';t.reviewManager='';t.returnedForRevision=false;t.closedFromDepartment=t.department;t.department='المحاسبة';t.closedAt=activityTimestamp();t.closedBy=currentUserDisplayName();t.history=t.history||[];t.history.push({text:'تم إنهاء المهمة نهائيًا وتحويلها إلى المحاسبة بانتظار الفوترة.',time:t.closedAt,by:currentUserDisplayName()});save();renderAllTasks();}
+async function finishAllTask(id){
+ const t=state.salesTasks.find(x=>String(x.id)===String(id));if(!t||t.status!=='in_progress'||t.parentTaskId)return;
+ if(getSubTasks(t.id).length>=2){alert('هذه باقة. إنهاء الباقة وإرسالها للفوترة يتم من «قائمة الباقات» في قسم المحاسبة.');return;}
+ if(!confirm(taskFinishesToFollowUp(t)?'إنهاء المهمة وإرسالها للمتابعة؟':'اعتماد المتابعة وإرسال المهمة للمحاسبة؟'))return;
+ if(await saveTaskCompletion(t))renderAllTasks();
+}
 function renderSalesTasks(){const box=document.getElementById('salesTasksContainer');if(!box)return;const tasks=(state.salesTasks||[]).filter(t=>!t.parentTaskId&&!['archived_invoiced','archived_no_invoice'].includes(t.status));box.innerHTML=tasks.length?tasks.map(t=>`
   <div class="sales-task-card">
    <div class="task-head">
@@ -3452,13 +3594,17 @@ function renderSalesTasks(){const box=document.getElementById('salesTasksContain
    ${t.status==='in_progress'?`<div class="sales-task-actions">
      <select id="taskDept_${t.id}">${salesTaskDepartments.map(d=>`<option value="${d}" ${d===t.department?'selected':''}>${departmentDisplayName(d)}</option>`).join('')}</select>
      <button class="btn" onclick="transferSalesTask(${MoshTaskUI.arg(t.id)})">تحويل للقسم</button>
-     <button class="btn primary" onclick="finishSalesTask(${MoshTaskUI.arg(t.id)})">إنهاء المهمة وتحويلها للفوترة</button>
+     <button class="btn primary" onclick="finishSalesTask(${MoshTaskUI.arg(t.id)})">${taskFinishesToFollowUp(t)?'إنهاء وإرسال للمتابعة':'إنهاء وإرسال للفوترة'}</button>
    </div>`:''}
    <div style="margin-top:10px">${(t.history||[]).slice().reverse().map(h=>`<div class="message"><div class="meta">${esc(h.time)}</div>${esc(MoshTaskUI.historyText(h.text))}</div>`).join('')}</div>
   </div>`).join(''):'<div class="empty">لا يوجد مهام حتى الآن.</div>';}
 function transferSalesTask(id){const t=state.salesTasks.find(x=>x.id===id);if(!t || t.status!=='in_progress')return;const sel=document.getElementById('taskDept_'+id);if(!sel)return;const next=sel.value;if(next===t.department)return;pushAppUndo();const prev=t.department;closeTaskWorkSession(t,'transferred');t.department=next;t.assignee='';t.assigneeId='';t.assignmentMode='manager';t.employeeState='new';resetTaskReviewWorkflow(t);t.history=t.history||[];t.history.push({text:`تم تحويل المهمة من ${prev} إلى ${next}`,time:activityTimestamp()});save();renderSalesTasks();}
-function finishSalesTask(id){const t=state.salesTasks.find(x=>x.id===id);if(!t||t.status!=='in_progress')return;if(getSubTasks(t.id).length>=2){alert('هذه باقة. إنهاء الباقة وإرسالها للفوترة يتم من «قائمة الباقات» في قسم المحاسبة.');return;}
-if(!confirm('إنهاء المهمة نهائيًا وتحويلها للفوترة؟'))return;pushAppUndo();t.status='awaiting_invoice';t.employeeState='finished';t.reviewManager='';t.returnedForRevision=false;t.closedFromDepartment=t.department;t.department='المحاسبة';t.closedAt=activityTimestamp();t.closedBy=currentUserDisplayName();t.history=t.history||[];t.history.push({text:'تم إنهاء المهمة نهائيًا وتحويلها إلى المحاسبة بانتظار الفوترة.',time:t.closedAt,by:currentUserDisplayName()});save();renderSalesTasks();}
+async function finishSalesTask(id){
+ const t=state.salesTasks.find(x=>String(x.id)===String(id));if(!t||t.status!=='in_progress'||t.parentTaskId)return;
+ if(getSubTasks(t.id).length>=2){alert('هذه باقة. إنهاء الباقة وإرسالها للفوترة يتم من «قائمة الباقات» في قسم المحاسبة.');return;}
+ if(!confirm(taskFinishesToFollowUp(t)?'إنهاء المهمة وإرسالها للمتابعة؟':'إنهاء المهمة وإرسالها للفوترة؟'))return;
+ if(await saveTaskCompletion(t))renderSalesTasks();
+}
 let pendingBillingFinalizeAction=null;let archiveTaskSection='tasks';function normalizeLegacyBillingArchiveTasks(){let changed=false;(state.salesTasks||[]).forEach(t=>{if(t.parentTaskId)return;if(t.status==='invoiced'){t.status='archived_invoiced';t.archiveBillingType='invoiced';t.archivedAt=t.archivedAt||t.invoicedAt||activityTimestamp();t.archivedBy=t.archivedBy||t.closedBy||'النظام';t.history=Array.isArray(t.history)?t.history:[];if(!t.history.some(h=>String(h.text||'').includes('نُقلت المهمة المفوترة إلى أرشيف المهام المنتهية'))){t.history.push({text:'نُقلت المهمة المفوترة إلى أرشيف المهام المنتهية المفوترة.',time:t.archivedAt,by:'النظام'});}
 changed=true;}
 });if(changed)save();return changed;}
@@ -3536,7 +3682,7 @@ function accountingPackageStatusInfo(task){const subs=getSubTasks(task.id);const
 function accountingSubTaskStatusLabel(task){if(isPackageSubTaskDone(task))return 'منتهية';if(task.status==='awaiting_invoice')return 'بانتظار الفوترة';if(task.status==='invoiced')return 'تمت الفوترة';if(task.employeeState==='submitted')return 'بانتظار المدير';if(task.employeeState==='received')return 'تم الاستلام';if(task.employeeState==='paused')return task.returnedForRevision?'متوقفة — للتعديل':'إيقاف مؤقت';if(task.employeeState==='working')return 'جارٍ العمل';if(task.assignee)return 'بانتظار الاستلام';return 'بحاجة للتوزيع';}
 function accountingTogglePackageServices(id){const el=document.getElementById('accountingPackageServices_'+id);const btn=document.getElementById('accountingPackageToggle_'+id);if(!el)return;const open=el.classList.toggle('open');if(btn)btn.textContent=open?'إخفاء الخدمات':'عرض الخدمات';}
 function accountingOpenPackageTask(id){const task=(state.salesTasks||[]).find(t=>String(t.id)===String(id)&&!t.parentTaskId);if(!task){alert('تعذر العثور على الباقة.');return;}
-goApp('tasks',null);setTimeout(()=>{activeTaskViewContext={source:'accountingPackages',containerId:'allTasksContainer',department:''};openTaskDetails(task.id);},0);}
+return openAppWith('tasks',()=>{activeTaskViewContext={source:'accountingPackages',containerId:'allTasksContainer',department:''};openTaskDetails(task.id);});}
 function accountingSendPackageToBilling(id){const task=(state.salesTasks||[]).find(t=>String(t.id)===String(id)&&!t.parentTaskId);if(!task){alert('تعذر العثور على الباقة.');return;}
 if(task.status==='invoiced'){alert('هذه الباقة تمت فوترتها مسبقاً.');return;}
 if(task.status==='awaiting_invoice'){alert('هذه الباقة موجودة أصلاً ضمن مهام بانتظار الفوترة.');return;}
@@ -3547,7 +3693,7 @@ let pendingPackageBillingId='';function showPackageBillingConfirm(task){const mo
 function closePackageBillingConfirm(){const modal=document.getElementById('packageBillingConfirmModal');modal?.classList.remove('show');modal?.setAttribute('aria-hidden','true');pendingPackageBillingId='';}
 function confirmPackageBillingSend(){const task=(state.salesTasks||[]).find(t=>String(t.id)===String(pendingPackageBillingId)&&!t.parentTaskId);if(!task){closePackageBillingConfirm();return;}
 normalizeLegacyPackageSubTasks();const subs=getSubTasks(task.id);const incomplete=subs.filter(st=>!isPackageSubTaskDone(st));if(incomplete.length){closePackageBillingConfirm();alert(`لا يمكن إرسال الباقة للفوترة. ما زال هناك ${incomplete.length} خدمة غير منتهية.`);renderAccountingPackages();return;}
-pushAppUndo();task.packageReadyForAccounting=false;task.status='awaiting_invoice';task.employeeState='finished';task.closedFromDepartment=task.closedFromDepartment||task.department||'المحاسبة';task.department='المحاسبة';task.closedAt=activityTimestamp();task.closedBy=currentUserDisplayName();task.reviewManager='';task.returnedForRevision=false;task.history=Array.isArray(task.history)?task.history:[];task.history.push({text:'تم إنهاء الباقة من قائمة الباقات في قسم المحاسبة وإرسال المهمة الرئيسية إلى مهام بانتظار الفوترة.',time:task.closedAt,by:currentUserDisplayName()
+pushAppUndo();task.packageReady=false;task.status='awaiting_invoice';task.employeeState='finished';task.closedFromDepartment=task.closedFromDepartment||task.department||'المحاسبة';task.department='المحاسبة';task.closedAt=activityTimestamp();task.closedBy=currentUserDisplayName();task.reviewManager='';task.returnedForRevision=false;task.history=Array.isArray(task.history)?task.history:[];task.history.push({text:'تم إنهاء الباقة من قائمة الباقات في قسم المحاسبة وإرسال المهمة الرئيسية إلى مهام بانتظار الفوترة.',time:task.closedAt,by:currentUserDisplayName()
 });save();closePackageBillingConfirm();if(typeof renderAccountingPackages==='function')renderAccountingPackages();if(typeof renderBillingTasks==='function')renderBillingTasks();openAccountingSection('billing');}
 function accountingPackageCardHtml(task){const subs=getSubTasks(task.id);const done=subs.filter(isPackageSubTaskDone).length;const pct=subs.length?Math.round(done/subs.length*100):0;const status=accountingPackageStatusInfo(task);const departments=[...new Set(subs.map(s=>departmentDisplayName(s.department)||s.department).filter(Boolean))];return `<div class="accounting-package-card">
   <div class="accounting-package-card-head">
@@ -3732,7 +3878,8 @@ function deleteFollowupNote(i){setDirtyState(true);const q=getQ();if(!q)return;p
 function updateFollowupNote(i,value){setDirtyState(true);const q=getQ();if(!q)return;q.followupNotes=q.followupNotes||[];if(q.followupNotes[i])q.followupNotes[i].text=value;}
 function quickNote(){pushAppUndo();const q=getQ(),el=document.getElementById('quickNoteInput');if(!el||!el.value.trim())return;q.chatter.push({who:currentUserDisplayName(),text:el.value.trim(),time:activityTimestamp()});save();openQuote(q.id,false)}
 function toggleBuilder(type){pushAppUndo();const q=getQ();if(type==='header')q.quoteBuilder.headers.push('غلاف إضافي');else q.quoteBuilder.footers.push('تذييل إضافي');save();openQuote(q.id,false)}
-renderQuotationList();document.addEventListener('input',function(e){const el=e.target;if(!el || !['INPUT','TEXTAREA','SELECT'].includes(el.tagName)||el.closest('[data-chat34-task]'))return;if(window.MoshR14Polish?.isEditorControl&&!window.MoshR14Polish.isEditorControl(el))return;if(el.closest('.modal')|| el.closest('.view'))setDirtyState(true);});document.addEventListener('change',function(e){const el=e.target;if(!el || !['INPUT','TEXTAREA','SELECT'].includes(el.tagName)||el.closest('[data-chat34-task]'))return;if(window.MoshR14Polish?.isEditorControl&&!window.MoshR14Polish.isEditorControl(el))return;if(el.closest('.modal')|| el.closest('.view'))setDirtyState(true);});document.addEventListener('focusin',function(e){const el=e.target;if(!el || !['INPUT','TEXTAREA','SELECT'].includes(el.tagName))return;if(el.dataset.undoCaptured==='1')return;if((el.getAttribute('onfocus')||'').includes('pushQuoteUndo')){el.dataset.undoCaptured='1';return;}
+if(document.getElementById('salesDynamic'))renderQuotationList();
+document.addEventListener('input',function(e){const el=e.target;if(!el || !['INPUT','TEXTAREA','SELECT'].includes(el.tagName)||el.closest('[data-chat34-task]'))return;if(window.MoshR14Polish?.isEditorControl&&!window.MoshR14Polish.isEditorControl(el))return;if(el.closest('.modal')|| el.closest('.view'))setDirtyState(true);});document.addEventListener('change',function(e){const el=e.target;if(!el || !['INPUT','TEXTAREA','SELECT'].includes(el.tagName)||el.closest('[data-chat34-task]'))return;if(window.MoshR14Polish?.isEditorControl&&!window.MoshR14Polish.isEditorControl(el))return;if(el.closest('.modal')|| el.closest('.view'))setDirtyState(true);});document.addEventListener('focusin',function(e){const el=e.target;if(!el || !['INPUT','TEXTAREA','SELECT'].includes(el.tagName))return;if(el.dataset.undoCaptured==='1')return;if((el.getAttribute('onfocus')||'').includes('pushQuoteUndo')){el.dataset.undoCaptured='1';return;}
 pushAppUndo();el.dataset.undoCaptured='1';});document.addEventListener('focusout',function(e){const el=e.target;if(el && el.dataset)delete el.dataset.undoCaptured;});state.hrSettings=state.hrSettings&&typeof state.hrSettings==='object'?state.hrSettings:{annualLeaveDays:14,sickLeaveDays:14,annualAccrualDaily:true,warningValidityDays:365,documentAlertDays:[60,30,7],performanceWeights:{timeliness:40,speed:30,quality:30}
 };if(!Array.isArray(state.hrApprovals))state.hrApprovals=[];const HR_NATIONALITIES=['سوري','فلسطيني','مصري','لبناني','أردني','عراقي','سعودي','إماراتي','قطري','كويتي','بحريني','عماني','يمني','مغربي','جزائري','تونسي','ليبي','سوداني','أخرى'];const HR_WORK_MODES=['مكتبي','أونلاين / عن بُعد','فريلانس / مستقل','هجين'];const HR_CONTRACT_TYPES=['دائم','مؤقت','مشروع','مستقل / فريلانس','تدريب'];const HR_END_REASONS=['','استقالة','إنهاء عقد من الشركة','انتهاء مدة العقد','عدم اجتياز فترة التجربة','اتفاق متبادل','تقاعد','أخرى'];const HR_LEAVE_TYPES=['سنوية','مرضية','بدون راتب','طارئة','زواج','وفاة','أمومة / أبوة','مهمة عمل','أخرى'];const HR_DISCIPLINARY_LEVELS=[{value:'notice',label:'لفت نظر',rank:1},{value:'warning1',label:'إنذار أول',rank:2},{value:'warning2',label:'إنذار ثاني',rank:3},{value:'warning3',label:'إنذار ثالث',rank:4},{value:'termination_notice',label:'إخطار طرد / إنهاء خدمة',rank:5}
 ];function hrTodayIso(){const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
@@ -4395,7 +4542,7 @@ ${lastChat.length?`<br><br><b>آخر ما ورد في المحادثة:</b><br>$
 </div>`;}
 function moshAiTeamSummary(){const profile=moshAiGetProfile();let departments=moshAiManagedDepartments(profile);if(moshAiCanSeeAllTasks()){departments=[...new Set((state.salesTasks||[]).map(t=>t.department).filter(Boolean))];}
 if(!departments.length)return 'لا يرتبط حسابك الحالي بفريق إداري مباشر وفق إعدادات مديري الأقسام. يمكنني عرض حالة مهامك الشخصية بدلاً من ذلك.';const tasks=moshAiVisibleTasks().filter(t=>t.status==='in_progress'&&departments.includes(t.department));const byPerson={};tasks.forEach(t=>{const who=String(t.assignee||'غير موزع').trim()||'غير موزع';byPerson[who]=byPerson[who]||{total:0,working:0,review:0,revision:0};byPerson[who].total++;if(t.employeeState==='working')byPerson[who].working++;if(t.employeeState==='submitted')byPerson[who].review++;if(t.employeeState==='revision')byPerson[who].revision++;});const rows=Object.entries(byPerson).sort((a,b)=>b[1].total-a[1].total).slice(0,10);if(!rows.length)return 'لا توجد مهام جارية للفريق ضمن نطاق صلاحياتك حالياً.';return `<b>وضع الفريق</b><br>${rows.map(([name,s])=>`• ${moshAiEscapeText(name)}: <b>${s.total}</b> مهمة · عمل ${s.working} · مراجعة ${s.review} · تعديل ${s.revision}`).join('<br>')}`;}
-function moshAiOpenTaskFromAssistant(id){const task=(state.salesTasks||[]).find(t=>String(t.id)===String(id));if(!task)return;moshAiCurrentTaskId=String(id);goApp('tasks',null);activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};openTaskDetails(task.id);moshAiRefreshContext();}
+function moshAiOpenTaskFromAssistant(id){const task=(state.salesTasks||[]).find(t=>String(t.id)===String(id));if(!task)return;return openAppWith('tasks',()=>{moshAiCurrentTaskId=String(id);activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};openTaskDetails(task.id);moshAiRefreshContext();});}
 function moshAiPurchaseForCurrent(){const t=moshAiGetCurrentTask();if(!t){moshAiAddAssistant('افتح مهمة أولاً لربط طلب الشراء بها.');return}
 openSupportRequestModal(t.id,'purchase');}
 function moshAiLogisticsForCurrent(){const t=moshAiGetCurrentTask();if(!t){moshAiAddAssistant('افتح مهمة أولاً لربط الطلب اللوجستي بها.');return}

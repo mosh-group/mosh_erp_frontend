@@ -27,7 +27,9 @@
   let audioContext = null, audioUnlocked = false, lastSound = 0;
 
   let inbox = {items:[], _version:0}, loadPending = null, lastLoaded = 0, loaded = false, loadError = '';
-  let refreshWanted = true;
+  let refreshWanted = true, inboxEpoch = 0;
+  const popupHistory = new Map(), popupQueued = new Set();
+  let popupQueue = [], popupSeen = new Set(), popupNode = null, popupTimer = null;
   const urgencyPending = new Set(), acknowledgementKeys = new Map();
   function boxFor(recipient) {
     if (str(recipient) !== owner()) return {items:[], read:{}, initialized:false};
@@ -35,27 +37,29 @@
   }
   async function refresh(force = false) {
     if (!user() || user().mustChange || !window.MoshApi?.request) return false;
+    syncOwner();
     if (loadPending) return loadPending;
     if (!force && !refreshWanted && Date.now() - lastLoaded < 15000) return true;
     refreshWanted = false;
-    const who = identity(), prior = new Set(inbox.items.map(n => n.id)), wasLoaded = loaded;
+    const who = identity(), epoch = inboxEpoch, prior = new Set(inbox.items.map(n => n.id)), wasLoaded = loaded;
     const promise = (async () => {
       try {
         const response = await MoshApi.request('/r19/notifications');
-        if (identity() !== who) return false;
+        if (identity() !== who || epoch !== inboxEpoch) return false;
         if (!response || !Array.isArray(response.items)) throw new Error('رد الإشعارات غير مكتمل.');
         inbox = {items:response.items, _version:Number(response._version)||0};
         loaded = true; loadError = ''; lastLoaded = Date.now();
         if (wasLoaded) {
-          const arriving = inbox.items.filter(n => !prior.has(n.id) && !n.readAt);
+          const arriving = inbox.items.filter(n => !prior.has(n.id) && belongsToCurrent(n) && !isRead(n));
           if (arriving.length) { chime(); notifyDesktop(arriving[0]); }
         }
+        queuePopups();
         return true;
       } catch (error) {
-        if (identity() === who) { loadError = str(error?.message || 'تعذر تحميل الإشعارات.'); lastLoaded = Date.now(); }
+        if (identity() === who && epoch === inboxEpoch) { loadError = str(error?.message || 'تعذر تحميل الإشعارات.'); lastLoaded = Date.now(); }
         return false;
       } finally {
-        if (identity() === who) { dialogSignature = ''; schedule(); }
+        if (identity() === who && epoch === inboxEpoch) { dialogSignature = ''; schedule(); }
       }
     })();
     loadPending = promise;
@@ -72,6 +76,68 @@
   }
   function belongsToCurrent(n) {
     return !!user() && list(n.recipientIds).map(recipientKey).includes(owner());
+  }
+  // Presentation receipts are scoped to the account; they never acknowledge
+  // notices or change the server inbox, business records or task state.
+  function popupStorageKey() { return 'mosh-notification-popups-v1:' + encodeURIComponent(identity()); }
+  function readPopupHistory() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(popupStorageKey()) || '[]');
+      return new Set(Array.isArray(saved) ? saved.filter(id => typeof id === 'string') : []);
+    } catch (_) { return new Set(); }
+  }
+  function rememberPopup(id) {
+    for (const saved of readPopupHistory()) popupSeen.add(saved);
+    if (popupSeen.has(id)) return false;
+    popupSeen.add(id); popupHistory.set(identity(),popupSeen);
+    try { localStorage.setItem(popupStorageKey(),JSON.stringify([...popupSeen])); } catch (_) {}
+    return true;
+  }
+  function removePopup() {
+    clearTimeout(popupTimer); popupTimer = null;
+    if (popupNode) { try { popupNode.hidePopover?.(); } catch (_) {} popupNode.remove(); popupNode = null; }
+  }
+  function clearPopups() { removePopup(); popupQueue = []; popupQueued.clear(); }
+  function dismissPopup() { removePopup(); showNextPopup(); }
+  function availablePopup(id) { return inbox.items.find(n => str(n.id) === id && belongsToCurrent(n) && !isRead(n)); }
+  function showNextPopup() {
+    if (lastIdentity !== identity()) { syncOwner(); return; }
+    if (popupNode || !user() || user().mustChange || document.visibilityState === 'hidden' || document.documentElement.classList.contains('mosh-booting')) return;
+    while (popupQueue.length) {
+      const id = popupQueue.shift(); popupQueued.delete(id);
+      const n = availablePopup(id);
+      if (!n || !rememberPopup(id)) continue;
+      const who = identity(), epoch = inboxEpoch, node = document.createElement('article');
+      node.id = 'r19IncomingPopup'; node.className = 'r19-incoming-popup' + (n.urgent ? ' is-urgent' : '');
+      node.dir = 'rtl'; node.dataset.noticeId = id;
+      node.setAttribute('role','status'); node.setAttribute('aria-live','polite'); node.setAttribute('aria-atomic','true');
+      node.setAttribute('popover','manual');
+      node.innerHTML = '<div class="r19-popup-heading"><span class="r19-popup-icon">' + icon + '</span><span>إشعار جديد</span><button type="button" class="r19-popup-close" aria-label="إخفاء التنبيه" title="إخفاء التنبيه"><span aria-hidden="true">×</span><span class="r19-popup-sr">إخفاء التنبيه</span></button></div><h3>' + E(n.title || 'إشعار جديد') + '</h3><p>' + E(n.body || '') + '</p><footer><small>' + E(n.source || typeLabels[n.type] || 'MOSH') + '</small><button type="button" data-r19-alert-open="' + E(id) + '">عرض الإشعار ←</button></footer><span class="r19-popup-progress" aria-hidden="true"></span>';
+      node.querySelector('.r19-popup-close').addEventListener('click',event => {
+        event.preventDefault(); event.stopPropagation();
+        if (identity() === who && epoch === inboxEpoch) dismissPopup();
+      });
+      popupNode = node; document.body.appendChild(node);
+      // A manual popover remains visible above open forms without blocking them,
+      // moving keyboard focus, or requiring browser notification permission.
+      try { node.showPopover?.(); } catch (_) {}
+      popupTimer = setTimeout(() => {
+        if (popupNode !== node) return;
+        if (identity() !== who || epoch !== inboxEpoch) { clearPopups(); return; }
+        dismissPopup();
+      },5000);
+      return;
+    }
+  }
+  function queuePopups() {
+    if (popupNode && !availablePopup(popupNode.dataset.noticeId)) removePopup();
+    const notices = rows().filter(n => !isRead(n)).reverse();
+    for (const n of notices) {
+      const id = str(n.id);
+      if (!id || popupSeen.has(id) || popupQueued.has(id) || popupNode?.dataset.noticeId === id) continue;
+      popupQueued.add(id); popupQueue.push(id);
+    }
+    showNextPopup();
   }
   function formatDate(value) {
     const d = new Date(value);
@@ -173,7 +239,9 @@
 
   function syncOwner() {
     if (lastIdentity === identity()) return;
-    lastIdentity = identity(); inbox = {items:[],_version:0}; loaded = false; lastLoaded = 0; loadError = ''; loadPending = null; refreshWanted = true; acknowledgementKeys.clear(); currentId = ''; tab = 'unread'; type = 'all'; query = ''; page = 1; dialogSignature = '';
+    clearPopups(); inboxEpoch++; lastIdentity = identity();
+    popupSeen = popupHistory.get(lastIdentity) || readPopupHistory(); popupHistory.set(lastIdentity,popupSeen);
+    inbox = {items:[],_version:0}; loaded = false; lastLoaded = 0; loadError = ''; loadPending = null; refreshWanted = true; acknowledgementKeys.clear(); currentId = ''; tab = 'unread'; type = 'all'; query = ''; page = 1; dialogSignature = '';
     if ($('r19Alerts')?.open) P.close('r19Alerts');
   }
   function badge(n) {
@@ -206,9 +274,10 @@
       if (!n) { body.innerHTML = '<p class="r19-alert-empty">هذا الإشعار غير متاح لحسابك.</p><button type="button" class="btn" data-r19-alert-action="back">العودة إلى الإشعارات</button>'; return; }
       const read = isRead(n), readAt = n.readAt || boxFor(owner()).read[n.id] || sourceAnnouncement(n)?.readAtBy?.[owner()];
       const details = typeof n.details === 'string' ? n.details : '';
-      const linkedTask = task(n.taskId), availableTask = !!linkedTask && canViewTask(linkedTask);
+      const linkedTask = task(n.taskId), availableTask = !!linkedTask && canViewTask(linkedTask) && n.taskEvent!=='approval';
       const procedure = n.type === 'hr' && str(n.details?.requestId).trim() && belongsToCurrent(n);
       const procedureAction = procedure ? '<div class="r19-alert-linked-task"><b>الإجراء الإداري المرتبط</b><small>المرفقات والتفاصيل الكاملة وسجل الإجراء</small><button type="button" data-r19-alert-procedure="' + E(n.id) + '">عرض الإجراء كاملاً ←</button></div>' : '';
+      const reviewAction = n.taskEvent==='approval' ? '<div class="r19-alert-linked-task"><button type="button" data-r19-alert-review="'+E(n.id)+'">فتح المهمة للمراجعة ←</button></div>' : '';
       const alertReplyAction = n.type === 'r24-alert' && belongsToCurrent(n) ?
         '<div class="r19-alert-linked-task"><b>الرد على التنبيه الإداري (اختياري)</b>' +
         (n.details?.replied ? '<p>ردّك المحفوظ: ' + E(n.details.replyText || 'تم الرد') + '</p>' :
@@ -217,7 +286,7 @@
       const decisionAction = n.type === 'r24-decision' ? '<div class="r19-alert-linked-task"><button type="button" data-r19-alert-decision="' + E(n.sourceId) + '">قراءة القرار وتفاصيله ←</button><div id="r24DecisionNoticeDetails"></div></div>' : '';
       const purchaseAction = n.type === 'r24-purchase-approval' ? '<div class="r19-alert-linked-task"><button type="button" data-r19-alert-purchase="' + E(n.sourceId) + '">مراجعة طلب الشراء ←</button></div>' : '';
 
-      body.innerHTML = '<article class="r19-alert-detail" dir="rtl"><button type="button" class="r19-alert-back" data-r19-alert-action="back">→ كل الإشعارات</button><div class="r19-alert-detail-meta">' + badge(n) + '<time>' + E(formatDate(n.createdAt)) + '</time></div><h3>' + E(n.title) + '</h3><p class="r19-alert-source">من ' + E(n.source) + '</p><div class="r19-alert-message">' + E(n.body || 'لا يوجد نص إضافي.') + '</div>' + (details ? '<p class="r19-alert-detail-note">' + E(details) + '</p>' : '') + (availableTask ? '<div class="r19-alert-linked-task"><span>المهمة المرتبطة</span><b>' + E(taskTitle(linkedTask)) + '</b><small>' + E(taskClient(linkedTask)) + '</small>' + taskBadges(linkedTask) + '<button type="button" data-r19-alert-task="' + E(linkedTask.id) + '">فتح تفاصيل المهمة ←</button></div>' : '') + procedureAction + alertReplyAction + adminReplyAction + decisionAction + purchaseAction + '<div class="r19-alert-receipt ' + (read ? 'is-read' : '') + '">' + (read ? '✓ تم تسجيل الاطلاع' + (readAt ? ' · ' + E(formatDate(readAt)) : '') : 'يبقى الإشعار غير مقروء حتى تضغط «تم الاطلاع».') + (n.type === 'task' ? '<small>استلام المهمة وبدء تنفيذها يتمان من أزرار المهمة المخصصة.</small>' : '') + '</div><footer>' + (read ? '<span class="r19-alert-read">✓ محفوظ في الأرشيف</span>' : '<button type="button" class="r19-alert-primary" data-r19-alert-ack="' + E(n.id) + '" ' + (acknowledging ? 'disabled' : '') + '>' + (acknowledging ? 'جارٍ تسجيل الاطلاع…' : '✓ تم الاطلاع') + '</button>') + '<button type="button" data-r19-alert-action="back">العودة إلى القائمة</button></footer></article>';
+      body.innerHTML = '<article class="r19-alert-detail" dir="rtl"><button type="button" class="r19-alert-back" data-r19-alert-action="back">→ كل الإشعارات</button><div class="r19-alert-detail-meta">' + badge(n) + '<time>' + E(formatDate(n.createdAt)) + '</time></div><h3>' + E(n.title) + '</h3><p class="r19-alert-source">من ' + E(n.source) + '</p><div class="r19-alert-message">' + E(n.body || 'لا يوجد نص إضافي.') + '</div>' + (details ? '<p class="r19-alert-detail-note">' + E(details) + '</p>' : '') + (availableTask ? '<div class="r19-alert-linked-task"><span>المهمة المرتبطة</span><b>' + E(taskTitle(linkedTask)) + '</b><small>' + E(taskClient(linkedTask)) + '</small>' + taskBadges(linkedTask) + '<button type="button" data-r19-alert-task="' + E(linkedTask.id) + '">فتح تفاصيل المهمة ←</button></div>' : '') + reviewAction + procedureAction + alertReplyAction + adminReplyAction + decisionAction + purchaseAction + '<div class="r19-alert-receipt ' + (read ? 'is-read' : '') + '">' + (read ? '✓ تم تسجيل الاطلاع' + (readAt ? ' · ' + E(formatDate(readAt)) : '') : 'يبقى الإشعار غير مقروء حتى تضغط «تم الاطلاع».') + (n.type === 'task' && n.taskEvent!=='approval' ? '<small>استلام المهمة وبدء تنفيذها يتمان من أزرار المهمة المخصصة.</small>' : '') + '</div><footer>' + (read ? '<span class="r19-alert-read">✓ محفوظ في الأرشيف</span>' : '<button type="button" class="r19-alert-primary" data-r19-alert-ack="' + E(n.id) + '" ' + (acknowledging ? 'disabled' : '') + '>' + (acknowledging ? 'جارٍ تسجيل الاطلاع…' : '✓ تم الاطلاع') + '</button>') + '<button type="button" data-r19-alert-action="back">العودة إلى القائمة</button></footer></article>';
       return;
     }
     if (!body.querySelector('.r19-alerts-center')) { body.innerHTML = centerFrame(); $('r19AlertType').value = type; }
@@ -285,6 +354,10 @@
   }
   async function openAdminReplyRecord(id){
     if(!id)return;
+    if(window.MoshPages?.pending('admin')){
+      if(!window.MoshAuth37?.canModule('admin','view'))return;
+      return window.MoshPages.open('admin',()=>openAdminReplyRecord(id));
+    }
     if(!window.MoshAdministration24?.openAlert){P.toast('افتح قسم الإدارة لمراجعة سجل التنبيه.');return}
     P.close('r19Alerts');await window.MoshAdministration24.openAlert(id);
   }
@@ -296,10 +369,34 @@
     if (taskMine(t) && window.MoshEmployeeTaskOverlay47?.open) return MoshEmployeeTaskOverlay47.open(t.id);
     const app = deptMap[t.sharedDepartment || t.department];
     if (app && typeof window.openProductiveTaskDetails === 'function' && ['design','marketing','photo','editing','promotion','logistics','hr'].includes(app)) {
-      window.goApp?.(app); window.openProductiveTaskDetails(app,t.id,'running'); schedule(); return true;
+      return openAppWith(app,()=>{window.openProductiveTaskDetails(app,t.id,'running');schedule();return true;});
     }
-    if (role() === 'admin' && window.openTaskDetailsFromAll) { window.goApp?.('tasks'); window.openTaskDetailsFromAll(t.id); schedule(); return true; }
+    if (role() === 'admin' && window.openTaskDetailsFromAll) { return openAppWith('tasks',()=>{window.openTaskDetailsFromAll(t.id);schedule();return true;}); }
     P.toast('افتح المهمة من قائمة مهام قسمك.'); return false;
+  }
+  async function openLinkedReview(noticeId) {
+    const notice=rows().find(n=>n.id===noticeId&&n.taskEvent==='approval');
+    if(!notice)return;
+    const who=identity();
+    try{
+      let t=task(notice.taskId);
+      if(t?.employeeState!=='submitted'){
+        await window.MoshApi?.refreshTasks?.();
+        t=task(notice.taskId);
+      }
+      if(identity()!==who)return;
+      const app=t&&(deptMap[t.department]||window.MoshAuth37?.departmentApp?.(t.department));
+      const auth=window.MoshAuth37;
+      if(!t||t.status!=='in_progress'||t.employeeState!=='submitted'||!app||
+        !auth?.canModule?.(app,'details')||!auth.canModule(app,'approve')) {
+        P.toast('المهمة لم تعد متاحة للمراجعة.');return;
+      }
+      P.close('r19Alerts');
+      if(await window.goApp?.(app)===false)return;
+      window.openProductiveTaskDetails?.(app,t.id,'running');
+    }catch{
+      if(identity()===who)P.toast('تعذر تحديث المهمة للمراجعة.');
+    }
   }
   function openLinkedProcedure(alertId) {
     // Resolve from this recipient's inbox again at click time. The HR module
@@ -432,7 +529,7 @@
   function mount() {
     if (painting) return;
     painting = true;
-    try { syncOwner(); scan(); mountStrip(); mountTaskFlags(); renderDialog(); }
+    try { syncOwner(); scan(); showNextPopup(); mountStrip(); mountTaskFlags(); renderDialog(); }
     finally { painting = false; }
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(() => { frame = 0; mount(); }); }
@@ -440,12 +537,13 @@
   document.addEventListener('pointerdown',unlockAudio,{capture:true,passive:true});
   document.addEventListener('keydown',e => { if (e.isTrusted && !e.repeat) unlockAudio(); },true);
   document.addEventListener('click',e => {
-    const b = e.target.closest?.('[data-r19-alert-action],[data-r19-alert-open],[data-r19-alert-ack],[data-r19-alert-tab],[data-r19-alert-task],[data-r19-alert-procedure],[data-r19-task-urgency],[data-r19-alert-reply],[data-r19-alert-decision],[data-r19-alert-admin-record],[data-r19-alert-purchase]');
+    const b = e.target.closest?.('[data-r19-alert-action],[data-r19-alert-open],[data-r19-alert-ack],[data-r19-alert-tab],[data-r19-alert-task],[data-r19-alert-review],[data-r19-alert-procedure],[data-r19-task-urgency],[data-r19-alert-reply],[data-r19-alert-decision],[data-r19-alert-admin-record],[data-r19-alert-purchase]');
     if (!b || b.disabled) return;
     e.preventDefault(); e.stopImmediatePropagation();
-    if (b.hasAttribute('data-r19-alert-open')) { currentId = b.dataset.r19AlertOpen; if (!$('r19Alerts')?.open) open(currentId); else { dialogSignature = ''; renderDialog(true); } }
+    if (b.hasAttribute('data-r19-alert-open')) { if (b.closest('.r19-incoming-popup')) dismissPopup(); currentId = b.dataset.r19AlertOpen; if (!$('r19Alerts')?.open) open(currentId); else { dialogSignature = ''; renderDialog(true); } }
     else if (b.hasAttribute('data-r19-alert-ack')) void acknowledge(b.dataset.r19AlertAck);
     else if (b.hasAttribute('data-r19-alert-task')) openLinkedTask(b.dataset.r19AlertTask);
+    else if (b.hasAttribute('data-r19-alert-review')) openLinkedReview(b.dataset.r19AlertReview);
     else if (b.hasAttribute('data-r19-alert-procedure')) openLinkedProcedure(b.dataset.r19AlertProcedure);
     else if (b.hasAttribute('data-r19-alert-reply')) void sendAdminReply(b.dataset.r19AlertReply);
     else if (b.hasAttribute('data-r19-alert-decision')) void openAdminDecisionDetails(b.dataset.r19AlertDecision);
@@ -469,10 +567,11 @@
   // Only the business events above invalidate its server snapshot.
   document.addEventListener('mosh:r19-change',schedule);
   window.addEventListener('mosh:r19-change',schedule);
-  document.addEventListener('mosh:session-expired',() => { lastIdentity = ''; inbox = {items:[],_version:0}; loaded = false; P.close('r19Alerts'); });
+  ['mosh:session-expired','mosh:logout-complete'].forEach(event => document.addEventListener(event,() => { clearPopups(); inboxEpoch++; lastIdentity = ''; inbox = {items:[],_version:0}; loaded = false; loadPending = null; P.close('r19Alerts'); }));
+  document.addEventListener('visibilitychange',() => { syncOwner(); if (document.visibilityState !== 'hidden') showNextPopup(); });
   new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
   window.openEmployeeAnnouncements = open;
-  window.MoshAlerts19 = {version:'19.0.0',push,refresh,open,mount,unread,rows,isRead,acknowledge,canViewTask};
+  window.MoshAlerts19 = {version:'19.1.0',push,refresh,open,mount,unread,rows,isRead,acknowledge,canViewTask};
   window.MoshTaskFlags19 = {version:'19.0.0',canManage:canManageUrgency,isUrgent,needsRevision,badgesHtml:taskBadges,setUrgent,mount:mountTaskFlags};
   mount();
   setInterval(mount,3000);

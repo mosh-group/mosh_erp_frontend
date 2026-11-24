@@ -46,3 +46,8 @@ html.mosh-meta #appShell .topbar .ui09-page-heading{gap:2px 10px!important}.ui09
 @media(prefers-reduced-motion:reduce){#ui09-tree-hr .ui09-hr-group>summary::after{transition:none}}
 
 html.mosh-meta #appShell .topbar #backBtn[data-ui09-back]{font-size:22px!important}html.mosh-meta #appShell .topbar #backBtn[data-ui09-back]::after{content:none}
+
+.top-actions > #auth37UserBar,
+.top-actions #auth37LogoutBtn {
+  order: 1;
+}

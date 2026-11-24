@@ -214,7 +214,7 @@
     const p=model?.posts?.find(x=>x.id===id);if(!p)return;
     dialog('ig28Details','تفاصيل المحتوى',`${badge(p.status)}<p class="ig28-caption">${E(p.caption||'بدون نص')}</p><p>${E(p.attachmentName||'بدون ملف')} ${p.attachmentKey?button('فتح المرفق','file',p.attachmentKey):''}</p>${p.mediaId?`<p class="ig28-muted">معرّف منشور Instagram: <bdi>${E(p.mediaId)}</bdi></p>`:''}${p.lastError?`<p class="ig28-inline-warning">${E(p.lastError)}</p>`:''}<h3>سجل الإجراءات</h3><div class="ig28-legacy-list">${(p.history||[]).map(x=>`<article><strong>${E(labels[x.action]||({approve:'اعتماد',return:'إعادة للتعديل',reject:'إعادة للتعديل (سجل سابق)',reject_final:'رفض نهائي',cancel:'إلغاء طلب النشر'}[x.action])||x.action)}</strong><span>${E(x.by||'')} · ${E(stamp(x.at))}</span>${x.note?`<p>${E(x.note)}</p>`:''}</article>`).join('')}</div>`);
   }
-  window.openMoshSocialHub=function(customerId='') {if(!window.MoshAuth37?.canModule('social','view'))return notice('لا تملك صلاحية دخول قسم السوشال ميديا.',true);if(!$('#socialApp')?.classList.contains('active'))window.goApp('social');shell();load(customerId||selected);};
+  window.openMoshSocialHub=function(customerId='') {if(!window.MoshAuth37?.canModule('social','view'))return notice('لا تملك صلاحية دخول قسم السوشال ميديا.',true);if(window.MoshPages?.pending('social'))return openAppWith('social',()=>window.openSocialCustomers(customerId));if(!$('#socialApp')?.classList.contains('active'))window.goApp('social');shell();load(customerId||selected);};
   if(window.MoshR16FieldFixes)window.MoshR16FieldFixes.openSocialHub=window.openMoshSocialHub;
   document.addEventListener('change',e=>{if(e.target.id==='ig28Customer')load(e.target.value);});
   document.addEventListener('click',async e=>{
@@ -225,7 +225,7 @@
       if(action==='back'){leave();window.MoshMarketingV33?.openDashboard();}
       else if(action==='refresh')await load();
       else if(action==='filter'){filter=id in filters?id:'all';render();}
-      else if(action==='compose')compose();
+      else if(action==='compose')await window.MoshSocialPublishing.compose(selected,'instagram');
       else if(action==='edit')compose(model?.posts?.find(x=>x.id===id));
       else if(action==='config')await configure();
       else if(action==='connect')await connect();

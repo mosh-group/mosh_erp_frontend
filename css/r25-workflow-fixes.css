@@ -1,5 +1,23 @@
 /* MOSH R25: A scrollable task editor with persistent actions, even with many attachments. */
 .modal.show{min-height:0;}
+#systemSettingsModal.show{
+  display:grid;
+  grid-template:minmax(0,1fr) / minmax(0,1fr);
+  place-items:center;
+  padding:clamp(6px,2vmin,16px);
+}
+#systemSettingsModal .system-settings-modalbox{
+  box-sizing:border-box;
+  width:min(920px,100%)!important;
+  min-width:0;
+  max-height:100%;
+  min-height:0;
+  overflow:auto;
+}
+#systemSettingsModal .system-settings-head{top:-18px;flex-wrap:wrap}
+@media(max-width:700px){
+  #systemSettingsModal .settings-grid{grid-template-columns:minmax(0,1fr)}
+}
 .modal .modalbox{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;}
 #standaloneTaskModal{padding:clamp(6px,2vh,16px);}
 #standaloneTaskModal .modalbox{
