@@ -36,16 +36,17 @@ function currentProfile(){
 }
 function managerForDepartment(dept){
  try{const m=typeof getDepartmentManager==='function'?getDepartmentManager(dept):null;if(m)return m;}catch(e){}
- const map=state.departmentManagers||{};const id=map[dept];
+ const map=effectiveDepartmentManagers();const id=map[dept];
  if(id){const p=arr(state.staffProfiles).find(x=>String(x.id)===String(id));if(p)return p;}
- return arr(state.staffProfiles).find(p=>p&&p.isManager&&p.active!==false&&same(p.department,dept))||null;
+ return window.MoshApi?null:arr(state.staffProfiles).find(p=>p&&p.isManager&&p.active!==false&&same(p.department,dept))||null;
 }
 function expectedManager(req,stage){
  if(stage==='مدير القسم الجديد')return managerForDepartment(req?.data?.target||'');
  if(stage==='مدير القسم الحالي')return managerForDepartment(req?.department||'');
  if(stage==='المدير المباشر'){
    const byName=arr(state.staffProfiles).find(p=>same(p.name,req?.manager));
-   return byName||managerForDepartment(req?.department||'');
+   const dept=req?.department||'';
+   return !byName||String(byName.id)===String(state.departmentManagers?.[dept]||'')?managerForDepartment(dept):byName;
  }
  return null;
 }

@@ -4,21 +4,32 @@ const U=window.Mosh34,{E,B,$,$$}=U;let cfg=null,who='',inbox=null,loading=null,v
 const names={pending:'بانتظار المصادقة',approved:'معتمد',rejected:'مرفوض',expired:'منتهي الصلاحية',locked:'أُبطل بعد محاولات خاطئة',invalidated:'يحتاج طلباً جديداً',executed:'نُفّذ الإتلاف',cancelled:'ملغى'};
 const status=x=>names[x]||x||'—';
 function reset(){cfg=null;inbox=null;loading=null;who='';if(codeTimer)clearTimeout(codeTimer);codeTimer=null;$('#r34ApprovalsTop')?.remove();}
-async function hierarchy(force=false){const s=U.snapshot();if(cfg&&who===s.owner&&!force)return cfg;const data=await U.request('/r34/hierarchy',{},s);cfg=data;who=s.owner;return data;}
+async function hierarchy(force=false){const s=U.snapshot();if(cfg&&who===s.owner&&!force)return cfg;const data=await U.request('/r34/hierarchy',{},s);cfg=data;who=s.owner;window.MoshApi.setReportingHierarchy?.(data);return data;}
 function noticeError(e){window.MoshUI19?.toast(e.message||String(e),true);}
 async function openHierarchy(){
- const h=await hierarchy(true),people=h.people||[],options=[['','اختر المسؤول'],...people.filter(p=>p.hasAccount).map(p=>[p.id,p.name+' — '+p.department])];
+ const h=await hierarchy(true);
+ const people=(h.people||[]).map(person=>({...person,id:String(person.id)}));
+ const options=[['','اختر المسؤول'],...people.map(person=>[
+  person.id,
+  [person.name||person.id,person.department,!person.hasAccount?'يحتاج ربط حساب دخول':''].filter(Boolean).join(' — ')
+ ])];
  const managers=new Map();for(const [dept,id]of Object.entries(h.departmentManagers||{})){if(!id)continue;const arr=managers.get(String(id))||[];arr.push(dept);managers.set(String(id),arr);}
  let rows=new Map(Object.entries(h.reportsTo||{}));if(h.executiveId&&h.generalManagerId)rows.set(String(h.executiveId),String(h.generalManagerId));for(const id of managers.keys())if(!rows.has(id))rows.set(id,'');
+ const positionField=(label,key)=>{
+  const person=people.find(candidate=>candidate.id===String(h[key]));
+  if(!person)return U.select(label,key,options,h[key]);
+  return U.field(label,key+'Display',person.name||person.id,'text','readonly')+
+   `<input type="hidden" name="${E(key)}" value="${E(person.id)}">`;
+ };
  const html=U.note('حدّد تبعية مدراء الأقسام ثم المسؤولين الأعلى حتى المدير العام. هذا لا ينقل الموظف من قسمه ولا يمنح صلاحيات إضافية. الطلبات السابقة تبقى على مساراتها المحفوظة.')+
- `<div class="r34-grid">${U.select('المدير العام','generalManagerId',options,h.generalManagerId)}${U.select('المدير التنفيذي — يتبع للمدير العام','executiveId',options,h.executiveId)}</div>`+
+ `<div class="r34-grid">${positionField('المدير العام','generalManagerId')}${positionField('المدير التنفيذي — يتبع للمدير العام','executiveId')}</div>`+
  `<label><span><input type="checkbox" name="enabled" ${h.enabled?'checked':''}> تفعيل التسلسل للطلبات الجديدة</span></label>`+
  `<div class="r34-table-wrap"><table><thead><tr><th>المدير / المسؤول</th><th>الأقسام التي يديرها</th><th>يتبع إدارياً إلى</th></tr></thead><tbody data-hierarchy34></tbody></table></div>`+
  `<div class="r34-grid">${U.select('موافقات الموارد البشرية','routeHr',[['direct','المدير الأعلى المباشر ثم بقية الإجراءات'],['chain','السلسلة كاملة حتى المدير العام ثم بقية الإجراءات']],h.routes.hr)}${U.select('موافقات المشتريات','routePurchases',[['direct','المدير الأعلى ثم سياسة الشراء'],['chain','السلسلة حتى المدير العام ثم سياسة الشراء']],h.routes.purchases)}${U.select('موافقات الإتلاف','routeDamage',[['direct','المدير الأعلى المباشر'],['chain','السلسلة كاملة حتى المدير العام']],h.routes.damage)}</div>`+
- U.note('إجازة المدير تذهب إلى مديره الأعلى، ولا يعتمد أي مستخدم طلبه الشخصي. تُرفض حلقات التبعية تلقائياً. يلزم حساب فعال واحد لكل مسؤول. المدير العام والتنفيذي منصبان متزامنان داخل الإدارة، ولا يلغي تعيين أحدهما الآخر. التنفيذي يتبع للعام. تحديد المنصب لا يمنح صلاحيات جديدة ولا حق رؤية كلمات سر IT.');
+ U.note('إجازة المدير تذهب إلى مديره الأعلى، ولا يعتمد أي مستخدم طلبه الشخصي. تُرفض حلقات التبعية تلقائياً. يمكن حفظ التسلسل كمسودة قبل ربط الحسابات. عند التفعيل يلزم حساب دخول نشط واحد لكل مسؤول اعتماد. المدير العام والتنفيذي منصبان متزامنان داخل الإدارة، ولا يلغي تعيين أحدهما الآخر. التنفيذي يتبع للعام. تحديد المنصب لا يمنح صلاحيات جديدة ولا حق رؤية كلمات سر IT.');
  const d=U.form('r34Hierarchy','الإدارة — تبعية مدراء الأقسام',html,async(fd,f,holder,s)=>{
   if(!h.canConfigure)throw new Error('ليس لديك صلاحية تعديل الهيكل.');const reportsTo={};$$('select[data-parent34]',f).forEach(el=>{if(el.value)reportsTo[el.dataset.parent34]=el.value;});
-  const out=await U.commit(holder,'/r34/hierarchy',{_version:h._version,enabled:fd.has('enabled'),generalManagerId:fd.get('generalManagerId'),executiveId:fd.get('executiveId'),reportsTo,routes:{hr:fd.get('routeHr'),purchases:fd.get('routePurchases'),damage:fd.get('routeDamage')}},'PUT',s);cfg=out;who=s.owner;return out;
+  const out=await U.commit(holder,'/r34/hierarchy',{_version:h._version,enabled:fd.has('enabled'),generalManagerId:fd.get('generalManagerId'),executiveId:fd.get('executiveId'),reportsTo,routes:{hr:fd.get('routeHr'),purchases:fd.get('routePurchases'),damage:fd.get('routeDamage')}},'PUT',s);cfg=out;who=s.owner;window.MoshApi.setReportingHierarchy?.(out);return out;
  },()=>{void poll();});
  const renderRows=()=>{const gm=$('[name=generalManagerId]',d).value,executive=$('[name=executiveId]',d).value;if(executive&&executive!==gm)rows.set(executive,gm);for(const id of [...rows.values()])if(id&&id!==gm&&!rows.has(id))rows.set(id,'');
   $('[data-hierarchy34]',d).innerHTML=[...rows].filter(([id])=>id!==gm).map(([id,parent])=>{const person=people.find(p=>p.id===id);const opt=options.filter(([v])=>v!==id);return `<tr><td>${E(person?.name||id)}${!person?' — غير نشط / يحتاج مراجعة':''}</td><td>${E((id===executive?['المدير التنفيذي — قسم الإدارة']:(managers.get(id)||['مسؤول أعلى'])).join('، '))}</td><td><select ${id===executive?'disabled':''} data-parent34="${E(id)}" aria-label="المدير الأعلى لـ ${E(person?.name||id)}">${U.opts(opt,parent)}</select></td></tr>`;}).join('')||`<tr><td colspan="3">عيّن مدراء الأقسام أولاً من القائمة أعلاه.</td></tr>`;

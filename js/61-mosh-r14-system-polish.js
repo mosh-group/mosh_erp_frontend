@@ -5,7 +5,7 @@ if(window.MoshR14Polish)return;
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
 const visible=el=>!!el&&el.getClientRects().length>0&&!el.hidden;
 const text=el=>String(el?.textContent||'').replace(/\s+/g,' ').trim();
-let bypassExit=false,pendingPhotoFile=null,pendingPhotoPreview='',editRevision=0;
+let bypassExit=false,pendingStaffPhoto=null,savingStaffPhoto=false,editRevision=0;
 
 function dirty(){try{return typeof appIsDirty!=='undefined'&&!!appIsDirty}catch(e){return document.body.dataset.r14Dirty==='1'}}
 function setDirty(v=true){try{if(typeof setDirtyState==='function')setDirtyState(v);else document.body.dataset.r14Dirty=v?'1':'0'}catch(e){document.body.dataset.r14Dirty=v?'1':'0'}}
@@ -135,8 +135,55 @@ async function normalizeProfilePhoto(file){
    const ext=String(file.name||'').split('.').pop().toLowerCase();if(['jpg','jpeg','png','webp','gif','heic','heif','bmp','tif','tiff'].includes(ext))return file;throw e;
  }
 }
-window.r14PickStaffPhoto=async function(input){const file=input?.files?.[0];if(!file)return;try{pendingPhotoFile=await normalizeProfilePhoto(file);pendingPhotoPreview=await imagePreview(pendingPhotoFile);const im=q('#r14StaffPhotoPreview');if(im){im.src=pendingPhotoPreview;im.hidden=false;}q('#r14StaffPhotoPlaceholder')?.setAttribute('hidden','');setDirty(true);}catch(e){pendingPhotoFile=null;pendingPhotoPreview='';input.value='';alert(e?.message||'تعذر تجهيز صورة الموظف.');}};
-async function hydrateOneAvatar(el,key){if(!el||!key||el.dataset.r14PhotoHydrated===key)return;el.dataset.r14PhotoHydrated=key;try{const rec=await getAttachmentRecord(key);if(!rec?.blob)return;const url=URL.createObjectURL(rec.blob);el.innerHTML='';const im=document.createElement('img');im.className='r14-avatar-img';im.src=url;im.alt='صورة الموظف';el.appendChild(im);el.dataset.r14ObjectUrl=url;}catch(e){console.warn('R14 avatar',e)}}
+function showStaffPhotoPreview(photo) {
+ const im=q('#r14StaffPhotoPreview');
+ if(im){im.src=photo.preview;im.hidden=false;}
+ q('#r14StaffPhotoPlaceholder')?.setAttribute('hidden','');
+}
+window.r14PickStaffPhoto=async function(input) {
+ const chosen=input?.files?.[0];
+ if(!chosen)return;
+ const photo={input,accountId:String(window.MoshApi?.user?.id||''),file:null,preview:''};
+ pendingStaffPhoto=photo;
+ try {
+  photo.file=await normalizeProfilePhoto(chosen);
+  photo.preview=await imagePreview(photo.file);
+  if(pendingStaffPhoto!==photo||!input.isConnected)return;
+  showStaffPhotoPreview(photo);
+  setDirty(true);
+ }catch(error){
+  if(pendingStaffPhoto!==photo)return;
+  pendingStaffPhoto=null;input.value='';
+  if(input.isConnected){
+   const preview=q('#r14StaffPhotoPreview');if(preview)preview.hidden=true;
+   q('#r14StaffPhotoPlaceholder')?.removeAttribute('hidden');
+   alert(error?.message||'تعذر تجهيز صورة الموظف.');
+  }
+ }
+};
+
+const avatarLoads=new Map();
+async function hydrateOneAvatar(el,key) {
+ const accountId=window.MoshApi?.user?.id;
+ if(!el||!key||!accountId||el.dataset.r14PhotoHydrated===key)return;
+ el.dataset.r14PhotoHydrated=key;
+ const cacheKey=accountId+':'+key;
+ if(!avatarLoads.has(cacheKey)){
+  const download=MoshApi.request('/files/'+encodeURIComponent(key)+'/content',{binary:true});
+  avatarLoads.set(cacheKey,download.finally(()=>avatarLoads.delete(cacheKey)));
+ }
+ const current=()=>el.isConnected&&el.dataset.r14PhotoHydrated===key&&window.MoshApi?.user?.id===accountId;
+ try {
+  const blob=await avatarLoads.get(cacheKey);
+  if(!blob?.size||!current())return;
+  const url=URL.createObjectURL(blob), image=document.createElement('img');
+  image.className='r14-avatar-img';
+  image.alt='';
+  image.onload=()=>{URL.revokeObjectURL(url);if(current())el.replaceChildren(image);};
+  image.onerror=()=>URL.revokeObjectURL(url);
+  image.src=url;
+ }catch(error){if(current()&&error.status!==404)console.warn('MOSH employee photo:',error);}
+}
 window.r14HydrateStaffPhotos=async function(){
  const profiles=Array.isArray(state?.staffProfiles)?state.staffProfiles:[];
  for(const p of profiles){if(!p?.photoKey)continue;qa('[data-r14-staff-id="'+CSS.escape(String(p.id))+'"],[data-r14-staff-name="'+CSS.escape(String(p.name||''))+'"]').forEach(el=>hydrateOneAvatar(el,p.photoKey));}
@@ -146,7 +193,7 @@ if(typeof window.hrEmployeeFormHtml==='function'){
  const oldForm=window.hrEmployeeFormHtml;
  window.hrEmployeeFormHtml=function(p,identity,status){let html=oldForm.apply(this,arguments);const box=document.createElement('div');box.innerHTML=html;const hero=box.querySelector('.hr-profile-hero');if(hero&&!box.querySelector('#r14StaffPhotoInput')){
    const av=hero.querySelector('.hr-profile-avatar');if(av){av.dataset.r14StaffId=String(p?.id||'');av.id='r14StaffPhotoPlaceholder';}
-   const tools=document.createElement('div');tools.className='r14-photo-tools';tools.innerHTML='<label class="btn" for="r14StaffPhotoInput">'+(p?.photoKey?'تغيير صورة الموظف':'إضافة صورة الموظف')+'</label><input id="r14StaffPhotoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden onchange="r14PickStaffPhoto(this)"><img id="r14StaffPhotoPreview" class="r14-photo-preview" '+(pendingPhotoPreview?'src="'+pendingPhotoPreview+'"':'hidden')+' alt="معاينة الصورة">';
+   const tools=document.createElement('div');tools.className='r14-photo-tools';tools.innerHTML='<label class="btn" for="r14StaffPhotoInput">'+(p?.photoKey?'تغيير صورة الموظف':'إضافة صورة الموظف')+'</label><input id="r14StaffPhotoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden onchange="r14PickStaffPhoto(this)"><img id="r14StaffPhotoPreview" class="r14-photo-preview" hidden alt="معاينة الصورة">';
    hero.insertBefore(tools,hero.querySelector('.hr-status')||hero.lastElementChild);
  }
  setTimeout(()=>window.r14HydrateStaffPhotos?.(),0);return box.innerHTML;
@@ -155,10 +202,53 @@ if(typeof window.hrEmployeeFormHtml==='function'){
 if(typeof window.saveStaffProfile==='function'){
  const oldSaveStaff=window.saveStaffProfile;
  window.saveStaffProfile=async function(id=''){
-   const result=await oldSaveStaff.apply(this,arguments);if(result===false)return result;
-   if(pendingPhotoFile){const pid=String((typeof hrStaffEditingId!=='undefined'&&hrStaffEditingId)?hrStaffEditingId:(id||''));const p=(state.staffProfiles||[]).find(x=>String(x.id)===pid);if(p){const oldKey=p.photoKey||'';const key='staff_photo_'+p.id+'_'+Date.now();let uploaded=false;try{await storeAttachmentRecord({key,kind:'staff_photo',scope:'staff_photo',staffId:String(p.id),name:pendingPhotoFile.name||'profile.jpg',type:pendingPhotoFile.type||'image/jpeg',size:pendingPhotoFile.size||0,blob:pendingPhotoFile,createdAt:new Date().toISOString()});uploaded=true;p.photoKey=key;p.photoName=pendingPhotoFile.name||'profile.jpg';p.photoUpdatedAt=typeof activityTimestamp==='function'?activityTimestamp():new Date().toISOString();await Promise.resolve(save());if(oldKey)try{await removeAttachmentRecord(oldKey)}catch(e){}}catch(e){if(uploaded)try{await MoshApi.removeFile(key)}catch(_e){};console.error('MOSH profile photo upload failed',e);alert('تم حفظ الموظف، لكن تعذر حفظ صورة البروفايل: '+(e?.message||'خطأ غير معروف'));}}
+  if(savingStaffPhoto)return false;
+  const photo=pendingStaffPhoto?.input===q('#r14StaffPhotoInput')?pendingStaffPhoto:null;
+  if(!photo)return oldSaveStaff.apply(this,arguments);
+  if(!photo.preview){window.MoshUI19?.toast('جارٍ تجهيز صورة الموظف…');return false;}
+
+  savingStaffPhoto=true;
+  const photoRevision=editRevision;
+  const sameAccount=()=>photo.accountId&&String(window.MoshApi?.user?.id||'')===photo.accountId;
+  let uploadedKey='',profileId='';
+  try{
+   const result=await oldSaveStaff.apply(this,arguments);
+   if(result!==true)return result;
+   profileId=String(id||hrStaffEditingId||'');
+   await MoshApi.flush();
+   if(!sameAccount())return false;
+   const profile=getStaffProfileById(profileId);
+   if(!profile)throw new Error('تعذر تحديد ملف الموظف.');
+   const oldKey=profile.photoKey, key='staff_photo_'+crypto.randomUUID();
+   const updatedAt=new Date().toISOString();
+   await storeAttachmentRecord({key,kind:'staff_photo',scope:'staff_photo',staffId:profileId,
+    name:photo.file.name||'profile.jpg',type:photo.file.type||'image/jpeg',size:photo.file.size,blob:photo.file,createdAt:updatedAt});
+   uploadedKey=key;
+   if(!sameAccount())return false;
+   const current=getStaffProfileById(profileId);
+   if(!current)throw new Error('تعذر ربط الصورة بملف الموظف.');
+   Object.assign(current,{photoKey:key,photoName:photo.file.name||'profile.jpg',photoUpdatedAt:updatedAt});
+   await Promise.resolve(save());
+   uploadedKey='';
+   if(pendingStaffPhoto===photo)pendingStaffPhoto=null;
+   if(sameAccount()&&editRevision===photoRevision&&String(hrStaffEditingId||'')===profileId&&q('#r14StaffPhotoInput')){
+    setDirty(false);
+    renderStaffWorkflowConfig();
    }
-   pendingPhotoFile=null;pendingPhotoPreview='';setTimeout(()=>{try{renderStaffWorkflowConfig()}catch(e){};window.r14HydrateStaffPhotos?.()},80);return result;
+   if(sameAccount()&&oldKey&&oldKey!==key)await removeAttachmentRecord(oldKey).catch(()=>{});
+   window.r14HydrateStaffPhotos?.();
+   return result;
+  }catch(error){
+   if(sameAccount()){
+    if(uploadedKey)await removeAttachmentRecord(uploadedKey).catch(()=>{});
+    if(pendingStaffPhoto===photo&&String(hrStaffEditingId||'')===profileId){
+     const input=q('#r14StaffPhotoInput');
+     if(input){photo.input=input;showStaffPhotoPreview(photo);}
+    }
+    window.MoshUI19?.toast('تعذر حفظ صورة الموظف. '+(error?.message||'أعد المحاولة.'));
+   }
+   return false;
+  }finally{savingStaffPhoto=false;}
  };
 }
 

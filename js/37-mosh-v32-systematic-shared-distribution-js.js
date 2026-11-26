@@ -44,11 +44,10 @@ if(typeof BASE_GET_SUBTASKS==='function'){
  window.getSubTasks=function(parentId){return BASE_GET_SUBTASKS(parentId).filter(function(t){return !t.sharedDistributionChild})};
 }
 
-function createChild(parent,dep,type,assignee,extra){
- var id=getNextTaskId(),no='TASK/'+String(id).padStart(5,'0');
+function createChild(id,parent,dep,type,assignee,extra){
  var r=rootOf(parent)||parent;
  var obj={
-  id:id,number:no,taskNo:no,parentTaskId:parent.id,parentTaskNo:parent.taskNo||parent.number||'',parentTaskTitle:parent.title||'',
+  ...taskIdentity(id),parentTaskId:parent.id,parentTaskNo:parent.taskNo||parent.number||'',parentTaskTitle:parent.title||'',
   salesOrderId:r.salesOrderId||null,salesOrderNo:r.salesOrderNo||'',origin:r.origin||(r.salesOrderId?'أمر مبيعات':'مهمة مباشرة'),createdBy:currentName(),
   customer:r.customer||'',customerId:r.customerId||'',title:r.title||'مهمة مشتركة',description:r.description||'',department:dep,assignee:clean(assignee),
   assigneeId:assignee?String(staffFor(dep).find(p=>clean(p.name)===clean(assignee))?.id||''):'',
@@ -68,21 +67,34 @@ function makeRoot(t,mode,leadDep){
  t.history=arr(t.history);t.history.push({text:mode==='departments'?'تم تحويل المهمة إلى مهمة مشتركة بين عدة أقسام.':'تم تحويل المهمة إلى مهمة مشتركة بين عدة موظفين.',time:nowText(),by:currentName()});
  return t;
 }
-function createDepartmentUnit(root,dep){
- return createChild(root,dep,'department','',{sharedTeamContainer:false,sharedDepartment:dep});
+function createDepartmentUnit(id,root,dep){
+ return createChild(id,root,dep,'department','',{sharedTeamContainer:false,sharedDepartment:dep});
 }
-function addDepartments(root,deps){
- var existing=deptUnits(root.id).map(deptOfUnit);var add=deps.filter(function(d){return !existing.includes(d)});if(!add.length)return;
- pushUndo();add.forEach(function(dep){createDepartmentUnit(root,dep)});root.sharedReady=false;root.history=arr(root.history);root.history.push({text:'تمت إضافة '+add.map(displayDepartment).join('، ')+' إلى المهمة المشتركة دون تغيير الأقسام الموزعة سابقاً.',time:nowText(),by:currentName()});syncStatuses(false);saveSafe();refreshBoards();openRoot(root.id);
+async function addDepartments(root,deps){
+ const existing = deptUnits(root.id).map(deptOfUnit);
+ const additions = deps.filter(department => !existing.includes(department));
+ if (!additions.length) return false;
+ const firstId = await MoshApi.reserveTaskIds(additions.length);
+ if (task(root.id) !== root) throw new Error('تغيّرت المهمة أثناء تخصيص الأرقام. أعد فتحها.');
+ pushUndo();
+ additions.forEach((department,index) => createDepartmentUnit(firstId + index, root, department));
+ root.sharedReady = false;
+ root.history = arr(root.history);
+ root.history.push({text:'تمت إضافة ' + additions.map(displayDepartment).join('، ') + ' إلى المهمة المشتركة.',time:nowText(),by:currentName()});
+ syncStatuses(false);
+ await save();
+ refreshBoards();
+ return true;
 }
 function syncStatuses(doSave){
  var changed=false;
  list().filter(function(x){return isShared(x)&&nodeType(x)==='department'&&x.sharedTeamContainer}).forEach(function(unit){
+  if(!MoshApi.hasTaskFamily(unit.id))return;
   var ms=members(unit.id);var done=ms.length>0&&ms.every(isDone);
   if(done&&!isDone(unit)){unit.status='completed';unit.employeeState='finished';unit.completedAt=unit.completedAt||nowText();unit.completedBy=unit.completedBy||'النظام';changed=true}
   if(!done&&isDone(unit)){unit.status='shared_container';unit.employeeState='new';delete unit.completedAt;delete unit.completedBy;changed=true}
  });
- list().filter(isRoot).forEach(function(root){var us=deptUnits(root.id);var ready=us.length>0&&us.every(isDone);if(!!root.sharedReady!==ready){root.sharedReady=ready;root.sharedReadyAt=ready?nowText():'';changed=true}});
+ list().filter(isRoot).forEach(function(root){if(!MoshApi.hasTaskFamily(root.id))return;var us=deptUnits(root.id);var ready=us.length>0&&us.every(isDone);if(!!root.sharedReady!==ready){root.sharedReady=ready;root.sharedReadyAt=ready?nowText():'';changed=true}});
  if(changed&&doSave!==false)saveSafe();return changed;
 }
 
@@ -172,10 +184,17 @@ async function saveDepartmentsModal(){
   if(selected.length<2){alert('اختر قسمين على الأقل.');return}var t=task(modalState.taskId);if(!t)return;var lead=document.querySelector('#sd32ModalBody input[name=sd32LeadDep]:checked');await distributeFromBoard(t,'departments',selected,lead?.value||selected[0]);return;
  }
  if(modalState.type==='addDepartments'){
-  if(!selected.length){alert('اختر قسماً واحداً على الأقل.');return}var root=task(modalState.taskId);closeModal();if(root)addDepartments(root,selected);
+  if(!selected.length){alert('اختر قسماً واحداً على الأقل.');return}
+  const root=task(modalState.taskId), button=document.getElementById('sd32SaveBtn');
+  if(!root||button.disabled)return;
+  button.disabled=true;
+  try{
+   if(await addDepartments(root,selected)){closeModal();await openRoot(root.id);}
+  }catch(error){MoshApi.showError(error);}
+  finally{button.disabled=false;}
  }
 }
-function openRoot(id){var r=task(id);if(!r)return;return openAppWith('tasks',function(){activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:''};openTaskDetails(r.id);})}
+function openRoot(id){return openAppWith('tasks',function(){return openTaskDetailsFromAll(id);});}
 
 
 // Protect the shared root from accidental department reassignment and delete the whole shared tree safely.
@@ -358,16 +377,24 @@ async function createDistributed(payload,mode,selected,owner,existing=null,teams
   return [department,people];
  }));
  const existingUnit=existing&&isShared(existing)&&nodeType(existing)==='department';
- const root=existingUnit?{id:existing.sharedRootTaskId,title:existing.parentTaskTitle}:existing?{...existing,history:[...(existing.history||[])]}:{...payload,id:crypto.randomUUID()};
+ const needsRootId = !existing && payload.id == null;
+ const memberCount = [...assignedTeams.values()].reduce((sum, people) => sum + people.length, 0);
+ const count = memberCount + (existingUnit ? 0 : assignedTeams.size) + Number(needsRootId);
+ let nextId = count ? await MoshApi.reserveTaskIds(count) : null;
+ const root=existingUnit
+  ? {id:existing.sharedRootTaskId,title:existing.parentTaskTitle,taskNo:existing.parentTaskNo}
+  : existing
+   ? {...existing,history:[...(existing.history||[])]}
+   : {...payload,...taskIdentity(needsRootId ? nextId++ : payload.id)};
  if(!existingUnit)makeRoot(root,mode,team?dep:selected[0]);
  const rows=existingUnit?[]:[root];
  for(const [department,people] of assignedTeams){
   const hasTeam=people.length>0;
-  const unit={...payload,id:crypto.randomUUID(),attachments:[],parentTaskId:root.id,parentTaskTitle:root.title,sharedDistributionChild:true,sharedRootTaskId:root.id,sharedDepartment:department,sharedNodeType:'department',sharedTeamContainer:hasTeam,department:hasTeam?'المهمات':department,status:hasTeam?'shared_container':'in_progress',assignmentMode:hasTeam?'shared_team':'manager',assignee:'',assigneeId:''};
-  if(existingUnit)unit.id=existing.id;
+  const identity = existingUnit ? {id:existing.id,number:existing.number,taskNo:existing.taskNo} : taskIdentity(nextId++);
+  const unit={...payload,...identity,attachments:[],parentTaskId:root.id,parentTaskNo:root.taskNo||root.number||'',parentTaskTitle:root.title,sharedDistributionChild:true,sharedRootTaskId:root.id,sharedDepartment:department,sharedNodeType:'department',sharedTeamContainer:hasTeam,department:hasTeam?'المهمات':department,status:hasTeam?'shared_container':'in_progress',assignmentMode:hasTeam?'shared_team':'manager',assignee:'',assigneeId:''};
   if(hasTeam)unit.sharedTeamLead=people[0].name;
   rows.push(unit);
-  for(const [i,p] of people.entries())rows.push({...payload,id:crypto.randomUUID(),attachments:[],department,parentTaskId:unit.id,parentTaskTitle:root.title,sharedDistributionChild:true,sharedRootTaskId:root.id,sharedDepartment:department,sharedNodeType:'member',sharedLead:i===0,assignee:p.name,assigneeId:String(p.id),assignmentMode:'manager_assigned'});
+  for(const [i,p] of people.entries())rows.push({...payload,...taskIdentity(nextId++),attachments:[],department,parentTaskId:unit.id,parentTaskNo:unit.taskNo||unit.number||'',parentTaskTitle:root.title,sharedDistributionChild:true,sharedRootTaskId:root.id,sharedDepartment:department,sharedNodeType:'member',sharedLead:i===0,assignee:p.name,assigneeId:String(p.id),assignmentMode:'manager_assigned'});
  }
  const operations=rows.map(data=>{
   if(!existing||data.id!==existing.id)return {resource:'tasks',action:'create',id:data.id,data};
@@ -380,7 +407,10 @@ async function createDistributed(payload,mode,selected,owner,existing=null,teams
  const options={method:'POST',headers:{'Idempotency-Key':crypto.randomUUID()},body:{operations}};
  let result;try{result=await MoshApi.request('/transactions',options);}catch(e){if(!e.network)throw e;result=await MoshApi.request('/transactions',options);}
  for(const change of result.changes)if(change.resource==='tasks'&&change.data)MoshApi.acceptCreatedTask(change.data,owner);
- if(existing&&!result.changes.some(change=>String(change.id)===String(existing.id)&&change.data))await MoshApi.refreshTasks();
+ if(existing&&!result.changes.some(change=>String(change.id)===String(existing.id)&&change.data)){
+  try{await MoshApi.hydrateTaskFamily(existing.id);}
+  catch(error){if(![403,404].includes(error.status))MoshApi.showError(error);}
+ }
  refreshMarketingTaskList();
  return root;
 }

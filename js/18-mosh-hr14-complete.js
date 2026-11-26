@@ -59,36 +59,210 @@ const isMine=(t,p)=>t&&p&&(t.assigneeId?String(t.assigneeId)===String(p.id):!!p.
 function performance(p,period='month'){const tasks=A(state.salesTasks).filter(t=>isMine(t,p)),open=tasks.filter(t=>t.status==='in_progress'),from=period==='all'?0:Date.parse(today().slice(0,7)+'-01T00:00:00'),done=tasks.filter(t=>dwrDone(t)&&dwrEnd(t)>=from&&dwrEnd(t)<=Date.now()),timed=done.filter(t=>dwrWork(t)>0),total=timed.reduce((s,t)=>s+dwrWork(t),0),due=done.filter(t=>iso(t.dueDate)&&dwrEnd(t)>0),ontime=due.filter(t=>dwrEnd(t)<=Date.parse(t.dueDate+'T23:59:59')).length,revisions=done.reduce((s,t)=>s+dwrRev(t),0);return{tasks,open,done,total,timed:timed.length,avg:timed.length?total/timed.length:0,due:due.length,ontime,revisions};}
 function perfHtml(p){const x=p||draft(),m=performance(x),rows=m.tasks.slice().sort((a,b)=>num(b.id)-num(a.id)).map(t=>'<tr><td>'+MoshTaskUI.identityHtml(t)+'</td><td>'+E(t.department||t.closedFromDepartment||'')+'</td><td>'+E(t.status==='in_progress'?workflowEmployeeLabel(t):dwrDone(t)?'منجزة':t.status)+'</td><td>'+E(iso(t.dueDate)?stamp(t.dueDate):'غير محدد')+'</td><td>'+E(dwrFmt(dwrWork(t)))+'</td><td>'+btn('فتح','task',String(t.id))+'</td></tr>').join('');return '<div class="m14"><div class="m14-head"><div><strong>مهام وأداء '+E(x.name||'الموظف الجديد')+'</strong><p>ملخص الشهر الحالي من المهام المسندة لهذا الموظف فقط.</p></div></div><div class="m14-kpis">'+kpi('مهام جارية',m.open.length)+kpi('منجزة هذا الشهر',m.done.length)+kpi('طلبات تعديل للمنجزة',m.revisions)+kpi('التزام بالموعد',m.due?Math.round(m.ontime/m.due*100)+'%':'—')+'</div><div class="m14-kpis">'+kpi('إجمالي وقت المهام',dwrFmt(m.total))+kpi('متوسط وقت المهمة',dwrFmt(m.avg))+kpi('بانتظار المراجعة',m.open.filter(t=>t.employeeState==='submitted').length)+kpi('متأخرة حاليًا',m.open.filter(t=>iso(t.dueDate)&&t.dueDate<today()).length)+'</div><p>الوقت من مؤقت المهام وليس من ساعات الحضور. «—» تعني أن البيانات غير متاحة، ولا نمنح تقييم أداء تلقائيًا من بيانات ناقصة.</p>'+fold('m14EmployeeTasks','قائمة مهام الموظف',table(['المهمة / العميل','القسم','الحالة','الموعد','الوقت المسجل',''],rows),m.tasks.length+' مهمة',false)+fold('m14EmployeeEvaluations','التقييمات المسجّلة',table(['التاريخ','النتيجة','ملاحظة','المقيّم',''],A(x.evaluationRecords).slice().reverse().map(r=>'<tr><td>'+E(stamp(r.date))+'</td><td>'+E(r.score??r.rating??'—')+'</td><td>'+E(r.note||r.notes||'')+'</td><td>'+E(r.by||'')+'</td><td>'+btn('تعديل','eval-edit',String(x.id)+'|'+String(r.id))+' '+btn('حذف','eval-remove',String(x.id)+'|'+String(r.id),'m14-danger')+'</td></tr>').join('')),A(x.evaluationRecords).length+' تقييم')+'</div>';}
 const previousOverview14=window.hrOverviewPaneHtml;
-window.hrOverviewPaneHtml=function(p){if(!p)return '<div class="m14-note info">أدخل اسم الموظف وبياناته الوظيفية. يمكنك إضافة الوثائق والعهد والإجازات وسجلات الدوام قبل حفظ وإغلاق الملف.</div>';const m=performance(p),b=balance(p);return '<div class="m14"><div class="m14-kpis">'+kpi('القسم',p.department||'—')+kpi('المدير المباشر',p.directManager||'غير محدد')+kpi('الإجازة المتاحة',b.available+' يوم')+kpi('المهام الجارية',m.open.length)+'</div><div class="m14-kpis">'+kpi('منجزة هذا الشهر',m.done.length)+kpi('الالتزام بالموعد',m.due?Math.round(m.ontime/m.due*100)+'%':'—')+kpi('العهد المسلّمة',A(p.assets).filter(a=>a.status!=='مستردة').length)+kpi('الوثائق',A(p.documents).length)+'</div><p>التفاصيل في التبويب المختص. لا تُعدّ البيانات الناقصة أداءً ضعيفًا أو غيابًا.</p></div>';};
+window.hrOverviewPaneHtml=function(p){if(!p)return '<div class="m14-note info">أدخل اسم الموظف وبياناته الوظيفية. يمكنك إضافة الوثائق والعهد والإجازات وسجلات الدوام قبل حفظ وإغلاق الملف.</div>';const m=performance(p),b=balance(p);return '<div class="m14"><div class="m14-kpis">'+kpi('القسم',p.department||'—')+kpi('المدير المباشر',getStaffDirectManagerName(p)||'غير محدد')+kpi('الإجازة المتاحة',b.available+' يوم')+kpi('المهام الجارية',m.open.length)+'</div><div class="m14-kpis">'+kpi('منجزة هذا الشهر',m.done.length)+kpi('الالتزام بالموعد',m.due?Math.round(m.ontime/m.due*100)+'%':'—')+kpi('العهد المسلّمة',A(p.assets).filter(a=>a.status!=='مستردة').length)+kpi('الوثائق',A(p.documents).length)+'</div><p>التفاصيل في التبويب المختص. لا تُعدّ البيانات الناقصة أداءً ضعيفًا أو غيابًا.</p></div>';};
 window.hrLeavePaneHtml=p=>{session(p);return leaveHtml(p);};window.hrAttendancePaneHtml=p=>{session(p);return attendanceHtml(p);};window.hrPerformancePaneHtml=p=>perfHtml(p||S?.base||{});
-window.hrEmployeeFormHtml=function(p,identity,status){session(p);let html=oldForm.apply(this,arguments);const box=document.createElement('div');box.innerHTML=html;const a=box.querySelector('#staffIssuedAssets');if(a){a.type='hidden';const parent=a.parentElement;parent.style.gridColumn='1 / -1';parent.querySelector('label')?.remove();const d=document.createElement('div');d.id='m14Assets';d.innerHTML=assetHtml();parent.append(d);}const tabs=box.querySelector('.hr-profile-tabs');if(tabs&&!tabs.querySelector('[data-m14=contracts]'))tabs.insertAdjacentHTML('beforeend',btn('عقود الموظف','contracts',p?.id||''));const type=box.querySelector('#staffContractType');if(type&&p?.contractType==='مشروع')type.insertAdjacentHTML('beforeend','<option value="مشروع" selected>مشروع (قيمة سابقة محفوظة)</option>');return box.innerHTML;};
+function showAccountStatus(pane,account,announcement=''){
+ if(!account){
+  pane.innerHTML='<div class="m14-empty" role="status">لا يوجد حساب دخول مرتبط بهذا الموظف.</div>';
+  return;
+ }
+ const label=account.active?'فعّال':'متجمّد';
+ const action=account.active?'تجميد الحساب':'إعادة تفعيل الحساب';
+ pane.innerHTML='<div class="hr-profile-section">'+
+  '<span class="hr-status '+(account.active?'active':'inactive')+'">'+label+'</span>'+
+  (account.canChange?'<p>التجميد يوقف الدخول إلى النظام مع حفظ ملف الموظف وسجلّه.</p>'+
+   '<div class="m14-actions"><button type="button" class="btn '+(account.active?'hr-staff-delete':'primary')+'" data-hr-account-toggle>'+action+'</button></div>':'')+
+  (account.activationBlocked?'<p>فعّل الملف الوظيفي أولاً لإعادة تفعيل حساب الدخول.</p>':'')+
+  (announcement?'<p role="status">'+E(announcement)+'</p>':'')+'</div>';
+ const button=pane.querySelector('[data-hr-account-toggle]');
+ if(button)button.onclick=()=>loadAccountStatus(pane,account,button);
+}
+async function loadAccountStatus(pane,change=null,button=null){
+ const actor=MoshApi.user?.id;
+ if(!actor||pane.getAttribute('aria-busy')==='true')return;
+ const current=()=>pane.isConnected&&MoshApi.user?.id===actor;
+ pane.setAttribute('aria-busy','true');
+ if(button)button.disabled=true;
+ try{
+  if(change?.active&&!await ask('تجميد حساب الدخول لهذا الموظف؟'))return;
+  if(!current())return;
+  const path='/hr/account-status/'+encodeURIComponent(pane.dataset.accountEmployee);
+  if(!change)pane.innerHTML='<p role="status">جارٍ تحميل حالة الحساب…</p>';
+  const account=await MoshApi.request(path,change?{
+   method:'PUT',body:{accountId:change.accountId,_version:change._version,active:!change.active}
+  }:{cache:'no-store'});
+  if(current())showAccountStatus(pane,account,change?(account.active?'تم تفعيل الحساب.':'تم تجميد الحساب.'):'');
+ }catch(error){
+  if(current()){
+   pane.innerHTML='<p class="m14-error" role="alert">'+E(error.message||'تعذر جلب حالة الحساب.')+'</p>'+
+    '<button type="button" class="btn" data-hr-account-retry>تحديث حالة الحساب</button>';
+   pane.querySelector('[data-hr-account-retry]').onclick=()=>loadAccountStatus(pane);
+  }
+ }finally{
+  pane.removeAttribute('aria-busy');
+  if(button?.isConnected)button.disabled=false;
+ }
+}
+const previousEmployeeTab=window.switchHrEmployeeTab;
+window.switchHrEmployeeTab=function(tab){
+ const result=previousEmployeeTab.apply(this,arguments);
+ if(tab==='account-status'){
+  const pane=hr.querySelector('#staffWorkflowConfig [data-pane="account-status"].active');
+  if(pane)void loadAccountStatus(pane);
+ }
+ return result;
+};
+window.hrEmployeeFormHtml=function(p,identity,status){
+ session(p);
+ const box=document.createElement('div');
+ box.innerHTML=oldForm.apply(this,arguments);
+ const assets=box.querySelector('#staffIssuedAssets');
+ if(assets){
+  assets.type='hidden';
+  const parent=assets.parentElement;
+  parent.style.gridColumn='1 / -1';
+  parent.querySelector('label')?.remove();
+  const list=document.createElement('div');
+  list.id='m14Assets';
+  list.innerHTML=assetHtml();
+  parent.append(list);
+ }
+ const tabs=box.querySelector('.hr-profile-tabs');
+ if(tabs&&!tabs.querySelector('[data-m14=contracts]'))tabs.insertAdjacentHTML('beforeend',btn('عقود الموظف','contracts',p?.id||''));
+ const access=window.MoshAuth37;
+ if(tabs&&p?.id&&access?.canModule('hr','view')&&access.canModule('hr','details')){
+  tabs.insertAdjacentHTML('beforeend','<button type="button" class="hr-profile-tab" data-tab="account-status" onclick="switchHrEmployeeTab(\'account-status\')">حالة الحساب</button>');
+  box.querySelector('.hr-profile-shell').insertAdjacentHTML('beforeend','<div class="hr-profile-pane m14" data-pane="account-status" data-account-employee="'+E(p.id)+'"></div>');
+ }
+ const type=box.querySelector('#staffContractType');
+ if(type&&p?.contractType==='مشروع')type.insertAdjacentHTML('beforeend','<option value="مشروع" selected>مشروع (قيمة سابقة محفوظة)</option>');
+ return box.innerHTML;
+};
 const project=typeof HR_CONTRACT_TYPES!=='undefined'?HR_CONTRACT_TYPES.indexOf('مشروع'):-1;if(project>=0)HR_CONTRACT_TYPES.splice(project,1,'تجربة');
 window.saveStaffProfile=async function(id=''){if(!dateValid(hr))return false;collectAssets();if(S?.assets.some(a=>!String(a.name||'').trim())){toast('اكتب اسم كل عهدة أو احذف السطر الفارغ.',true);switchHrEmployeeTab('employment');return false;}if(!S||!Q('m14Assets'))return oldSave.apply(this,arguments);const snap=S,who=value('staffName'),originalSave=window.save;window.save=function(){const p=id?getStaffProfileById(id):getStaffProfileByName(who);if(p){p.assets=clone(snap.assets);p.issuedAssets=snap.assets.filter(a=>a.status!=='مستردة').map(a=>a.name).join(' + ');if(snap.dirtyKinds.has('leave')){p.leaveRecords=clone(snap.leave);p.annualLeaveDays=num(snap.annual,14);p.leaveOpeningBalance=num(snap.opening);for(const r of p.leaveRecords){if(r.status==='pending'&&!r.approvalId&&!A(state.hrProRequests).some(q=>String(q.id)===String(r.id))){const a=hrCreateApproval('leave_override',p,r.id,'طلب إجازة '+r.type+' — '+(r.type==='ساعية'?r.hours+' ساعة':leaveDays(r)+' يوم'),{days:leaveDays(r),type:r.type,startDate:r.startDate,endDate:r.endDate,hours:r.hours});r.approvalId=a.id;}}}if(snap.dirtyKinds.has('attendance'))p.attendanceRecords=clone(snap.attendance);if(snap.changed){p.auditTrail=A(p.auditTrail);p.auditTrail.push({time:now(),by:name(),text:'تحديث العهد والإجازات وسجلات الدوام من ملف الموظف.'});}}return originalSave.apply(this,arguments);};try{const result=await oldSave.call(this,id);if(result!==false){S=null;Q('m14Pending')?.remove();}return result;}finally{window.save=originalSave;}};
 const oldOpen=window.openStaffEmployeeForm;window.openStaffEmployeeForm=function(){if(!Q('staffDocuments13A')||!S?.changed)S=null;return oldOpen.apply(this,arguments);};
 const oldClose=window.closeStaffEmployeeForm;window.closeStaffEmployeeForm=function(){const result=oldClose.apply(this,arguments);if(result!==false&&!hrStaffFormOpen)S=null;return result;};
-// Manager assignment uses an in-app confirmation and an atomic write, not a blocked native dialog.
-window.assignDepartmentManagerFromHR=async function(dept){
- if(!permitted())return false;
- const field=Array.from(document.querySelectorAll('select')).find(e=>e.id==='hrDeptManager_'+dept&&e.getClientRects().length>0)||Q('hrDeptManager_'+dept);
- if(!field){toast('تعذر العثور على اختيار المدير.',true);return false;}
- const id=String(field.value||''),p=id?getStaffProfileById(id):null;
- if(id&&(!p||!isStaffAssignable(p))){toast('اختر موظفاً نشطاً.',true);return false;}
- const expected=String(state.departmentManagers?.[dept]||'');
- if(expected===id){toast('تعيين القسم محفوظ بالفعل.');return true;}
- const others=id?getManagedDepartmentsForStaff(p).filter(d=>d!==dept):[];
- if(!await ask((p?'تعيين '+p.name:'إلغاء المدير')+' لقسم '+dept+'؟'+(others.length?'\nيبقى مديراً أيضاً لـ: '+others.join('، '):'')))return false;
+const managerDepartmentsDialog = 'hrManagerDepartments';
+async function saveDepartmentManager(owner,body,suffix=''){
+ const current=()=>owner&&MoshApi.user?.id===owner;
+ await MoshApi.flush();
+ if(!current())throw new Error('تغيّر حساب الدخول؛ افتح قائمة مدراء الأقسام من جديد.');
+ const options={method:'PUT',body:{...body,requestId:crypto.randomUUID()}};
+ let result;
+ try{result=await MoshApi.request('/hr/department-managers'+suffix,options);}
+ catch(error){
+  if(!error.network||!current())throw error;
+  result=await MoshApi.request('/hr/department-managers'+suffix,options);
+ }
+ if(!current())throw new Error('تغيّر حساب الدخول.');
+ if(suffix)MoshApi.departmentManagerCoverage=result;else{
+  MoshApi.departmentManagerCoverage=result.coverage||null;
+  MoshApi.acceptServerChanges(result.changes,owner);
+ }
+}
+function refreshManagerAssignments(){
+ MoshHR13.go('employees','managers');
+ decorate();
+ const list=Q('m14Managers');
+ if(list)list.open=true;
+}
+function chooseManagerDepartments(person,startingDepartment){
+ const owner=MoshApi.user?.id,id=String(person.id);
+ const departments=managerAssignmentDepartments();
+ const expected=Object.fromEntries(departments.map(department=>[department,String(state.departmentManagers?.[department]||'')]));
+ const rows=departments.map(department=>{
+  const current=getStaffProfileById(expected[department]);
+  const alreadyAssigned=expected[department]===id;
+  const checked=alreadyAssigned||department===startingDepartment?'checked':'';
+  return '<label class="sd32-choice"><input type="checkbox" name="department" value="'+E(department)+'" '+checked+
+   (alreadyAssigned?' disabled':'')+'><span><b>'+E(departmentDisplayName(department))+'</b><small>'+
+   (alreadyAssigned?'يديره حالياً':current?'المدير الحالي: '+E(current.name):'بدون مدير')+'</small></span></label>';
+ }).join('');
+ const d=MoshUI19.dialog(managerDepartmentsDialog,'تعيين الأقسام · '+person.name,
+  '<form><p>اختَر الأقسام لهذا المدير. عند اختيار قسم له مدير حالي، يحل المدير الجديد مكانه.</p>'+
+  '<div class="sd32-choices">'+rows+'</div><p class="m14-error" role="alert" hidden></p><footer class="r19-dialog-actions">'+
+  '<button type="submit" class="primary">حفظ التعيين</button><button type="button" data-r19-close="'+managerDepartmentsDialog+'">إلغاء</button></footer></form>');
+ const form=d.querySelector('form'),saveButton=form.querySelector('button[type="submit"]');
+ const choices=[...form.querySelectorAll('input[name="department"]:not(:disabled)')];
+ const message=form.querySelector('[role="alert"]');
+ const selected=()=>choices.filter(box=>box.checked).map(box=>box.value);
+ const updateButton=()=>{saveButton.disabled=d.getAttribute('aria-busy')==='true'||!selected().length;};
+ form.addEventListener('change',updateButton);
+ updateButton();
+ form.onsubmit=async event=>{
+  event.preventDefault();
+  const changes=selected().map(department=>({department,expectedManagerId:expected[department]}));
+  if(!changes.length||d.getAttribute('aria-busy')==='true')return;
+  d.setAttribute('aria-busy','true');
+  message.hidden=true;
+  choices.forEach(box=>box.disabled=true);
+  updateButton();
+  try{
+   await saveDepartmentManager(owner,{managerId:id,departments:changes});
+   MoshUI19.close(managerDepartmentsDialog,true);
+   toast('تم تعيين المدير للأقسام المختارة.');
+   refreshManagerAssignments();
+  }catch(error){
+   message.textContent=error.message||'تعذر حفظ التعيين.';
+   message.hidden=false;
+  }finally{
+   d.removeAttribute('aria-busy');
+   choices.forEach(box=>box.disabled=false);
+   updateButton();
+  }
+ };
+}
+window.assignDepartmentManagerBackupFromHR=async function(dept){
+ if(!window.MoshAuth37?.canModule?.('hr','edit')){
+  toast('لا تملك صلاحية تعيين مدير بديل.',true);
+  return false;
+ }
+ const field=Array.from(hr.querySelectorAll('select[data-hr-backup-department]'))
+  .find(input=>input.dataset.hrBackupDepartment===dept&&input.getClientRects().length);
+ if(!field||field.disabled)return false;
+ const id=String(field.value||''),expected=String(MoshApi.departmentManagerCoverage?.backups?.[dept]||'');
+ if(id===expected)return true;
  field.disabled=true;
  try{
-  await MoshApi.flush();
-  const owner=MoshApi.user?.id,body={department:dept,managerId:id,expectedManagerId:expected,requestId:crypto.randomUUID()};
-  const options={method:'PUT',body}; let result;
-  try{result=await MoshApi.request('/hr/department-managers',options);}
-  catch(error){if(!error.network)throw error;result=await MoshApi.request('/hr/department-managers',options);}
-  MoshApi.acceptServerChanges(result.changes,owner);
-  toast('تم تثبيت مدير القسم على الخادم.');MoshHR13.go('employees','managers');return true;
+  await saveDepartmentManager(MoshApi.user?.id,{department:dept,managerId:id,expectedManagerId:expected},'/backup');
+  toast(id?'تم حفظ المدير البديل.':'تم إلغاء المدير البديل.');
+  refreshManagerAssignments();
+  return true;
+ }catch(error){
+  toast(error.message||'تعذر حفظ المدير البديل.',true);
+  return false;
+ }finally{field.disabled=false;}
+};
+
+window.assignDepartmentManagerFromHR=async function(dept){
+ if(!window.MoshAuth37?.canModule?.('hr','edit')){
+  toast('لا تملك صلاحية تعيين مدراء الأقسام.',true);
+  return false;
+ }
+ const field=Array.from(hr.querySelectorAll('select[data-hr-manager-department]')).find(e=>e.dataset.hrManagerDepartment===dept&&e.getClientRects().length)||Q('hrDeptManager_'+dept);
+ if(!field){toast('تعذر العثور على اختيار المدير.',true);return false;}
+ const id=String(field.value||''),expected=String(state.departmentManagers?.[dept]||'');
+ if(id){
+  const person=getStaffProfileById(id);
+  if(!person||!isStaffAssignable(person)){toast('اختر موظفاً نشطاً.',true);return false;}
+  chooseManagerDepartments(person,dept);
+  return true;
+ }
+ if(!expected){toast('القسم بدون مدير حالياً.');return true;}
+ const owner=MoshApi.user?.id;
+ if(!await ask('إلغاء مدير قسم '+departmentDisplayName(dept)+'؟'))return false;
+ field.disabled=true;
+ try{
+  await saveDepartmentManager(owner,{department:dept,managerId:'',expectedManagerId:expected});
+  toast('تم إلغاء مدير القسم.');
+  refreshManagerAssignments();return true;
  }catch(error){toast(error.message||'تعذر حفظ التعيين.',true);return false;}
  finally{field.disabled=false;}
 };
+hr.addEventListener('change',event=>{
+ const field=event.target.closest?.('select[data-hr-manager-department]');
+ if(field?.value)window.assignDepartmentManagerFromHR(field.dataset.hrManagerDepartment);
+});
 // Repeated settings and records are collapsed by default, with their labels/counts visible.
 function wrap(el,id,title){if(!el||el.closest('details')||el.closest('.m14-modal'))return;const d=document.createElement('details');d.id=id;d.className='m14-fold m14';const s=document.createElement('summary');s.textContent=title;const body=document.createElement('div');el.before(d);d.append(s,body);body.append(el);}
 function decorate(){hr.querySelectorAll('#h13EmployeeRows [data-h13="profile"]').forEach(b=>{const td=b.parentElement;if(td.querySelector('[data-m14="employee-edit"]'))return;const id=b.dataset.value||'';td.insertAdjacentHTML('beforeend',' '+btn('تعديل','employee-edit',id)+' '+btn('أرشفة','employee-remove',id,'m14-danger'));});const managers=hr.querySelector('#h13EmployeesBody .hr-manager-table-wrap');wrap(managers,'m14Managers','مدراء الأقسام — فتح / طيّ القائمة');const tabs=hr.querySelector('.h13-tabs');if(tabs?.querySelector('.active')?.dataset.value==='expiry'&&!Q('m14ExpiryContracts')){const area=Q('h13EmployeesBody');if(area){const records=area.querySelector('.h13-table-wrap');wrap(records,'m14ExpiryTable','تواريخ انتهاء العقود والوثائق — فتح / طيّ');area.insertAdjacentHTML('afterbegin','<div id="m14ExpiryContracts" class="m14"><div class="m14-head"><div><strong>عقود الموظفين</strong><p>إنشاء عقد وكتابة الشروط ومعاينته وتسجيل توقيع الطرفين.</p></div><div class="m14-actions">'+btn('+ عقد توظيف جديد','contract-new','','primary')+btn('سجل العقود','contracts')+'</div></div></div>');}}const profile=hr.querySelector('.hr-v209-profile-actions');if(profile&&!Q('m14ProfileContracts')){const b=document.createElement('button');b.id='m14ProfileContracts';b.type='button';b.className='btn';b.textContent='عقود الموظف';b.onclick=()=>contracts(profileId());profile.append(b);}hr.querySelectorAll('.hr-profile-pane[data-pane="rewards"] .hr-data-table-wrap,.hr-profile-pane[data-pane="disciplinary"] .hr-data-table-wrap,.hr-profile-pane[data-pane="timeline"] .hr-timeline').forEach((e,i)=>wrap(e,'m14Archive'+i,'السجل المحفوظ — فتح / طيّ'));}

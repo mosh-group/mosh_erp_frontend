@@ -115,3 +115,37 @@ html[data-mosh-theme=light] #r19IncomingPopup .r19-popup-close{color:#344c55}
 @keyframes r19-popup-countdown{to{transform:scaleX(0)}}
 @media(prefers-reduced-motion:reduce){#r19IncomingPopup,#r19IncomingPopup .r19-popup-progress{animation:none}}
 @media(max-width:480px){#r19IncomingPopup.r19-incoming-popup{left:12px;bottom:max(12px,env(safe-area-inset-bottom));width:calc(100vw - 24px)}}
+
+/* Keep circular actions visible when the form or decision needs to scroll. */
+:is(#r19CircularComposer,#r19AdministrativeCircular)[open]{
+  display:flex;flex-direction:column;box-sizing:border-box;width:min(620px,calc(100vw - 24px));
+  max-height:calc(100dvh - 24px);overflow:hidden;
+}
+:is(#r19CircularComposer,#r19AdministrativeCircular)>.r19-dialog-head{flex-shrink:0}
+:is(#r19CircularComposer,#r19AdministrativeCircular)>.r19-dialog-body{display:flex;flex-direction:column;min-height:0;padding:0;overflow:hidden}
+.r19-circular-form{display:flex;flex-direction:column;min-height:0;margin:0}
+.r19-circular-fields{
+  display:grid;grid-template-columns:minmax(0,1fr);gap:14px;
+  min-height:0;margin:0;padding:clamp(14px,3vw,22px);overflow:auto;overscroll-behavior:contain;
+}
+.r19-circular-fields :is(h3,p){margin:0;overflow-wrap:anywhere}
+.r19-circular-note,.r19-circular-meta{color:var(--muted,#aeb7be)}
+#r19AdministrativeCircular .r19-circular-meta{font-size:13px}
+.r19-circular-message{white-space:pre-wrap}
+#r19CircularComposer .r19-circular-field label{display:block;margin:0 0 5px;font-weight:700}
+#r19CircularComposer .r19-circular-field :is(input,textarea){display:block;width:100%;min-width:0;min-height:42px;margin:0;text-align:right}
+#r19CircularComposer .r19-circular-field textarea{min-height:105px;resize:vertical}
+.r19-circular-options{display:grid;grid-template-columns:minmax(0,9rem) minmax(0,9rem) minmax(0,1fr);align-items:end;gap:12px}
+.r19-circular-options>.r19-circular-check{min-height:42px}
+@media(max-width:560px){
+  .r19-circular-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .r19-circular-options>.r19-circular-check{grid-column:1/-1}
+}
+.r19-circular-footer{
+  flex-shrink:0;display:grid;gap:10px;margin:0;padding:12px clamp(14px,3vw,22px);
+  border-top:1px solid var(--line,#3b3e38);
+}
+.r19-circular-footer .r19-circular-error{margin:0;color:var(--danger,#e49891);overflow-wrap:anywhere}
+.r19-circular-actions{display:flex;flex-wrap:wrap;gap:8px}
+.r19-circular-check{display:flex;align-items:center;gap:9px;margin:0;font-weight:700;cursor:pointer}
+:is(#r19CircularComposer,#r19AdministrativeCircular) .r19-circular-check input{width:18px;height:18px;margin:0;flex:none;accent-color:#c5a44e}

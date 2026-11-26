@@ -20,7 +20,7 @@
   const taskTitle = t => presentation().title?.(t) || str(t?.title || 'مهمة بدون عنوان');
   const taskClient = t => presentation().client?.(t) || str(t?.customer || 'بدون عميل محدد');
   const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M9 21h6M12 1v1"/></svg>';
-  const typeLabels = {task:'المهام', hr:'إشعار إداري', announcement:'تعميم', 'r24-alert':'تنبيه إداري', 'r24-admin-reply':'رد على تنبيه', 'r24-decision':'قرار إداري', 'r24-purchase-approval':'اعتماد مشتريات'};
+  const typeLabels = {task:'المهام', hr:'إشعار إداري', announcement:'تعميم', 'administrative-circular':'تعميم إداري', 'r24-alert':'تنبيه إداري', 'r24-admin-reply':'رد على تنبيه', 'r24-decision':'قرار إداري', 'r24-purchase-approval':'اعتماد مشتريات'};
   const deptMap = {'الإدارة':'admin','الموارد البشرية':'hr','المبيعات':'sales','التسويق':'marketing','السوشال ميديا':'social','السوشل ميديا':'social','قسم السوشال ميديا':'social','التصميم':'design','التصوير':'photo','المونتاج':'editing','الترويج':'promotion','اللوجستيات':'logistics','المشتريات':'purchases','المحاسبة':'accounting','المستودعات':'warehouses','المستودعات العامة':'warehouses','MOSH MEDIA':'platform'};
   let lastIdentity = '', currentId = '', tab = 'unread', type = 'all', query = '', page = 1;
   let frame = 0, painting = false, scanning = false, acknowledging = false, dialogSignature = '';
@@ -41,11 +41,16 @@
     if (loadPending) return loadPending;
     if (!force && !refreshWanted && Date.now() - lastLoaded < 15000) return true;
     refreshWanted = false;
-    const who = identity(), epoch = inboxEpoch, prior = new Set(inbox.items.map(n => n.id)), wasLoaded = loaded;
+    const who = identity(), epoch = inboxEpoch, startingInbox = inbox;
+    const prior = new Set(inbox.items.map(n => n.id)), wasLoaded = loaded;
     const promise = (async () => {
       try {
-        const response = await MoshApi.request('/r19/notifications');
+        const response = await MoshApi.request('/r19/notifications', {cache:'no-store'});
         if (identity() !== who || epoch !== inboxEpoch) return false;
+        if (inbox !== startingInbox) {
+          refreshWanted = true;
+          return false;
+        }
         if (!response || !Array.isArray(response.items)) throw new Error('رد الإشعارات غير مكتمل.');
         inbox = {items:response.items, _version:Number(response._version)||0};
         loaded = true; loadError = ''; lastLoaded = Date.now();
@@ -53,6 +58,7 @@
           const arriving = inbox.items.filter(n => !prior.has(n.id) && belongsToCurrent(n) && !isRead(n));
           if (arriving.length) { chime(); notifyDesktop(arriving[0]); }
         }
+        showCircular();
         queuePopups();
         return true;
       } catch (error) {
@@ -131,7 +137,7 @@
   }
   function queuePopups() {
     if (popupNode && !availablePopup(popupNode.dataset.noticeId)) removePopup();
-    const notices = rows().filter(n => !isRead(n)).reverse();
+    const notices = rows().filter(n => n.type !== 'administrative-circular' && !isRead(n)).reverse();
     for (const n of notices) {
       const id = str(n.id);
       if (!id || popupSeen.has(id) || popupQueued.has(id) || popupNode?.dataset.noticeId === id) continue;
@@ -139,6 +145,209 @@
     }
     showNextPopup();
   }
+
+  const circularViewer = 'r19AdministrativeCircular';
+  const circularComposer = 'r19CircularComposer';
+  const presentedCirculars = new Set();
+
+  function dismissedCirculars() {
+    try {
+      const saved = JSON.parse(window.sessionStorage?.getItem(circularStorageKey()) || '[]');
+      return Array.isArray(saved) ? saved.filter(id => typeof id === 'string') : [];
+    } catch (_) { return []; }
+  }
+
+  function circularStorageKey() {
+    return 'mosh-dismissed-circulars:' + encodeURIComponent(identity());
+  }
+
+  function dismissCircular(id) {
+    try {
+      const saved = new Set(dismissedCirculars());
+      saved.add(id);
+      window.sessionStorage?.setItem(circularStorageKey(), JSON.stringify([...saved]));
+    } catch (_) { /* The in-memory set keeps this tab quiet until the next reload. */ }
+  }
+
+  function canPublishCirculars() {
+    return !!user() && !user().mustChange && !!window.MoshAuth37?.can('publishAdministrativeCirculars');
+  }
+
+  function mountCircularButton() {
+    const old = $('r19CircularNavigation');
+    if (!canPublishCirculars()) { old?.remove(); return; }
+    const nav = $('c09Nav');
+    if (old || !nav) return;
+    const button = document.createElement('button');
+    button.id = 'r19CircularNavigation';
+    button.type = 'button';
+    button.className = 'btn r35-ui-navigation';
+    button.textContent = 'تعميم إداري';
+    button.onclick = openCircularComposer;
+    nav.append(button);
+  }
+
+  function noticeRequestId() {
+    return globalThis.crypto?.randomUUID?.() || r24Key();
+  }
+
+  function openCircularComposer() {
+    if (!canPublishCirculars() || $(circularComposer)?.open) return;
+    const who = identity(), epoch = inboxEpoch;
+    const dialog = P.dialog(circularComposer, 'تعميم إداري',
+      '<form class="r19-circular-form">' +
+      '<div class="r19-circular-fields">' +
+      '<p class="r19-circular-note">يظهر القرار لكل الموظفين ورؤساء الأقسام.</p>' +
+      '<div class="r19-circular-field"><label for="r19CircularTitle">عنوان القرار</label>' +
+      '<input id="r19CircularTitle" name="title" type="text" dir="auto" required maxlength="250"></div>' +
+      '<div class="r19-circular-field"><label for="r19CircularMessage">نص القرار</label>' +
+      '<textarea id="r19CircularMessage" name="message" dir="auto" rows="4" required maxlength="10000"></textarea></div>' +
+      '<div class="r19-circular-options">' +
+      '<div class="r19-circular-field"><label for="r19CircularDays">مدة الظهور بالأيام</label>' +
+      '<input id="r19CircularDays" name="days" type="number" inputmode="numeric" min="1" max="3650" step="1" value="1" required></div>' +
+      '<div class="r19-circular-field"><label for="r19CircularSeconds">عدد ثواني الظهور</label>' +
+      '<input id="r19CircularSeconds" name="displaySeconds" type="number" inputmode="numeric" min="1" max="86400" step="1" placeholder="حتى الإغلاق"></div>' +
+      '<label class="r19-circular-check"><input name="repeatOnRefresh" type="checkbox"> ظهور عند كل تحديث للصفحة</label>' +
+      '</div>' +
+      '</div><footer class="r19-circular-footer"><p class="r19-circular-error" role="alert" hidden></p>' +
+      '<div class="r19-circular-actions"><button class="primary" type="submit">نشر التعميم</button>' +
+      '<button type="button" data-r19-close="' + circularComposer + '">إلغاء</button></div></footer></form>',
+      {dirty:true});
+    const form = dialog.querySelector('form');
+    const submit = form.querySelector('button[type="submit"]');
+    const error = form.querySelector('[role="alert"]');
+    form.elements.title.focus({preventScroll:true});
+    let pending = null;
+    const current = () => identity() === who && inboxEpoch === epoch && dialog.open;
+    form.onsubmit = async event => {
+      event.preventDefault();
+      if (!current() || !canPublishCirculars() || submit.disabled || !form.reportValidity()) return;
+      const payload = {
+        title: form.elements.title.value.trim(),
+        message: form.elements.message.value.trim(),
+        days: Number(form.elements.days.value),
+        displaySeconds: form.elements.displaySeconds.valueAsNumber || null,
+        repeatOnRefresh: form.elements.repeatOnRefresh.checked,
+      };
+      if (!payload.title || !payload.message) {
+        error.textContent = 'اكتب عنوان القرار ونصه.';
+        error.hidden = false;
+        return;
+      }
+      const signature = JSON.stringify(payload);
+      if (pending && pending.signature !== signature) {
+        error.textContent = 'أعد المحاولة بنفس النص والمدة للتحقق من النشر السابق.';
+        error.hidden = false;
+        return;
+      }
+      pending ??= {signature, requestId:noticeRequestId()};
+      error.hidden = true;
+      submit.disabled = true;
+      dialog.setAttribute('aria-busy', 'true');
+      try {
+        await MoshApi.request('/r19/administrative-circulars', {
+          method:'POST', body:{...payload, requestId:pending.requestId},
+        });
+        if (!current()) return;
+        P.close(circularComposer, true);
+        P.toast('تم نشر التعميم الإداري.');
+        refreshWanted = true;
+        schedule();
+      } catch (failure) {
+        if (!current()) return;
+        if (failure.status && failure.status < 500 && ![408,429].includes(failure.status)) pending = null;
+        error.textContent = failure.message || 'تعذر نشر التعميم. أعد المحاولة.';
+        error.hidden = false;
+      } finally {
+        submit.disabled = false;
+        dialog.removeAttribute('aria-busy');
+      }
+    };
+  }
+
+  function currentCircular(notice) {
+    const serverTime = window.MoshApi?.serverNow?.() ?? Date.now();
+    return notice.type === 'administrative-circular' && Date.parse(notice.expiresAt) > serverTime &&
+      (notice.repeatOnRefresh === true || !isRead(notice));
+  }
+
+  function showCircular() {
+    const open = $(circularViewer);
+    const pending = rows().filter(currentCircular);
+    if (open?.open) {
+      const notice = pending.find(row => row.id === open.dataset.noticeId);
+      if (!notice || (open.dataset.confirmed === 'false' && isRead(notice))) P.close(circularViewer, true);
+      return;
+    }
+    if (!user() || user().mustChange || document.visibilityState === 'hidden' ||
+        document.documentElement.classList.contains('mosh-booting')) return;
+    const notice = pending.filter(row => !presentedCirculars.has(row.id)).at(-1);
+    if (!notice || document.querySelector('dialog[open],.modal.show')) return;
+    presentedCirculars.add(notice.id);
+    const who = identity(), epoch = inboxEpoch, confirmed = isRead(notice);
+    const receipt = confirmed
+      ? '<p class="r19-circular-note">تم تأكيد الاطلاع</p>'
+      : '<label class="r19-circular-check"><input name="read" type="checkbox"> اطلعت على التعميم</label>';
+    const confirmButton = confirmed ? '' : '<button type="submit" class="primary" disabled>تأكيد الاطلاع</button>';
+    const dialog = P.dialog(circularViewer, 'تعميم إداري',
+      '<form class="r19-circular-form"><article class="r19-circular-fields">' +
+      '<h3 dir="auto">' + E(notice.title) + '</h3>' +
+      '<p class="r19-circular-meta">' + E(notice.source) + ' · حتى ' + E(formatDate(notice.expiresAt)) + '</p>' +
+      '<p class="r19-circular-message" dir="auto">' + E(notice.body) + '</p>' +
+      '</article><footer class="r19-circular-footer">' + receipt +
+      '<p class="r19-circular-error" role="alert" hidden></p>' +
+      '<div class="r19-circular-actions">' + confirmButton +
+      '<button type="button" data-r19-close="' + circularViewer + '">' + (confirmed ? 'إغلاق' : 'لاحقاً') + '</button></div></footer></form>');
+    dialog.dataset.noticeId = notice.id;
+    dialog.dataset.confirmed = String(confirmed);
+    const seconds = notice.displaySeconds;
+    const timer = Number.isInteger(seconds) && seconds > 0 && seconds <= 86400 ? setTimeout(() => {
+      if (identity() === who && inboxEpoch === epoch && dialog.open && dialog.dataset.noticeId === notice.id) P.close(circularViewer);
+    }, seconds * 1000) : null;
+    dialog.addEventListener('close', () => {
+      clearTimeout(timer);
+      if (!notice.repeatOnRefresh && identity() === who && inboxEpoch === epoch &&
+          rows().some(row => row.id === notice.id && currentCircular(row))) dismissCircular(notice.id);
+    }, {once:true});
+    if (confirmed) return;
+    const form = dialog.querySelector('form');
+    const checked = form.elements.read;
+    const confirm = form.querySelector('button[type="submit"]');
+    checked.onchange = () => { confirm.disabled = !checked.checked; };
+    form.onsubmit = async event => {
+      event.preventDefault();
+      if (!checked.checked || confirm.disabled || identity() !== who || epoch !== inboxEpoch) return;
+      confirm.disabled = true;
+      checked.disabled = true;
+      dialog.setAttribute('aria-busy', 'true');
+      const saved = await acknowledge(notice.id);
+      dialog.removeAttribute('aria-busy');
+      if (!dialog.open || identity() !== who || epoch !== inboxEpoch) return;
+      if (saved) { P.close(circularViewer, true); return; }
+      const error = form.querySelector('[role="alert"]');
+      error.textContent = 'تعذر تسجيل الاطلاع. أعد المحاولة.';
+      error.hidden = false;
+      checked.disabled = false;
+      confirm.disabled = !checked.checked;
+    };
+  }
+
+  function repeatCircularsAfterRefresh() {
+    syncOwner();
+    const open = $(circularViewer);
+    for (const notice of inbox.items) {
+      if (notice.repeatOnRefresh === true && (!open?.open || open.dataset.noticeId !== notice.id)) presentedCirculars.delete(notice.id);
+    }
+    schedule();
+  }
+
+  function clearCirculars() {
+    presentedCirculars.clear();
+    for (const id of [circularViewer,circularComposer]) {
+      if ($(id)?.open) P.close(id, true);
+    }
+  }
+
   function formatDate(value) {
     const d = new Date(value);
     if (!Number.isFinite(d.getTime())) return '';
@@ -235,11 +444,12 @@
     const department = str(u.department);
     return taskMine(t) || !!department && [str(t.department),str(t.sharedDepartment)].includes(department);
   }
-  function scan() { if (!scanning && user()) void refresh(); }
+  function scan() { if (!scanning && user() && document.visibilityState !== 'hidden') void refresh(); }
 
   function syncOwner() {
     if (lastIdentity === identity()) return;
-    clearPopups(); inboxEpoch++; lastIdentity = identity();
+    clearPopups(); clearCirculars(); inboxEpoch++; lastIdentity = identity();
+    if (user()) for (const id of dismissedCirculars()) presentedCirculars.add(id);
     popupSeen = popupHistory.get(lastIdentity) || readPopupHistory(); popupHistory.set(lastIdentity,popupSeen);
     inbox = {items:[],_version:0}; loaded = false; lastLoaded = 0; loadError = ''; loadPending = null; refreshWanted = true; acknowledgementKeys.clear(); currentId = ''; tab = 'unread'; type = 'all'; query = ''; page = 1; dialogSignature = '';
     if ($('r19Alerts')?.open) P.close('r19Alerts');
@@ -248,7 +458,7 @@
     return '<span class="r19-alert-type ' + E(n.type) + '">' + typeLabels[n.type] + '</span>' + (n.urgent ? '<span class="r19-urgent-badge">مهم</span>' : '');
   }
   function centerFrame() {
-    return '<div class="r19-alerts-center" dir="rtl"><div class="r19-alert-toolbar"><div class="r19-alert-tabs" role="tablist" aria-label="حالة الإشعارات"></div><div class="r19-alert-preferences"><button type="button" data-r19-alert-action="sound"></button><button type="button" data-r19-alert-action="desktop"></button></div></div><div class="r19-alert-filters"><label><span>البحث</span><input id="r19AlertSearch" type="search" autocomplete="off" placeholder="ابحث بالعنوان أو نص الإشعار…" value="' + E(query) + '"></label><label><span>نوع الإشعار</span><select id="r19AlertType"><option value="all">جميع الأنواع</option><option value="task">المهام</option><option value="hr">إشعارات إدارية</option><option value="announcement">التعاميم</option></select></label></div><div id="r19AlertRows" aria-live="polite"></div><footer class="r19-alert-pagination"><span id="r19AlertPage"></span><div><button type="button" data-r19-alert-action="previous">السابق</button><button type="button" data-r19-alert-action="next">التالي</button></div></footer></div>';
+    return '<div class="r19-alerts-center" dir="rtl"><div class="r19-alert-toolbar"><div class="r19-alert-tabs" role="tablist" aria-label="حالة الإشعارات"></div><div class="r19-alert-preferences"><button type="button" data-r19-alert-action="sound"></button><button type="button" data-r19-alert-action="desktop"></button></div></div><div class="r19-alert-filters"><label><span>البحث</span><input id="r19AlertSearch" type="search" autocomplete="off" placeholder="ابحث بالعنوان أو نص الإشعار…" value="' + E(query) + '"></label><label><span>نوع الإشعار</span><select id="r19AlertType"><option value="all">جميع الأنواع</option><option value="task">المهام</option><option value="hr">إشعارات إدارية</option><option value="announcement">التعاميم</option><option value="administrative-circular">التعاميم الإدارية</option></select></label></div><div id="r19AlertRows" aria-live="polite"></div><footer class="r19-alert-pagination"><span id="r19AlertPage"></span><div><button type="button" data-r19-alert-action="previous">السابق</button><button type="button" data-r19-alert-action="next">التالي</button></div></footer></div>';
   }
   function open(value) {
     syncOwner(); refreshWanted = true; scan();
@@ -309,18 +519,18 @@
     const n = rows().find(x => x.id === str(id));
     if (!n || !belongsToCurrent(n)) return false;
     if (isRead(n)) return true;
-    const who = identity(), recipient = owner();
+    const who = identity(), epoch = inboxEpoch;
     acknowledging = true; renderDialog(true);
     try {
-      const requestId = acknowledgementKeys.get(n.id) || crypto.randomUUID();
+      const requestId = acknowledgementKeys.get(n.id) || noticeRequestId();
       acknowledgementKeys.set(n.id, requestId);
       const result = await MoshApi.request('/r19/notifications/' + encodeURIComponent(n.id) + '/acknowledge', {method:'POST',body:{requestId}});
-      if (identity() !== who) return false;
+      if (identity() !== who || epoch !== inboxEpoch) return false;
       if (!result?.readAt || !Array.isArray(result?.inbox?.items)) throw new Error('لم يصل تأكيد حفظ الاطلاع. أعد المحاولة.');
       inbox = {items:result.inbox.items,_version:Number(result.inbox._version)||0};
       acknowledgementKeys.delete(n.id);
       P.toast('تم تسجيل الاطلاع ونقل الإشعار إلى الأرشيف.');
-      if (n.sourceId && MoshApi.refreshAnnouncements) void MoshApi.refreshAnnouncements().catch(() => {});
+      if (n.type !== 'administrative-circular' && n.sourceId && MoshApi.refreshAnnouncements) void MoshApi.refreshAnnouncements().catch(() => {});
       P.emit?.(); return true;
     } catch (error) {
       P.toast('لم يُسجل الاطلاع. ' + str(error?.message || 'أعد المحاولة.')); return false;
@@ -529,7 +739,7 @@
   function mount() {
     if (painting) return;
     painting = true;
-    try { syncOwner(); scan(); showNextPopup(); mountStrip(); mountTaskFlags(); renderDialog(); }
+    try { syncOwner(); mountCircularButton(); scan(); showCircular(); showNextPopup(); mountStrip(); mountTaskFlags(); renderDialog(); }
     finally { painting = false; }
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(() => { frame = 0; mount(); }); }
@@ -565,10 +775,22 @@
   ['mosh:saved','mosh:refreshed','mosh:tasks-refreshed','mosh:announcements-refreshed','mosh:announcement-read','mosh:r19-hr-updated','mosh:r24-admin-updated'].forEach(event => document.addEventListener(event,() => { refreshWanted = true; schedule(); }));
   // Layout, preferences and HR capability publication repaint the current inbox.
   // Only the business events above invalidate its server snapshot.
+  document.addEventListener('mosh:page-refreshed',repeatCircularsAfterRefresh);
   document.addEventListener('mosh:r19-change',schedule);
   window.addEventListener('mosh:r19-change',schedule);
-  ['mosh:session-expired','mosh:logout-complete'].forEach(event => document.addEventListener(event,() => { clearPopups(); inboxEpoch++; lastIdentity = ''; inbox = {items:[],_version:0}; loaded = false; loadPending = null; P.close('r19Alerts'); }));
-  document.addEventListener('visibilitychange',() => { syncOwner(); if (document.visibilityState !== 'hidden') showNextPopup(); });
+  ['mosh:session-expired','mosh:logout-complete'].forEach(event => document.addEventListener(event,() => { clearPopups(); clearCirculars(); $('r19CircularNavigation')?.remove(); inboxEpoch++; lastIdentity = ''; inbox = {items:[],_version:0}; loaded = false; loadPending = null; P.close('r19Alerts'); }));
+  function refreshVisibleInbox() {
+    if (document.visibilityState !== 'hidden' && Date.now() - lastLoaded >= 1000) void refresh(true);
+  }
+  document.addEventListener('visibilitychange', () => {
+    syncOwner();
+    if (document.visibilityState === 'hidden') return;
+    showNextPopup();
+    refreshVisibleInbox();
+  });
+  window.addEventListener('focus', refreshVisibleInbox);
+  window.addEventListener('online', () => { if (document.visibilityState !== 'hidden') void refresh(true); });
+  document.addEventListener('close', schedule, true);
   new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
   window.openEmployeeAnnouncements = open;
   window.MoshAlerts19 = {version:'19.1.0',push,refresh,open,mount,unread,rows,isRead,acknowledge,canViewTask};

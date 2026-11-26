@@ -37,11 +37,24 @@ function reason(title,initial=''){
  $('[data-r29="reason-ok"]',d).onclick=()=>{const value=$('[name=reason]',d).value.trim();if(value.length<3){fail(d,new Error('اكتب سبباً واضحاً لا يقل عن ثلاثة أحرف.'));return;}settled=true;ui().close(id,true);resolve(value);};d.addEventListener('close',()=>{if(!settled)resolve(null);},{once:true});});
 }
 let HR=null,hrTicket=0,thumbUrls=new Set();
+const hrProfileNavigation=()=>Boolean(document.getElementById('hrApp')?.classList.contains('active'));
+function rememberHrProfile(h){
+ if(hrProfileNavigation())h.trail.push({id:h.id,tab:h.tab,year:h.year});
+}
+function backHrProfile(h,d){
+ if(d.getAttribute('aria-busy')==='true'||h!==HR)return;
+ const page=h.trail.pop();
+ if(!page){ui().close('r29HR');return;}
+ const reload=h.id!==page.id||h.year!==page.year;
+ Object.assign(h,page);
+ if(reload){h.data=null;return loadEmployee();}
+ renderHR();
+}
 async function openHR(id='',tab='profile'){
  const who=owner(),ticket=++hrTicket,d=dialog('r29HR','ملف الموظف · الموارد البشرية',empty('جارٍ قراءة بيانات الملف من الخادم…'));
  try{const index=await api().request('/r29/hr');guard(who);if(ticket!==hrTicket||!d.open)return;
  if(!id)id=index.employees.find(p=>String(p.id)===String(whoAmI().employeeId))?.id||index.employees[0]?.id||'';
- HR={who,index,id:String(id),tab,year:Number(index.today.slice(0,4)),data:null};if(id)await loadEmployee();else renderHR();
+ HR={who,index,id:String(id),tab,year:Number(index.today.slice(0,4)),data:null,trail:[]};if(id)await loadEmployee();else renderHR();
  }catch(e){if(ticket===hrTicket)fail(d,e);}
 }
 async function loadEmployee(){if(!HR?.id)return;const h=HR,who=h.who,id=h.id,year=h.year,ticket=++hrTicket;busy($('#r29HR'),true);try{const data=await api().request('/r29/hr/employees/'+enc(id)+'?year='+year);guard(who);if(HR!==h||ticket!==hrTicket||h.id!==id)return;h.data=data;renderHR();}catch(e){fail($('#r29HR'),e);}finally{busy($('#r29HR'),false);}}
@@ -55,14 +68,23 @@ function renderHR(){const h=HR,d=$('#r29HR');if(!h||!d?.open)return;guard(h.who)
  if(alerts.length)html+=`<section aria-label="تنبيهات التجربة">${alerts.map(a=>`<div class="r29-alert"><div><strong>${E(a.stage==='end'?'انتهاء فترة التجربة':'قبل انتهاء التجربة بسبعة أيام')}</strong><div class="r29-muted">${E(a.name)} · نهاية التجربة ${E(a.endDate)} · استحق التنبيه ${E(a.dueDate)}</div></div>${B('اطّلعت على التنبيه','ack-alert',a.id)}</div>`).join('')}</section>`;
  if(!p)html+=empty('لا توجد ملفات ضمن صلاحيتك.');else{html+=`<nav class="r29-nav" aria-label="أقسام ملف الموظف">${paneNames().filter(([key])=>allowedTab(key)).map(([key,title])=>`<button type="button" data-r29-tab="${key}" class="${h.tab===key?'active':''}" aria-selected="${h.tab===key}">${title}</button>`).join('')}</nav><div data-r29-error class="r29-error"></div><section data-r29-pane>${({profile:profilePane,attendance:attendancePane,leave:leavePane,evaluation:evaluationPane,documents:documentsPane,career:careerPane,contracts:contractsPane,certificates:certificatesPane,settlements:settlementsPane}[h.tab])()}</section>`;}
  $('.r29',d).innerHTML=html;decorateThumbs(d);
- $('[data-r29-employee]',d)?.addEventListener('change',e=>{h.id=e.target.value;h.data=null;loadEmployee();});
- $$('[data-r29-tab]',d).forEach(b=>b.onclick=()=>{h.tab=b.dataset.r29Tab;renderHR();});
+ if(hrProfileNavigation()){
+  const back=$('.r19-dialog-head button',d);
+  if(back){
+   back.removeAttribute('data-r19-close');
+   back.classList.remove('r19-dialog-close');back.classList.add('btn');
+   back.textContent='رجوع للصفحة السابقة';back.title=back.textContent;back.setAttribute('aria-label',back.title);
+   back.onclick=()=>backHrProfile(h,d);
+  }
+ }
+ $('[data-r29-employee]',d)?.addEventListener('change',e=>{if(h.id===e.target.value)return;rememberHrProfile(h);h.id=e.target.value;h.data=null;loadEmployee();});
+ $$('[data-r29-tab]',d).forEach(b=>b.onclick=()=>{if(h.tab===b.dataset.r29Tab)return;rememberHrProfile(h);h.tab=b.dataset.r29Tab;renderHR();});
  bindPane(d);
 }
 function profilePane(){const x=HR.data,p=x.employee,c=x.capabilities;
  return (x.missing.length?note('البيانات الناقصة للتفعيل: '+x.missing.join('، '))+ (p.employmentStatus==='active'?'<p class="r29-muted">الموظف نشط من نسخة سابقة؛ التحديث لم يعطّل حسابه تلقائياً.</p>':''):'')+
  note('العقد ليس شرطاً لتفعيل الموظف. بيانات العقود ونسخها الموقعة متاحة للموارد البشرية فقط.')+
- `<div class="r29-grid">${field('الاسم','viewName',p.name,'text','disabled')}${field('القسم','viewDepartment',pretty(p.department),'text','disabled')}${field('المسمى الوظيفي','viewJob',p.jobTitle,'text','disabled')}${field('تاريخ التعيين الحالي','viewHire',p.hireDate,'text','disabled')}${field('نظام الدوام','viewMode',{fingerprint:'بصمة',flexible:'مرن مع ساعات يومية',daily:'يومي دون ساعات ثابتة'}[p.attendanceMode||(p.zktecoExempt?'daily':'fingerprint')],'text','disabled')}${field('نهاية فترة التجربة','viewProbation',p.probationEndDate||'غير محددة','text','disabled')}</div>${c.edit?`<div class="r29-actions">${B('تعديل البيانات وشروط التفعيل','profile-edit','',true)}${B('فتح الملف الكامل الأصلي','legacy-profile',p.id)}</div>`:''}`;
+ `<div class="r29-grid">${field('الاسم','viewName',p.name,'text','disabled')}${field('رقم الموظف','viewEmployeeNo',p.employeeNo||p.id,'text','readonly')}${field('المدير المباشر','viewDirectManager',getStaffDirectManagerName(p)||'غير محدد','text','readonly')}${field('القسم','viewDepartment',pretty(p.department),'text','disabled')}${field('المسمى الوظيفي','viewJob',p.jobTitle,'text','disabled')}${field('تاريخ التعيين الحالي','viewHire',p.hireDate,'text','disabled')}${field('نظام الدوام','viewMode',{fingerprint:'بصمة',flexible:'مرن مع ساعات يومية',daily:'يومي دون ساعات ثابتة'}[p.attendanceMode||(p.zktecoExempt?'daily':'fingerprint')],'text','disabled')}${field('نهاية فترة التجربة','viewProbation',p.probationEndDate||'غير محددة','text','disabled')}</div>${c.edit?`<div class="r29-actions">${B('تعديل البيانات وشروط التفعيل','profile-edit','',true)}${B('فتح الملف الكامل الأصلي','legacy-profile',p.id)}</div>`:''}`;
 }
 function attendancePane(){const x=HR.data,c=x.capabilities,records=[...x.attendance].reverse();let html=note('بدء وإنهاء الدوام يُسجلان بتوقيت الخادم، ولا يشغلان مؤقّت أي مهمة. الجدول خطة دوام، وسجل الحضور مستقل عنه.');
  if(c.clock)html+=`<section class="r29-card"><div class="r29-card-header"><div><strong>${x.openShift?'الدوام مفتوح':'الدوام غير مفتوح'}</strong><p class="r29-muted">${x.openShift?'بدأ: '+E(stamp(x.openShift.startAt)):'ابدأ الدوام عند دخولك الفعلي.'}</p></div>${B(x.openShift?'إنهاء الدوام':'بدء الدوام','clock',x.openShift?'end':'start',true)}</div></section>`;
@@ -72,7 +94,82 @@ function attendancePane(){const x=HR.data,c=x.capabilities,records=[...x.attenda
 }
 function leavePane(){const x=HR.data,l=x.leave,p=x.employee;return `<div class="r29-head"><h3>الإجازة السنوية</h3><label>سنة الرصيد<input type="number" data-r29-year min="1900" max="2199" value="${HR.year}"></label></div>${note('السنة من ١ كانون الثاني إلى ٣١ كانون الأول. لا يُرحّل الرصيد إلى السنة التالية، وتبقى سجلات السنوات السابقة محفوظة.')}<div class="r29-kpis">${[['الاستحقاق',l.entitlement],['المستخدم سابقاً',l.usedBefore],['المستخدم المسجل',l.recordedUsed],['المتاح بعد الطلبات المعلقة',l.available]].map(([t,v])=>`<div class="r29-kpi"><span>${E(t)}</span><strong>${E(v)}</strong></div>`).join('')}</div><p class="r29-muted">طلبات معلقة: ${E(l.pending)} يوم. لا يتضمن هذا العرض الإجازات غير السنوية.</p>${x.capabilities.edit?B('إدخال الاستخدام السابق للنظام','previous-leave','',true):''}${l.legacyOpeningBalanceNotApplied?note('يوجد رصيد افتتاحي قديم لا يُطبّق كترحيل في السنة الميلادية. راجعه مع الاستخدام السابق تفادياً لاحتساب الأيام مرتين.'):''}${table(['السنة','أيام سابقة إضافية','حتى تاريخ','السبب'],Object.entries(p.leaveUsedBeforeSystemByYear||{}).sort(([a],[b])=>b-a).map(([year,r])=>`<tr><td>${E(year)}</td><td>${E(r.days)}</td><td>${E(r.throughDate)}</td><td>${E(r.reason)}</td></tr>`))}${table(['من','إلى','النوع','الأيام','الحالة'],(p.leaveRecords||[]).filter(r=>(r.startDate||'')<=HR.year+'-12-31'&&(r.endDate||r.startDate||'')>=HR.year+'-01-01').map(r=>`<tr><td>${E(r.startDate)}</td><td>${E(r.endDate||r.startDate)}</td><td>${E(r.type)}</td><td>${E(r.days??r.hours??'—')}</td><td>${E(label(r.status))}</td></tr>`))}`;}
 function evaluationPane(){const x=HR.data,c=x.capabilities,t=x.criteria;return `<h3>معايير ${E(x.employee.jobTitle||'المسمى غير محدد')}</h3>${note('خمسة معايير، كل معيار من ١٠٠. النتيجة مجموع العلامات ÷ ٥. يحفظ كل تقييم نسخة معاييره، فلا يتغير التقييم القديم عند تعديل المعايير.')}<div class="r29-card">${t.labels?.length?t.labels.map((a,i)=>`<p>${i+1}. ${E(a)}</p>`).join(''):empty('على الموارد البشرية تحديد معايير هذا المسمى أولاً.')}<div class="r29-actions">${c.edit?B('تحديد المعايير الخمسة','criteria'):''}${c.evaluate&&t.labels?.length===5?B('تقييم جديد','evaluate','',true):''}</div></div><h3>سجل التقييمات</h3>${[...x.evaluations].reverse().map(r=>`<article class="r29-card"><div class="r29-card-header"><strong>${E(r.date||'')} · ${E(r.by||r.evaluator||'')}</strong><span class="r29-pill">${E(r.score??'—')} / 100</span></div>${r.criteria?table(['المعيار المحفوظ وقت التقييم','العلامة'],r.criteria.map((a,i)=>`<tr><td>${E(a)}</td><td>${E(r.scores[i])}</td></tr>`)):'<p class="r29-muted">تقييم سابق بعلامة إجمالية؛ محفوظ دون إعادة احتساب.</p>'}<p>${E(r.note||r.notes||'')}</p></article>`).join('')||empty('لا توجد تقييمات محفوظة.')}`;}
-function documentsPane(){const docs=HR.data.employee.documents||[];return `<h3>وثائق الموظف</h3><p class="r29-muted">المعاينة لا تغيّر الملفات. إضافة واستبدال الوثائق متاحان من الملف الأصلي حسب الصلاحيات.</p>${HR.data.capabilities.edit?B('إدارة الوثائق في الملف الأصلي','legacy-documents',HR.id):''}<div class="r29-doc-grid">${docs.map(r=>`<article class="r29-doc"><div class="r29-doc-thumb" data-r29-thumb="${E(r.key)}" data-mime="${E(r.type||r.mime||'')}">${/pdf/i.test(r.type||r.mime||r.name||'')?'PDF':'ملف'}</div><strong>${E(r.name||r.category||'وثيقة')}</strong><p class="r29-muted">${E(r.category||'')} ${r.expiryDate?'· '+E(r.expiryDate):''}</p><div class="r29-actions">${B('معاينة','file',r.key)}${B('تحميل','download',r.key)}</div></article>`).join('')||empty('لا توجد وثائق مرفقة.')}</div>`;}
+const documentPrintTypes = {
+ png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp',
+ gif: 'image/gif', bmp: 'image/bmp', pdf: 'application/pdf'
+};
+function documentPrintType(file){
+ const types=[file.blob?.type,file.type,file.mime];
+ const mime=types.map(type=>String(type||'').split(';')[0].trim().toLowerCase())
+  .find(type=>type&&type!=='application/octet-stream');
+ if(mime)return Object.values(documentPrintTypes).includes(mime)?mime:'';
+ const extension=String(file.name||'').split('.').pop().toLowerCase();
+ return Object.hasOwn(documentPrintTypes,extension)?documentPrintTypes[extension]:'';
+}
+const printTabs=new Map();
+async function printDocument(load){
+ const who=owner();
+ // Reserve the tab during the click so the authenticated file fetch can finish first.
+ const tab=window.open('about:blank','_blank');
+ if(!tab)throw new Error('اسمح بفتح النوافذ المنبثقة لموش ثم أعد المحاولة.');
+ let url;
+ const release=()=>{
+  clearInterval(timer);
+  printTabs.delete(tab);
+  if(url)URL.revokeObjectURL(url);
+ };
+ const timer=setInterval(()=>{if(tab.closed)release();},1000);
+ printTabs.set(tab,release);
+ try{
+  tab.opener=null;
+  const doc=tab.document;
+  doc.documentElement.lang='ar';
+  doc.documentElement.dir='rtl';
+  doc.title='طباعة وثيقة';
+  doc.body.textContent='جارٍ تجهيز الوثيقة للطباعة…';
+
+  const file=await load();
+  guard(who);
+  if(tab.closed)return;
+  if(!(file?.blob instanceof Blob)||!file.blob.size)throw new Error('تعذر تحميل الوثيقة للطباعة.');
+  const mime=documentPrintType(file);
+  if(!mime)throw new Error('الطباعة متاحة لملفات PDF والصور.');
+  const blob=file.blob.type===mime?file.blob:file.blob.slice(0,file.blob.size,mime);
+  url=URL.createObjectURL(blob);
+  if(mime==='application/pdf'){
+   tab.location.replace(url+'#toolbar=1');
+   return;
+  }
+
+  const viewport=doc.createElement('meta');
+  viewport.name='viewport';
+  viewport.content='width=device-width, initial-scale=1';
+  const style=doc.createElement('style');
+  style.textContent=[
+   'body{margin:1rem;font:1rem system-ui,sans-serif;background:#fff;color:#111}',
+   'button{display:block;margin:0 auto 1rem;padding:.5rem 1rem;font:inherit;cursor:pointer}',
+   'img{display:block;margin:auto;max-width:100%;height:auto}',
+   '@media print{body{margin:0}button{display:none}img{max-height:calc(100vh - 1px);break-inside:avoid}}'
+  ].join('\n');
+  const button=doc.createElement('button');
+  button.type='button';
+  button.textContent='طباعة';
+  button.onclick=()=>tab.print();
+  const image=doc.createElement('img');
+  doc.title=file.name||'طباعة وثيقة';
+  image.alt=doc.title;
+  doc.head.append(viewport,style);
+  image.src=url;
+  doc.body.replaceChildren(button,image);
+  await image.decode();
+  if(!tab.closed)tab.print();
+ }catch(error){
+  if(!tab.closed)tab.close();
+  release();
+  throw error;
+ }
+}
+function documentsPane(){const docs=HR.data.employee.documents||[];return `<h3>وثائق الموظف</h3><p class="r29-muted">المعاينة لا تغيّر الملفات. إضافة واستبدال الوثائق متاحان من الملف الأصلي حسب الصلاحيات.</p>${HR.data.capabilities.edit?B('إدارة الوثائق في الملف الأصلي','legacy-documents',HR.id):''}<div class="r29-doc-grid">${docs.map(r=>`<article class="r29-doc"><div class="r29-doc-thumb" data-r29-thumb="${E(r.key)}" data-mime="${E(r.type||r.mime||'')}">${/pdf/i.test(r.type||r.mime||r.name||'')?'PDF':'ملف'}</div><strong>${E(r.name||r.category||'وثيقة')}</strong><p class="r29-muted">${E(r.category||'')} ${r.expiryDate?'· '+E(r.expiryDate):''}</p><div class="r29-actions">${B('معاينة','file',r.key)}${B('تحميل','download',r.key)}${documentPrintType(r)?B('طباعة','print-document',r.key):''}</div></article>`).join('')||empty('لا توجد وثائق مرفقة.')}</div>`;}
 function careerPane(){const x=HR.data;return `<h3>السجل الوظيفي</h3>${note('النقل والترقية وإعادة التوظيف تحفظ على نفس الملف. التغيير المستقبلي ينفذ عند أول نشاط مسجّل في النظام بعد تاريخ السريان، ولا يغير بيانات اليوم قبل موعده.')}<div class="r29-actions">${x.capabilities.edit?B('إضافة تغيير بتاريخ سريان','career','',true):''}</div><div class="r29-timeline">${[...x.career].reverse().map(r=>`<article class="r29-card"><div class="r29-card-header"><strong>${E({transfer:'نقل',promotion:'ترقية',rehire:'إعادة توظيف',profile:'تعديل بيانات'}[r.type]||r.type)} · ${E(r.effectiveDate)}</strong><span class="r29-pill">${E(label(r.status))}</span></div><p>${E(pretty(r.department||r.after?.department||''))} · ${E(r.jobTitle||r.after?.jobTitle||'')}</p><p class="r29-muted">السابق: ${E(pretty(r.before?.department||''))} · ${E(r.before?.jobTitle||'')} ${r.before?.hireDate?'· تعيين '+E(r.before.hireDate):''}${r.before?.resignationDate?' · انتهاء '+E(r.before.resignationDate):''}</p><p>${E(r.reason||'')}</p><p class="r29-muted">${E(r.by)} · ${E(stamp(r.at))}</p>${r.error?note(r.error):''}${x.capabilities.edit&&r.status==='scheduled'?B('إلغاء التغيير المستقبلي','career-cancel',r.id):''}</article>`).join('')||empty('لم تُسجّل تغييرات بهذه الآلية بعد؛ بيانات الملف القديمة باقية كما هي.')}</div>`;}
 function contractsPane(){const x=HR.data;return `<h3>أصول العقود والنسخ الموقعة</h3>${note('هذا القسم متاح للموارد البشرية فقط. رفع النسخة الموقعة يؤرشف العقد، ولا يستبدل الأصل أو يحذف الإصدارات السابقة.')} ${x.contracts.map(c=>`<article class="r29-card"><div class="r29-card-header"><strong>${E(c.title||c.contractNo||c.number||c.id)}</strong><span class="r29-pill">${E(label(c.status))}</span></div><p>${E(c.startDate||c.effectiveDate||'')} — ${E(c.endDate||'غير محدد')}</p><details><summary>بيانات أصل العقد</summary>${readObject(c,new Set(['signedScan','_version']))}</details>${c.signedScan?`<p>النسخة الموقعة: ${E(c.signedScan.name)} · ${E(stamp(c.signedScan.at))}</p><div class="r29-actions">${B('معاينة النسخة الموقعة','file',c.signedScan.key)}${B('تحميلها','download',c.signedScan.key)}</div>`:x.capabilities.edit?B('رفع النسخة الموقعة وأرشفة العقد','contract-scan',c.id,true):'<p class="r29-muted">لم تُرفق نسخة موقعة.</p>'}</article>`).join('')||empty('لا توجد عقود لهذا الموظف. أنشئ العقد من إدارة العقود الحالية.')}`;}
 function certificatesPane(){const x=HR.data;return `<h3>الشهادات الصادرة</h3>${note('شهادة مرقمة بالعربية أو الإنجليزية، مع توقيع وختم موش المعتمد ورمز تحقق. إصدار الشهادة لا يغير البيانات أو الراتب.')} ${x.capabilities.approve?B('إصدار شهادة رسمية','certificate','',true):''}${table(['الرقم','النوع','الإصدار','الحالة','الإجراء'],[...x.certificates].reverse().map(c=>`<tr><td>${E(c.number)}</td><td>${E({experience:'خبرة',service:'خدمة',salary:'راتب'}[c.kind])} · ${c.language==='en'?'EN':'AR'}</td><td>${E(stamp(c.issuedAt))}</td><td>${E(label(c.status))}</td><td><div class="r29-actions">${B('معاينة وطباعة','certificate-print',c.id)}${x.capabilities.approve&&c.status==='issued'?B('إلغاء صلاحية الشهادة','certificate-revoke',c.id):''}</div></td></tr>`))}`;}
@@ -82,7 +179,7 @@ function readObject(obj,exclude=new Set(),depth=0){if(depth>5)return'<span class
  return Object.entries(obj).filter(([k])=>!exclude.has(k)&&!/(token|secret|password|session|authorization|signatureData)/i.test(k)).map(([k,v])=>`<div class="r29-card"><strong>${E(names[k]||k)}</strong><div>${readObject(v,exclude,depth+1)}</div></div>`).join('');}
 async function mutate(payload,holder={pending:null}){const h=HR;if(!h?.data)throw new Error('افتح ملف الموظف أولاً.');guard(h.who);const id=h.id,d=h.data;const result=await commitWithState(holder,'/r29/hr/employees/'+enc(id),{...payload,_version:d.employee._version,workflowVersion:d.workflowVersion,viewYear:h.year});guard(h.who);if(HR===h&&h.id===id){h.data=result;const row=h.index.employees.find(p=>String(p.id)===id);if(row)Object.assign(row,result.employee);renderHR();}await refreshAfterWrite();return result;}
 function bindPane(d){$('[data-r29-year]',d)?.addEventListener('change',e=>{const y=Number(e.target.value);if(y>=1900&&y<=2199){HR.year=y;loadEmployee();}});}
-function newDraft(){formDialog('r29NewDraft','إضافة موظف كمسودة',note('يُحفظ الاسم والملف دون تفعيل الموظف. أكمل البيانات ثم فعّله من ملفه.')+field('اسم الموظف','name','','text','required maxlength="200"')+select('القسم (يمكن استكماله لاحقاً)','department',[['','غير محدد'],...departments()]),(fd,f,h)=>commitWithState(h,'/r29/hr/employees',Object.fromEntries(fd)),async x=>{await refreshAfterWrite();await openHR(x.employee.id);},'حفظ كمسودة');}
+function newDraft(){formDialog('r29NewDraft','إضافة موظف كمسودة',note('يُحفظ الاسم والملف دون تفعيل الموظف. أكمل البيانات ثم فعّله من ملفه.')+field('اسم الموظف','name','','text','required maxlength="200"')+field('رقم الموظف','employeeNo',nextStaffIdentity().employeeNo,'text','required maxlength="100"')+select('القسم (يمكن استكماله لاحقاً)','department',[['','غير محدد'],...departments()]),(fd,f,h)=>commitWithState(h,'/r29/hr/employees',Object.fromEntries(fd)),async x=>{await refreshAfterWrite();await openHR(x.employee.id);},'حفظ كمسودة');}
 function profileEdit(){const p=HR.data.employee;const mode=p.attendanceMode||(p.zktecoExempt?'daily':'fingerprint');const ds=departments();if(p.department&&!ds.some(([x])=>x===p.department))ds.push([p.department,pretty(p.department)]);
  formDialog('r29ProfileEdit','بيانات الموظف والتفعيل',note('المسودة لا تتطلب اكتمال البيانات. التفعيل يتطلب الاسم والقسم والمسمى وتاريخ التعيين، ورقم البصمة أو نظاماً معفى. العقد ليس شرطاً.')+`<div class="r29-grid">${field('الاسم','name',p.name,'text','required maxlength="200"')}${select('الحالة','employmentStatus',[['draft','مسودة'],['active','نشط'],['inactive','غير نشط'],['resigned','مستقيل']],p.employmentStatus||'active')}${select('القسم','department',[['','غير محدد'],...ds],p.department)}${field('المسمى الوظيفي','jobTitle',p.jobTitle,'text','maxlength="200"')}${field('تاريخ التعيين','hireDate',p.hireDate,'date')}${select('نظام الدوام','attendanceMode',[['fingerprint','بصمة'],['flexible','مرن مع ساعات يومية'],['daily','يومي دون ساعات ثابتة']],mode)}${field('ساعات العمل في اليوم','workdayHours',p.workdayHours??8,'number','min="0.01" max="24" step="0.01"')}${field('رقم البصمة — اتركه فارغاً للمعفى','zktecoEnrollmentNumber',p.zktecoEnrollmentNumber,'text','maxlength="100"')}${field('نهاية فترة التجربة','probationEndDate',p.probationEndDate,'date')}${field('استحقاق الإجازة السنوية','annualLeaveDays',p.annualLeaveDays??stateNow().hrSettings?.annualLeaveDays??14,'number','min="0" max="366" step="0.5"')}${field('تاريخ انتهاء الخدمة (عند الاستقالة)','resignationDate',p.resignationDate,'date')}${area('سبب انتهاء الخدمة','resignationReason',p.resignationReason||'')}</div>`,(fd,f,h)=>{const profile=Object.fromEntries(fd);for(const k of ['hireDate','probationEndDate','resignationDate','workdayHours'])if(profile[k]==='')profile[k]=null;return mutate({action:'profile',profile},h);});}
 function scheduleForm(){const d=formDialog('r29Schedule','جدول الموظف',`<div class="r29-grid">${select('نوع الجدول','type',[['weekly','أسبوعي'],['monthly','شهري']],'weekly')}${field('يبدأ سريانه','effectiveFrom',HR.data.today,'date','required')}${field('نهاية السريان (اختياري)','effectiveTo','','date')}${field('الشهر لتوليد الأيام','month',HR.data.today.slice(0,7),'month')}${area('سبب الجدول / الملاحظة','reason','','required minlength="3" maxlength="2000"')}</div><div data-r29-schedule-rows></div>`,(fd,f,h)=>{const type=fd.get('type'),rows=$$('[data-r29-day]',f).map(tr=>({[type==='weekly'?'day':'date']:type==='weekly'?Number(tr.dataset.r29Day):tr.dataset.r29Day,off:$('[name=off]',tr).checked,start:$('[name=start]',tr).value,end:$('[name=end]',tr).value}));return mutate({action:'schedule',schedule:{type,rows},effectiveFrom:fd.get('effectiveFrom'),effectiveTo:fd.get('effectiveTo')||null,reason:fd.get('reason')},h);});
@@ -144,7 +241,14 @@ function taskRead(id){const t=taskView?.tasks.find(t=>String(t.id)===String(id))
  dialog('r29TaskRead','اطلاع على المهمة · '+(t.title||t.name||''),note('للاطلاع فقط. جميع المعلومات أدناه من سجل المهمة المحفوظ على الخادم.')+`<div class="r29-summary-line"><span>${E(pretty(t.department||''))}</span><span>${E(t.assigneeName||t.employeeName||t.assignee||'')}</span><span>${E(label(t.status))}</span></div>${t.urgentReason?note('سبب الاستعجال: '+t.urgentReason):''}<h3>تفاصيل العمل</h3><p>${E(t.description||t.details||t.notes||'لا يوجد وصف إضافي.')}</p><h3>المحادثة</h3>${window.MoshChat34?window.MoshChat34.readOnlyHtml(chats):Array.isArray(chats)&&chats.length?chats.map(c=>`<article class="r29-card"><div class="r29-muted">${E(c.by||c.author||c.userName||c.sender||'')} · ${E(stamp(c.at||c.time||c.createdAt))}</div><p>${E(c.text||c.message||c.body||c.note||'')}</p></article>`).join(''):empty('لا توجد رسائل محفوظة بهذا الحقل.')}<h3>المرفقات</h3><div class="r29-actions">${files.map(f=>window.MoshChat34?window.MoshChat34.attachmentHtml(f):B(f.name,'file',f.key)).join('')||'لا توجد مرفقات.'}</div><h3>سجل التنفيذ والإجراءات</h3>${history.length?readObject(history):empty('لا يوجد سجل إضافي بهذا الحقل.')}<details><summary>بقية بيانات المهمة المحفوظة</summary>${readObject(t,new Set(['comments','chat','messages','conversation','history','executionHistory','activityLog','events','_version']))}</details>`);
 }
 async function simpleMutation(payload,button){const h=button._r29Holder||={pending:null};const d=button.closest('dialog');busy(d,true);try{await mutate(payload,h);ui().toast('تم الحفظ على الخادم.');return true;}catch(e){fail(d,e);return false;}finally{busy(d,false);}}
-function legacyProfile(id,documents=false){ui().close('r29HR',true);if(typeof window.openStaffEmployeeForm==='function'){window.openStaffEmployeeForm(id);if(documents)setTimeout(()=>window.switchHrEmployeeTab?.('documents'),60);}else ui().toast('افتح ملف الموظف من دليل الموارد البشرية.');}
+function legacyProfile(id,documents=false){
+ const previous=HR;
+ ui().close('r29HR',true);
+ if(typeof window.openStaffEmployeeForm!=='function'){ui().toast('افتح ملف الموظف من دليل الموارد البشرية.');return;}
+ window.openStaffEmployeeForm(id);
+ if(previous&&hrProfileNavigation())window.MoshPrevious09?.restoreHrDialog?.(()=>openHR(previous.id,previous.tab));
+ if(documents)setTimeout(()=>window.switchHrEmployeeTab?.('documents'),60);
+}
 async function handle(action,id,b){
  if(action==='hr'||action==='team-hr')return openHR(id||'');if(action==='own-attendance')return openHR(whoAmI().employeeId,'attendance');if(action==='new-draft')return newDraft();if(action==='hr-refresh')return loadEmployee();
  if(action==='profile-edit')return profileEdit();if(action==='schedule')return scheduleForm();if(action==='clock')return simpleMutation({action:'clock',kind:id},b);if(action==='attendance-correct')return correction(id);if(action==='previous-leave')return previousLeave();if(action==='criteria')return criteriaForm();if(action==='evaluate')return evaluateForm();if(action==='career')return careerForm();if(action==='contract-scan')return contractScan(id);if(action==='certificate')return certificateForm();if(action==='certificate-print')return certificatePrint(id);if(action==='settlement')return settlementForm();if(action==='settlement-print')return settlementPrint(id);if(action==='settlement-review')return settlementReview(id);if(action==='settlement-cancel')return settlementReview(id,true);
@@ -152,6 +256,7 @@ async function handle(action,id,b){
  if(action==='certificate-revoke'){const why=await reason('سبب إلغاء صلاحية الشهادة');const c=HR.data.certificates.find(c=>c.id===id);if(why!==null&&c)return simpleMutation({action:'certificate-revoke',certificateId:id,certificateVersion:c._version,reason:why},b);}
  if(action==='ack-alert'){const alert=HR.index.alerts.find(x=>x.id===id);if(!alert)return;if(await simpleMutation({action:'ack-alert',alertId:id},b)){HR.index.alerts=HR.index.alerts.filter(x=>x.id!==id);renderHR();}}
  if(action==='legacy-profile'||action==='legacy-documents')return legacyProfile(id,action==='legacy-documents');
+ if(action==='print-document')return printDocument(()=>api().file(id));
  if(action==='file'||action==='download')return fileOpen(id,action==='download');if(action==='customers')return openCustomers();if(action==='customer-work')return customerWork(id);if(action==='customer-archive')return archiveCustomer(id);if(action==='admin-tasks')return adminTasks();if(action==='task-read')return taskRead(id);
  if(action==='customer-history'){const c=customersState?.data.items.find(c=>c.id===id);if(c)dialog('r29CustomerHistory','سجل أرشفة · '+c.name,readObject(c.archiveHistory));}
  if(action==='task-original'){
@@ -167,8 +272,7 @@ async function handle(action,id,b){
   }
   if(await window.goApp('tasks')===false||!$('#tasksApp')?.classList.contains('active'))return;
   ui().close('r29TaskList',true);
-  activeTaskViewContext={source:'all',containerId:'allTasksContainer',department:'',returnTo:'adminTasks'};
-  window.openTaskDetails(id);
+  await openTaskDetailsFromAll(id,{returnTo:'adminTasks'});
  }
 }
 document.addEventListener('click',ev=>{const b=ev.target.closest?.('[data-r29]');if(!b||b.disabled)return;const action=b.dataset.r29;if(['reason-ok','zoom-in','zoom-out','zoom-reset','blob-download','certificate-browser-print','add-settlement-line'].includes(action))return;ev.preventDefault();handle(action,b.dataset.id||'',b).catch(e=>{const d=b.closest('dialog');if(d)fail(d,e);else ui().toast(e?.message||String(e));});});
@@ -212,8 +316,10 @@ function decorate(){if(decorateTimer)return;decorateTimer=setTimeout(()=>{decora
  },70);}
 const priorFilter=window.filterAndPageAppList;if(typeof priorFilter==='function')window.filterAndPageAppList=function(key,rows,...args){const taskList=Array.isArray(rows)&&rows.length&&rows.some(r=>r&&('employeeState'in r||'assigneeId'in r)&&('department'in r));return priorFilter.call(this,key,taskList?MoshR29Model.sortUrgent(rows):rows,...args);};
 const priorStatus=window.staffStatusLabel;if(typeof priorStatus==='function')window.staffStatusLabel=function(p){if(p?.employmentStatus==='draft')return'مسودة';return priorStatus.apply(this,arguments);};
-function cleanup(){clearTimeout(decorateTimer);decorateTimer=0;hrTicket++;customerTicket++;HR=null;customersState=null;taskView=null;thumbQueue=[];thumbCache.clear();for(const u of thumbUrls)URL.revokeObjectURL(u);thumbUrls.clear();$$('dialog[id^=r29]').forEach(d=>{ui()?.close(d.id,true);d.remove();});$('#r29ClientNav')?.remove();$('#r29TeamNav')?.remove();$$('#r29HRBar,#r29ProfileBar,#r29AttendancePortal').forEach(e=>e.remove());}
-window.MoshR29={openHR,openCustomers,adminTasks,returnToAdminTasks:()=>openAppWith('admin',adminTasks),reason,viewBlob,isHr,pretty,version:'R30',commitWithState,syncNavigation:decorate};
+function cleanup(){
+ for(const [tab,release] of printTabs){tab.close();release();}
+ clearTimeout(decorateTimer);decorateTimer=0;hrTicket++;customerTicket++;HR=null;customersState=null;taskView=null;thumbQueue=[];thumbCache.clear();for(const u of thumbUrls)URL.revokeObjectURL(u);thumbUrls.clear();$$('dialog[id^=r29]').forEach(d=>{ui()?.close(d.id,true);d.remove();});$('#r29ClientNav')?.remove();$('#r29TeamNav')?.remove();$$('#r29HRBar,#r29ProfileBar,#r29AttendancePortal').forEach(e=>e.remove());}
+window.MoshR29={openHR,openCustomers,adminTasks,returnToAdminTasks:()=>openAppWith('admin',adminTasks),reason,viewBlob,printDocument,documentPrintType,isHr,pretty,version:'R30',commitWithState,syncNavigation:decorate};
 ['mosh:ui-ready','mosh:refreshed','mosh:r19-change'].forEach(e=>document.addEventListener(e,decorate));['mosh:session-expired','mosh:logout-complete'].forEach(e=>document.addEventListener(e,cleanup));
 new MutationObserver(m=>{if(m.some(x=>[...x.addedNodes].some(n=>n.nodeType===1&&!n.closest?.('dialog[id^=r29]'))))decorate();}).observe(document.body,{childList:true,subtree:true});decorate();
 })();

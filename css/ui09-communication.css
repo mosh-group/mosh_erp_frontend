@@ -17,3 +17,10 @@
 .c09-message .c09-preview{display:block;width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .c09-message .c09-read-more:not([hidden]){display:block;text-decoration:underline}
 .c09-mail-body,.c09-message-top b{overflow-wrap:anywhere}
+.c09-person-label{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:10px;row-gap:2px}
+.c09-new-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.c09-new-tools input{flex:1;min-width:140px}
+#c09Group .c09-compose>label{display:grid;gap:6px}
+#c09Group .c09-recipients{max-height:260px}
+.c09-group-created{align-self:center;color:var(--muted,#a5b4bd);text-align:center;font-size:14px;overflow-wrap:anywhere}
+.c09-bubble-sender{display:block;color:var(--gold,#ddbe69);font-size:.8em;margin-bottom:3px}

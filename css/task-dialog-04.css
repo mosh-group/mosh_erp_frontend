@@ -1,23 +1,47 @@
-/* Approved change 04: compact task dialog. Existing inputs and handlers remain live. */
+/* Size the dialog against its fixed overlay, including the shell's desktop zoom. */
+#standaloneTaskModal{
+ --task04-width:920px;
+ --task04-gutter:clamp(6px,2vmin,16px);
+}
+#standaloneTaskModal.show{
+ box-sizing:border-box;
+ display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);
+ place-items:center;padding:var(--task04-gutter);
+ overflow:hidden;overscroll-behavior:contain;
+}
+#standaloneTaskModal>.modalbox{
+ box-sizing:border-box;
+ display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+ width:min(var(--task04-width),100%)!important;
+ min-width:0;max-width:100%;min-height:0;max-height:100%;
+ overflow:hidden;scrollbar-gutter:auto;
+}
+#standaloneTaskModal .r25-task-scroll-area{
+ min-width:0;min-height:0;
+ overflow:hidden auto;
+ overscroll-behavior:contain;
+}
+#standaloneTaskModal .task-attachment-list{
+ max-height:none;overflow:visible;
+}
 html.mosh-compact01 #standaloneTaskModal{
  --task04-bg:#101618;--task04-field:#0b1012;--task04-text:#f0f2ef;
  --task04-muted:#a9b4b8;--task04-line:#35434a;--task04-gold:#e4bc4b;
- padding:12px!important;
+ --task04-width:760px;
+ --task04-gutter:12px;
 }
 html.mosh-compact01[data-mosh-theme="light"] #standaloneTaskModal{
  --task04-bg:#fffdf7;--task04-field:#faf8f1;--task04-text:#272820;
  --task04-muted:#686b61;--task04-line:#c5c1b4;--task04-gold:#d6ad3b;
 }
 html.mosh-compact01 #standaloneTaskModal .modalbox{
- width:min(760px,100%)!important;max-width:100%!important;max-height:calc(100dvh - 24px)!important;
- display:flex!important;flex-direction:column!important;min-height:0!important;
- padding:0!important;overflow:hidden!important;border:1px solid var(--task04-line)!important;
+ padding:0!important;border:1px solid var(--task04-line)!important;
  border-radius:15px!important;background:var(--task04-bg)!important;color:var(--task04-text)!important;
  font:400 14px/1.6 Tahoma,Arial,sans-serif!important;
 }
 html.mosh-compact01 #standaloneTaskModal .r25-task-header{
  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:5px 18px!important;
- align-items:center!important;flex:0 0 auto!important;padding:18px 22px!important;margin:0!important;
+ align-items:center!important;padding:18px 22px!important;margin:0!important;
  border:0!important;border-bottom:1px solid var(--task04-line)!important;background:var(--task04-bg)!important;
 }
 html.mosh-compact01 #standaloneTaskModal #standaloneTaskModalTitle{font:500 19px/1.5 Tahoma,Arial,sans-serif!important;margin:0!important;color:var(--task04-text)!important}
@@ -25,7 +49,7 @@ html.mosh-compact01 #standaloneTaskModal .r25-task-header>.btn{grid-column:2;gri
 html.mosh-compact01 #standaloneTaskModal .r38-creator-field{grid-column:1/-1!important;grid-row:2!important;order:0!important;display:flex!important;align-items:center!important;gap:5px!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important}
 html.mosh-compact01 #standaloneTaskModal .r38-creator-field label{font:400 12px/1.6 Tahoma,Arial,sans-serif!important;margin:0!important;color:var(--task04-muted)!important;white-space:nowrap}
 html.mosh-compact01 #standaloneTaskModal #standaloneTaskCreator{flex:1!important;min-width:0!important;max-width:none!important;width:100%!important;height:auto!important;min-height:0!important;border:0!important;border-radius:0!important;background:transparent!important;padding:0!important;margin:0!important;box-shadow:none!important;color:var(--task04-muted)!important;font:400 12px/1.6 Tahoma,Arial,sans-serif!important}
-html.mosh-compact01 #standaloneTaskModal .r25-task-scroll-area{display:flex!important;flex-direction:column!important;gap:18px!important;flex:1 1 auto!important;min-height:0!important;overflow:auto!important;padding:22px!important;margin:0!important;scrollbar-gutter:stable}
+html.mosh-compact01 #standaloneTaskModal .r25-task-scroll-area{display:flex!important;flex-direction:column!important;gap:18px!important;padding:22px!important;margin:0!important;scrollbar-gutter:stable}
 html.mosh-compact01 #standaloneTaskModal .r38-task-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important;align-items:start!important;margin:0!important;padding:0!important}
 html.mosh-compact01 #standaloneTaskModal .r38-task-grid>.field{min-width:0!important;margin:0!important;padding:0!important;gap:7px!important;grid-template-columns:minmax(0,1fr)!important}
 html.mosh-compact01 #standaloneTaskModal .r38-task-primary{grid-column:1/-1!important}
@@ -71,19 +95,18 @@ html.mosh-compact01 #standaloneTaskModal .attachment-icon-btn:not(.voice-recordi
 html.mosh-compact01 #standaloneTaskModal .attachment-icon-btn::after{content:attr(aria-label);order:1;white-space:nowrap}
 html.mosh-compact01 #standaloneTaskModal .attachment-icon-btn .attach-svg{width:17px!important;height:17px!important;flex:0 0 17px!important}
 html.mosh-compact01 #standaloneTaskModal .voice-timer{order:2}
-html.mosh-compact01 #standaloneTaskModal .task-attachment-list{grid-column:1/-1;grid-row:3;margin:0!important;min-height:0!important;max-height:170px;overflow:auto;overflow-wrap:anywhere}
+html.mosh-compact01 #standaloneTaskModal .task-attachment-list{grid-column:1/-1;grid-row:3;margin:0!important;min-height:0!important;overflow-wrap:anywhere}
 html.mosh-compact01 #standaloneTaskModal .task-attachment-list:has(>.muted:only-child){grid-column:1;grid-row:2}
 html.mosh-compact01 #standaloneTaskModal .task-attachment-list>.muted{font:400 12px/1.6 Tahoma,Arial,sans-serif!important;color:var(--task04-muted)!important;padding:0!important;margin:0!important}
 html.mosh-compact01 #standaloneTaskModal #micLocalNote{grid-column:1/-1;grid-row:4}
-html.mosh-compact01 #standaloneTaskModal .r25-task-footer{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;flex-wrap:wrap!important;flex:0 0 auto!important;margin:0!important;padding:15px 22px!important;border:0!important;border-top:1px solid var(--task04-line)!important;background:var(--task04-bg)!important}
+html.mosh-compact01 #standaloneTaskModal .r25-task-footer{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;flex-wrap:wrap!important;margin:0!important;padding:15px 22px!important;border:0!important;border-top:1px solid var(--task04-line)!important;background:var(--task04-bg)!important}
 html.mosh-compact01 #standaloneTaskModal .btn{min-height:40px!important;border:1px solid var(--task04-line)!important;border-radius:8px!important;padding:8px 13px!important;box-shadow:none!important;font:400 13px/1.5 Tahoma,Arial,sans-serif!important}
 html.mosh-compact01 #standaloneTaskModal #standaloneTaskCreateBtn{min-width:138px!important;background:var(--task04-gold)!important;border-color:var(--task04-gold)!important;color:#211b0e!important;font-weight:500!important}
 html.mosh-compact01 #standaloneTaskModal .r25-task-footer .cancel-edit-btn{background:transparent!important;color:var(--task04-text)!important}
 html.mosh-compact01 #standaloneTaskModal .r40-task-required{margin-inline-start:auto;color:var(--task04-muted);font:400 12px/1.6 Tahoma,Arial,sans-serif}
 html.mosh-compact01 #standaloneTaskModal .r40-task-required>span{color:var(--task04-gold)}
 @media(max-width:500px){
- html.mosh-compact01 #standaloneTaskModal{padding:8px!important}
- html.mosh-compact01 #standaloneTaskModal .modalbox{max-height:calc(100dvh - 16px)!important}
+ html.mosh-compact01 #standaloneTaskModal{--task04-gutter:8px}
  html.mosh-compact01 #standaloneTaskModal .r25-task-header,html.mosh-compact01 #standaloneTaskModal .r25-task-scroll-area{padding:17px!important}
  html.mosh-compact01 #standaloneTaskModal #standaloneTaskModalTitle{font-size:17px!important}
  html.mosh-compact01 #standaloneTaskModal .r38-task-grid{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}
@@ -103,6 +126,13 @@ html.mosh-compact01 #standaloneTaskModal .r40-task-required>span{color:var(--tas
  html.mosh-compact01 #standaloneTaskModal .r25-task-footer{padding:14px 17px!important}
  html.mosh-compact01 #standaloneTaskModal .r25-task-footer .btn{flex:0 1 auto!important}
  html.mosh-compact01 #standaloneTaskModal .r40-task-required{width:100%;margin-inline-start:0}
+}
+@media(max-height:540px){
+ #standaloneTaskModal.show{padding-block:6px}
+ #standaloneTaskModal :is(.r25-task-header,.r25-task-scroll-area,.r25-task-footer),
+ html.mosh-compact01 #standaloneTaskModal :is(.r25-task-header,.r25-task-scroll-area,.r25-task-footer){
+  padding-block:9px!important;
+ }
 }
 @media(max-width:360px){html.mosh-compact01 #standaloneTaskModal .r38-creator-field{flex-direction:column!important;align-items:stretch!important}}
 @media(pointer:coarse){html.mosh-compact01 #standaloneTaskModal :is(.btn,.attachment-icon-btn){min-height:44px!important}}

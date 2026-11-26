@@ -288,8 +288,8 @@
     if(outcome==='conflict')throw Object.assign(new Error('وجد النظام حدث الإعادة نفسه ببيانات مختلفة. راجع سجل المهمة قبل المتابعة.'),{returnConflict:true});
     let synced=detailsVerified&&Number(task(attempt.id)?._version)===Number(fresh._version);
     if(outcome==='confirmed')synced=synced&&matchingReturn(task(attempt.id),attempt)==='confirmed';
-    if(!synced&&typeof MoshApi.refreshTasks==='function'){
-      try{synced=await MoshApi.refreshTasks()===true;}catch(error){if(outcome!=='confirmed')throw error;}
+    if(!synced&&typeof MoshApi.hydrateTaskFamily==='function'){
+      try{synced=await MoshApi.hydrateTaskFamily(attempt.id)===true;}catch(error){if(outcome!=='confirmed')throw error;}
     }
     if(!sameReturnIdentity(attempt))throw new Error('تغير حساب المراجعة. افتح المهمة من الحساب المختص.');
     if(outcome==='confirmed')return {confirmed:true,task:fresh,synced};
@@ -536,7 +536,7 @@
     if(refreshBusy||!user()||document.hidden||busy.size||window.MoshApi?.isSaving?.())return false;
     if(!manual && (Date.now()-lastRefresh<28000||!$('dashboardApp')?.classList.contains('active')||$('emp47TaskOverlay')?.classList.contains('show')||document.querySelector('dialog[open]')||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')))return false;
     refreshBusy=true;
-    try{const done=await MoshApi.refreshTasks();if(done){lastRefresh=Date.now();refreshError='';}else if(manual)refreshError='احفظ التعديلات المفتوحة قبل تحديث المهام.';return done;}
+    try{const done=await MoshApi.refreshDashboardTasks();if(done){lastRefresh=Date.now();refreshError='';}else if(manual)refreshError='احفظ التعديلات المفتوحة قبل تحديث المهام.';return done;}
     catch(error){refreshError='تعذر تحديث المهام من الخادم. البيانات المعروضة هي آخر بيانات محمّلة.';return false;}
     finally{refreshBusy=false;renderHome();renderList();}
   }

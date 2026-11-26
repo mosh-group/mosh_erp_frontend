@@ -29,14 +29,129 @@ const crumb=$('#crumb');if(crumb){let name=$('#ui09CurrentName');if(!name){name=
  const back=$('#backBtn');if(back&&!back.dataset.ui09Back){back.dataset.ui09Back='1';back.textContent='→';back.title='الصفحة السابقة';back.setAttribute('aria-label',back.title);back.onclick=previous;}
 }
 // Remember actual navigation actions so returning restores the previous list/subpage.
-let trail=[],restoring=false,lastNavigation=null;
-function remember(action,key){if(restoring)return;if(lastNavigation?.key!==key){if(lastNavigation)trail.push(lastNavigation);lastNavigation={action,key};}}
+let trail=[],restoring=false,lastNavigation=null,hrDialogReturn=null;
+function remember(action,key){
+ if(restoring)return;
+ if(lastNavigation?.key!==key){
+  if(lastNavigation)trail.push(lastNavigation);
+  if(hrDialogReturn?.key===lastNavigation?.key)hrDialogReturn=null;
+ }
+ lastNavigation={action,key};
+}
+const hrActive=()=>$('#hrApp')?.classList.contains('active');
+const hrVisible=el=>Boolean(el?.getClientRects().length&&!el.hidden);
+function hrTaskBack(){
+ if(!hrActive()||!hrVisible($('#hrAppTasks .sales-task-card')))return null;
+ return all('button',$('#hrAppTasks')).find(button=>hrVisible(button)&&button.textContent.trim().startsWith('رجوع'));
+}
+function hrPage(){
+ if(!hrActive()||hrTaskBack())return null;
+ if(hrVisible($('#hrFieldWorkContentV30B')))return {key:'field',run:()=>window.MoshFieldWorkV30B?.showSettings()};
+ if(hrVisible($('#hrWisdomContent')))return {key:'wisdom',run:()=>$('#hrWisdomTab')?.click()};
+ const payroll=$('#hrProContent [data-p23-hr]');
+ if(hrVisible(payroll)){
+  const hours=payroll.dataset.p23Hr==='hours';
+  return {key:hours?'payroll-hours':'payroll-runs',run:()=>window.MoshFinance23?.[hours?'hours':'payroll']()};
+ }
+ if(hrVisible($('#hrProContent #m15Comms')))return {key:'communications',run:()=>window.openHRPro('communications')};
+ if(hrVisible($('#hrStandaloneContent'))&&typeof hrStandaloneMode!=='undefined'&&typeof window.hrOpenHrPanel==='function'){
+  const mode=hrStandaloneMode,query=hrStandaloneQuery,filter=hrStandaloneFilter;
+  return {key:'standalone:'+mode,run:()=>{
+   window.hrOpenHrPanel(mode);
+   hrStandaloneQuery=query;hrStandaloneFilter=filter;
+   hrRenderStandalonePage();
+  }};
+ }
+ const hr=$('#hrApp');
+ if(hrVisible($('#hrAppContent'))){
+  if(hr.dataset.taskView==='assign')return {key:'assignment',run:()=>openDepartmentTaskView('hr','assign')};
+  if(hr.dataset.departmentTaskKind==='subtask')return {key:'subtasks',run:()=>openDepartmentTaskView('hr','running','subtask')};
+ }
+ const current=window.MoshHR13?.navigation();
+ if(!current)return null;
+ return {...current,run:()=>{
+  if(hr.dataset.departmentTaskKind==='subtask')hr.dataset.departmentTaskKind='main';
+  return current.run();
+ }};
+}
+function enterHrPage(page){
+ const render=()=>{
+  if(!auth()?.canModule('hr','view'))return false;
+  for(const selector of ['#hrFieldWorkContentV30B','#hrWisdomContent']){const panel=$(selector);if(panel)panel.style.display='none';}
+  return page.run();
+ };
+ return hrActive()?render():window.openAppWith('hr',render);
+}
+function rememberHrPage(sidebarKey,priorScreen){
+ const page=hrPage();
+ if(restoring||!page)return;
+ const key='hr:'+page.key;
+ const priorSidebar=lastNavigation?.key===key?lastNavigation.sidebarKey:null;
+ remember(()=>enterHrPage(page),key);
+ lastNavigation.sidebarKey=sidebarKey&&priorScreen!==page.key?sidebarKey:priorSidebar;
+ return page.key;
+}
 const nativeGo=window.goApp;
-if(typeof nativeGo==='function')window.goApp=function(app,link,...rest){const result=nativeGo.call(this,app,link,...rest);if(result!==false&&$('#'+app+'App')?.classList.contains('active'))remember(()=>window.goApp(app,null,false),'app:'+app);return result;};
+if(typeof nativeGo==='function')window.goApp=function(app,link,...rest){
+ if(hrActive()&&app!=='hr')rememberHrPage();
+ const result=nativeGo.call(this,app,link,...rest);
+ if(result!==false&&$('#'+app+'App')?.classList.contains('active')){
+  if(app==='hr')schedule();
+  else remember(()=>window.goApp(app,null,false),'app:'+app);
+ }
+ return result;
+};
 function navigateSafely(action){if(typeof appIsDirty!=='undefined'&&appIsDirty&&window.MoshR14Polish)return MoshR14Polish.requestUnsavedExit(action);return action();}
-function previous(bypass=false){if(bypass!==true&&typeof appIsDirty!=='undefined'&&appIsDirty&&window.MoshR14Polish)return MoshR14Polish.requestUnsavedExit(()=>previous(true));const close=$('.mw08-workspace .mw08-chrome [data-ui09-close]');if(close?.getClientRects().length){close.click();return;}const entry=trail.pop();restoring=true;try{if(entry){entry.action();lastNavigation=entry;}else window.goApp('dashboard',null,false);}finally{restoring=false;}}
+async function previous(bypass=false){
+ if(restoring)return false;
+ if(bypass!==true&&typeof appIsDirty!=='undefined'&&appIsDirty&&window.MoshR14Polish)return MoshR14Polish.requestUnsavedExit(()=>previous(true));
+ const close=$('.mw08-workspace .mw08-chrome [data-ui09-close]');
+ if(hrVisible(close)){close.click();return;}
+ const taskBack=hrTaskBack();
+ if(taskBack){taskBack.click();return;}
+ rememberHrPage();
+ const entry=trail.at(-1),returnDialog=hrDialogReturn?.key===lastNavigation?.key?hrDialogReturn:null;
+ const actor=window.MoshApi?.user?.id;
+ restoring=true;
+ try{
+  const result=await (entry?entry.action():window.goApp('dashboard',null,false));
+  if(result===false||actor!==window.MoshApi?.user?.id)return false;
+  if(entry)trail.pop();
+  lastNavigation=entry||{key:'app:dashboard',action:()=>window.goApp('dashboard',null,false)};
+  const hrTree=trees.get('hr');
+  if(hrTree&&entry?.key.startsWith('hr:'))hrTree.currentKey=entry.sidebarKey||'';
+  if(returnDialog){hrDialogReturn=null;await returnDialog.reopen();}
+ }catch(error){toast(error.message||'تعذر الرجوع إلى الصفحة السابقة.');return false;}
+ finally{restoring=false;schedule();}
+}
 remember(()=>window.goApp('dashboard',null,false),'app:dashboard');
 window.MoshPrevious09=previous;
+previous.recordHrPage=rememberHrPage;
+previous.restoreHrDialog=function(reopen){
+ rememberHrPage();
+ if(lastNavigation?.key.startsWith('hr:form:'))hrDialogReturn={key:lastNavigation.key,reopen};
+};
+function hrBackControls(){
+ if(!hrActive())return;
+ const back=$('#hrPageBack');
+ if(back)back.onclick=()=>previous();
+ const selectors=[
+  'dialog.r19-dialog[open]:not(#r29HR):not(#r19Unsaved) .r19-dialog-head [data-r19-close]',
+  '#hrProModalRoot .hr-pro-modal-head button[onclick*="hrProCloseModal"]',
+  '#f21Modal .f21-dialog > header button[data-f21="close"]',
+  '#moshZktecoAdmin header button[data-close]',
+  '#mgr28Modal header button[onclick*="close"]'
+ ];
+ for(const button of all(selectors.join(','))){
+  if(!hrVisible(button)||button.dataset.hrBackLabel)continue;
+  button.dataset.hrBackLabel='1';
+  button.classList.remove('r19-dialog-close','ui09-close','icon');
+  button.classList.add('btn');
+  button.textContent='رجوع';
+  button.setAttribute('aria-label','رجوع للصفحة السابقة');
+  button.title='رجوع للصفحة السابقة';
+ }
+}
 
 const departmentIds=new Set(['admin','hr','sales','marketing','social','design','photo','editing','promotion','it','logistics','purchases','accounting','warehouses','platform']);
 let expanded='',trees=new Map();
@@ -185,15 +300,24 @@ function refreshHRTree(t){
    if(row.count&&Number(row.count)>0)b.append(make('span','ui09-tree-count',row.count));
    if(t.currentKey===key)b.setAttribute('aria-current','page');
    b.onclick=()=>navigateSafely(()=>{
-    if(row.action&&!auth()?.canModule('hr',row.action))return;
-    let result;restoring=true;
-    try{result=window.goApp('hr',t.link);}finally{restoring=false;}
-    if(result===false||!$('#hrApp')?.classList.contains('active'))return;
-    row.run();t.currentKey=key;
-    all('.ui09-tree-leaf').forEach(n=>n.removeAttribute('aria-current'));
-    b.setAttribute('aria-current','page');
-    remember(()=>{if(row.action&&!auth()?.canModule('hr',row.action))return;window.goApp('hr',t.link,false);row.run();t.currentKey=key;schedule();},'hr:'+key);
-    schedule();
+    if(row.action&&!auth()?.canModule('hr',row.action))return false;
+    const record=window.MoshPrevious09?.recordHrPage;
+    const before=record?.();
+    const entered=result=>{
+     if(result===false||!$('#hrApp')?.classList.contains('active'))return false;
+     const finish=outcome=>{
+      if(outcome===false)return false;
+      t.currentKey=key;
+      record?.(key,before);
+      all('.ui09-tree-leaf').forEach(n=>n.removeAttribute('aria-current'));
+      b.setAttribute('aria-current','page');
+      schedule();
+     };
+     const selected=row.run();
+     return typeof selected?.then==='function'?selected.then(finish):finish(selected);
+    };
+    const result=$('#hrApp')?.classList.contains('active')?null:window.goApp('hr',t.link);
+    return typeof result?.then==='function'?result.then(entered):entered(result);
    });
    parent.append(b);
   }
@@ -461,28 +585,28 @@ if(typeof oldStandaloneSave==='function')window.saveStandaloneTask=function(...a
  if(!report(errors))return false;return oldStandaloneSave.apply(this,args);};
 function departmentAssignmentEntry(){
  const view=$('.view.active'),app=view?.id.replace(/App$/,'');
- if(!app||!window.getProductiveConfig?.(app))return;
+ if(!app)return;
  const existing=view.querySelector('[data-department-assignment-entry]');
- const allowed=auth()?.canModule(app,'assign');
- const native=view.querySelector('.db9 [data-action="assignment"]');
- if(!allowed||native?.getClientRects().length||view.dataset.taskView==='assign'){
+ const native=view.querySelector('.db9-heading [data-action="assignment"]');
+ if(!auth()?.canModule(app,'assign')||native?.getClientRects().length){
   existing?.remove();return;
  }
- const dashboard=Array.from(view.querySelectorAll('button,a')).find(control=>
-  control.getClientRects().length&&(
-   control.matches('[data-mode="distribution"],[data-h13-view="home"]')||
-   ['لوحة التحكم','لوحة القسم','لوحة الإدارة'].includes(control.textContent.trim())
-  ));
- if(!dashboard){existing?.remove();return;}
- if(existing&&existing.previousElementSibling===dashboard)return;
- const entry=existing||make('button','btn r35-ui-navigation','توزيع المهام');
+ // These dashboards replace the shared dashboard, which already has its own action.
+ let dashboard=null;
+ if(app==='admin')dashboard=view.querySelector('#r24Page:has(button[data-r24="employee-status"])');
+ if(app==='hr'&&window.MoshHR13?.navigation()?.key==='home:')dashboard=view.querySelector('#hrProContent .h13-page-head');
+ if(app==='it')dashboard=view.querySelector('#it31Body > .it31:has(> .it31-kpis)');
+ if(!dashboard?.getClientRects().length){existing?.remove();return;}
+ if(existing?.parentElement===dashboard)return;
+ const entry=existing||make('button','btn','توزيع المهام');
  entry.type='button';entry.dataset.departmentAssignmentEntry=app;
  entry.onclick=()=>{if(auth()?.canModule(app,'assign'))openDepartmentTaskView(app,'assign');};
- dashboard.after(entry);
+ if(app==='hr')dashboard.append(entry);
+ else dashboard.prepend(entry);
 }
-let frame=0;function decorate(){frame=0;if(!auth()?.current())return;passwordEyes();closeIcons();header();sidebar();attendanceControls();archiveControls();departmentAssignmentEntry();}function schedule(){if(!frame)frame=requestAnimationFrame(decorate);}
+let frame=0;function decorate(){frame=0;if(!auth()?.current())return;passwordEyes();closeIcons();header();sidebar();attendanceControls();archiveControls();departmentAssignmentEntry();rememberHrPage();hrBackControls();}function schedule(){if(!frame)frame=requestAnimationFrame(decorate);}
 new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1)))schedule();}).observe(document.body,{childList:true,subtree:true});
 for(const ev of ['mosh:ui-ready','mosh:section-enter','mosh:refreshed','mosh:permissions-applied'])document.addEventListener(ev,schedule);
-for(const ev of ['mosh:logout-complete','mosh:session-expired'])document.addEventListener(ev,()=>{trail=[];lastNavigation=null;expanded='';for(const t of trees.values()){t.box.hidden=true;t.signature='';}all('.ui09-password input').forEach(f=>f.type='password');});
+for(const ev of ['mosh:logout-complete','mosh:session-expired'])document.addEventListener(ev,()=>{trail=[];lastNavigation=null;hrDialogReturn=null;expanded='';for(const t of trees.values()){t.box.hidden=true;t.signature='';}all('.ui09-password input').forEach(f=>f.type='password');});
 schedule();
 })();

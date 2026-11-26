@@ -61,7 +61,8 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
       if(error.errors&&method!=='GET'&&method!=='HEAD')document.dispatchEvent(new CustomEvent('mosh:validation-error',{detail:error}));
       if (response.status === 429 && error.retryAfter) error.message += '\nأعد المحاولة بعد ' + error.retryAfter + ' ثانية.';
       if (response.status === 401 && !publicAuthPath(path)) {
-        document.dispatchEvent(new CustomEvent('mosh:session-expired'));
+        const reason = result.reason === 'frozen' ? 'frozen' : 'expired';
+        document.dispatchEvent(new CustomEvent('mosh:session-expired', {detail: {reason}}));
       }
       if (response.status === 419 && path === '/auth/login' && method === 'POST' && retryLogin) {
         const status = await api.request('/auth/status', {cache:'no-store', signal:controller.signal});
@@ -86,15 +87,46 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
   const readySections = new Set();
   const sectionRequests = new Map();
   let refreshTail = Promise.resolve();
+  let taskDataset = 'omit';
+  const hydratedTaskIds = new Set();
+  api.hasTaskFamily = id => taskDataset === 'all' || hydratedTaskIds.has(String(id));
   const activeSection = () => document.querySelector('.view.active')?.id.replace(/App$/, '') || 'dashboard';
+  api.personalTaskScope = function (account = api.user, roles = api.auth.roles, coverage = api.departmentManagerCoverage) {
+    if (!account || account.isRoot || Object.values(coverage?.acting||{}).some(id=>String(id)===String(account.employeeId))) return false;
+    const role = roles.find(row => row.id === account.roleId);
+    const scope = account.taskScope === 'inherit' || !account.taskScope
+      ? role?.taskScope || (role?.scope === 'department_limited' ? 'mine' : 'all')
+      : account.taskScope;
+    return scope === 'mine';
+  };
+  function bootstrapTaskMode(section, account, roles, coverage) {
+    if (section === 'dashboard') return 'mine';
+    if (section === 'tasks') return api.personalTaskScope(account, roles, coverage) ? 'mine' : 'omit';
+    if (section === 'instructions') return 'omit';
+    return 'all';
+  }
 
-  async function readBootstrap(section, options) {
-    const data = await api.request('/bootstrap?section='+encodeURIComponent(section), {...options, cache:'no-store', timeoutMs:60000});
+  async function readBootstrap(section, options, taskMode = bootstrapTaskMode(section)) {
+    const query = new URLSearchParams({section});
+    if (taskMode !== 'all') query.set('tasks', taskMode);
+    const data = await api.request('/bootstrap?' + query, {...options, cache:'no-store', timeoutMs:60000});
     data.state.departmentManagers = Object.assign({}, data.state.departmentManagers || {});
     if (data.settings?.['department-managers']) data.settings['department-managers'].value = Object.assign({}, data.settings['department-managers'].value || {});
     return data;
   }
+  api.setReportingHierarchy = function (value) {
+    if (!value) {
+      api.reportingHierarchy = null;
+      return;
+    }
+    if ((api.reportingHierarchy?._version ?? 0) > (value._version ?? 0)) return;
+    const {enabled, generalManagerId, reportsTo, _version} = value;
+    api.reportingHierarchy = {enabled, generalManagerId, reportsTo, _version};
+  };
   function applyBootstrapAccount(data) {
+    if (api.user?.id !== data.user?.id) api.reportingHierarchy = null;
+    api.setReportingHierarchy(data.reportingHierarchy);
+    api.departmentManagerCoverage=data.departmentManagerCoverage||null;
     api.resources = data.resources; api.settingPaths = data.settingPaths; api.settings = data.settings;
     api.auth = {version: 2, users: data.users, roles: data.roles, security: data.security, audit: api.auth.audit || []};
     api.user = data.user;
@@ -103,6 +135,8 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     const data = await readBootstrap(section, options);
     api.initialState = data.state;
     applyBootstrapAccount(data);
+    taskDataset = bootstrapTaskMode(section);
+    hydratedTaskIds.clear();
     readySections.clear();
     readySections.add(section);
     return data;
@@ -409,20 +443,74 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     if(typeof setDirtyState==='function')setDirtyState(false);
     document.dispatchEvent(new CustomEvent('mosh:local-discarded'));return true;
   };
-  let tasksRead36=null,tasksReadSequence36=0;
-  api.refreshTasks = function () {
-    if (!ready || !api.user || pending || taskPending) return Promise.resolve(false);
-    const who=String(api.user.id),before=copy(state.salesTasks||[]);
-    if(!equal(before,baseline.salesTasks||[]))return Promise.resolve(false);
-    if(tasksRead36?.who===who)return tasksRead36.promise;
-    const seq=++tasksReadSequence36;
-    const promise=(async()=>{const next=await api.listAll('tasks');
-      if(!Array.isArray(next))throw new Error('استجابة قائمة المهام غير صالحة.');
-      if(seq!==tasksReadSequence36||String(api.user?.id||'')!==who||pending||taskPending||!equal(before,state.salesTasks||[]))return false;
-      state.salesTasks=copy(next);baseline.salesTasks=copy(next);lastSavedStateRaw=JSON.stringify(state);
-      document.dispatchEvent(new CustomEvent('mosh:tasks-refreshed'));return true;
-    })().finally(()=>{if(tasksRead36?.seq===seq)tasksRead36=null;});
-    tasksRead36={who,seq,promise};return promise;
+  let mineRequest = null;
+  api.refreshDashboardTasks = function () {
+    if (!ready || !api.user || activeSection() !== 'dashboard' || api.isSaving() || sectionRequests.size) return Promise.resolve(false);
+    const owner = String(api.user.id);
+    if (mineRequest?.owner === owner) return mineRequest.promise;
+    const before = copy(baseline.salesTasks);
+    if (!equal(before, state.salesTasks)) return Promise.resolve(false);
+    const request = {owner, promise: null};
+    mineRequest = request;
+    request.promise = api.request('/task-views/mine', {cache: 'no-store'}).then(tasks => {
+      if (!Array.isArray(tasks)) throw new Error('استجابة مهامي غير صالحة.');
+      if (mineRequest !== request || String(api.user?.id) !== owner || activeSection() !== 'dashboard'
+        || api.isSaving() || sectionRequests.size || !equal(before, baseline.salesTasks) || !equal(before, state.salesTasks)) return false;
+      state.salesTasks = copy(tasks);
+      baseline.salesTasks = copy(tasks);
+      taskDataset = 'mine';
+      hydratedTaskIds.clear();
+      lastSavedStateRaw = JSON.stringify(state);
+      document.dispatchEvent(new CustomEvent('mosh:tasks-refreshed'));
+      return true;
+    }).finally(() => {
+      if (mineRequest === request) mineRequest = null;
+    });
+    return request.promise;
+  };
+  api.taskPage = function ({page, perPage, q, signal}) {
+    const query = new URLSearchParams({view:'main', page, perPage});
+    if (q) query.set('q', q);
+    return api.request('/tasks?' + query, {envelope:true, cache:'no-store', signal});
+  };
+  api.reserveTaskIds = async function (count = 1) {
+    const owner = String(api.user?.id || '');
+    const allocation = await api.request('/task-views/reserve', {method:'POST', body:{count}});
+    if (!owner || String(api.user?.id || '') !== owner) throw new Error('تغير حساب الدخول. أعد فتح نموذج المهمة.');
+    const first = Number(allocation?.first), last = Number(allocation?.last);
+    if (!Number.isSafeInteger(first) || first < 1 || !Number.isSafeInteger(last) || last - first + 1 !== count) {
+      throw new Error('تعذّر تخصيص أرقام المهام.');
+    }
+    return first;
+  };
+  api.hydrateTaskFamily = async function (id, {signal} = {}) {
+    if (!api.user || !ready || api.isSaving()) return false;
+    const owner = String(api.user.id), key = String(id);
+    const access = accountAccess(api.user, api.auth.roles);
+    const versions = new Map(baseline.salesTasks.map(task => [String(task.id), task._version]));
+    const tasks = await api.request('/task-views/family/' + encodeURIComponent(key), {cache:'no-store', signal});
+    if (!Array.isArray(tasks) || !tasks.some(task => String(task?.id) === key)
+      || tasks.some(task => !task?.id || !Number.isSafeInteger(Number(task._version)) || Number(task._version) < 1)) {
+      throw new Error('استجابة تفاصيل المهمة غير مكتملة.');
+    }
+    if (signal?.aborted || String(api.user?.id) !== owner || api.isSaving()
+      || !equal(access, accountAccess(api.user, api.auth.roles))) return false;
+    const originals = new Map(baseline.salesTasks.map(task => [String(task.id), task]));
+    const current = new Map(state.salesTasks.map(task => [String(task.id), task]));
+    for (const task of tasks) {
+      const taskId = String(task.id);
+      const original = originals.get(taskId);
+      if (!equal(current.get(taskId), original) || original?._version !== versions.get(taskId)
+        || original && Number(original._version) > Number(task._version)) return false;
+    }
+    for (const task of tasks) {
+      const change = {resource:'tasks', id:task.id, data:task};
+      mergeChange(baseline, change);
+      mergeChange(state, change);
+      hydratedTaskIds.add(String(task.id));
+    }
+    lastSavedStateRaw = JSON.stringify(state);
+    return true;
   };
   // R6: read a committed task's server-owned timing, never overwrite unsaved form edits.
   api.refreshTaskDetails = async function(id) {
@@ -522,9 +610,12 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     document.dispatchEvent(new CustomEvent('mosh:saved', {detail:{changes, serverConfirmed:true}}));
     return changes;
   };
-  function accountAccess(user, roles) {
+  function accountAccess(user, roles, coverage = api.departmentManagerCoverage) {
     const fields = ['id','roleId','department','employeeId','isRoot','active','mustChange','taskScope','moduleOverrides','globalOverrides'];
-    return [fields.map(field => user?.[field]), roles.find(role => role.id === user?.roleId)];
+    const assigned = map => Object.keys(map||{}).filter(department=>String(map[department])===String(user?.employeeId)).sort();
+    const acting=assigned(coverage?.acting);
+    return [fields.map(field => user?.[field]), roles.find(role => role.id === user?.roleId),
+      assigned(coverage?.effective), acting, acting.length?coverage.actions:null];
   }
 
   async function refreshSection(section) {
@@ -532,9 +623,17 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     if(workdeskUncertain)await api.resolveWorkdesk();
     const before = copy(baseline);
     const access = accountAccess(api.user, api.auth.roles);
-    const next = await readBootstrap(section);
-    if (!equal(access, accountAccess(next.user, next.roles)) || !Array.isArray(next.loadedResources)) {
+    let taskMode = bootstrapTaskMode(section);
+    let next = await readBootstrap(section, undefined, taskMode);
+    const updatedTaskMode = bootstrapTaskMode(section, next.user, next.roles, next.departmentManagerCoverage||null);
+    if (updatedTaskMode !== taskMode) {
+      taskMode = updatedTaskMode;
+      next = await readBootstrap(section, undefined, taskMode);
+    }
+    if (!equal(access, accountAccess(next.user, next.roles, next.departmentManagerCoverage||null)) || !Array.isArray(next.loadedResources)) {
       state = copy(next.state);
+      taskDataset = taskMode;
+      hydratedTaskIds.clear();
       readySections.clear();
       applyBootstrapAccount(next);
       api.initialize();
@@ -550,6 +649,17 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
         set(state, path, copy(value));
         set(baseline, path, copy(value));
         if (wanted) set(wanted, path, copy(value));
+      }
+      if (applied.has('salesTasks')) {
+        taskDataset = taskMode;
+        hydratedTaskIds.clear();
+      } else if (taskMode === 'omit' && taskDataset === 'all' && !api.isSaving()
+        && equal(before.salesTasks, baseline.salesTasks) && equal(baseline.salesTasks, state.salesTasks)) {
+        const retained = baseline.salesTasks.filter(task =>
+          hydratedTaskIds.has(String(task.id)) || window.MoshEmployeeTasks41?.isMine?.(task));
+        state.salesTasks = copy(retained);
+        baseline.salesTasks = copy(retained);
+        taskDataset = 'omit';
       }
       const priorSettings = api.settings;
       for (const [key, path] of Object.entries(next.settingPaths)) {
@@ -573,7 +683,10 @@ if(globalThis.crypto && typeof globalThis.crypto.randomUUID!=='function' && type
     return request;
   };
 
-  api.sectionPending = section => !readySections.has(section);
+  api.sectionPending = section => !readySections.has(section)
+    || (bootstrapTaskMode(section) === 'all' && taskDataset !== 'all')
+    || (bootstrapTaskMode(section) === 'omit' && taskDataset === 'all')
+    || (bootstrapTaskMode(section) === 'mine' && taskDataset !== 'mine');
   api.ensureSection = section => api.sectionPending(section) ? api.refresh({section}) : Promise.resolve();
   api.saveAccounts = async function (desired) {
     const previous = copy(api.auth);

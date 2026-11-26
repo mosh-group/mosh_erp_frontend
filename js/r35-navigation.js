@@ -24,7 +24,21 @@ function allowed(e){
  return !!owner();
 }
 function label(e){const copy=e.cloneNode(true);copy.querySelectorAll('svg,.badge,.m15-count,.hr-count,small').forEach(n=>n.remove());return copy.textContent.trim().replace(/^[▦◉◇☷✎↻✓\s]+/,'').replace(/\s+/g,' ').replace(/\d+$/,'').trim();}
-function sources(app){const v=$('#'+app+'App');if(!v)return[];let nodes=$$(roots[app]+' button',v);if(app==='marketing'){if(window.MoshAuth37?.taskScope?.()==='mine')return [];nodes=nodes.filter(n=>n.dataset.mk33View!=='dashboard');const customers=$('#marketingCustomersTab',v);if(customers)nodes.unshift(customers);const social=$('#marketingSocialHubTab',v);if(social)nodes.push(social);}return [...new Set(nodes)].filter(e=>allowed(e)&&label(e));}
+function sources(app){
+ const view=$('#'+app+'App');
+ if(!view)return [];
+ if(app==='it'&&!window.MoshAuth37?.canModule('it','list'))return [];
+ let buttons=$$(roots[app]+' button',view);
+ if(app==='marketing'){
+  if(window.MoshAuth37?.taskScope?.()==='mine')return [];
+  buttons=buttons.filter(button=>button.dataset.mk33View!=='dashboard');
+  const customers=$('#marketingCustomersTab',view);
+  if(customers)buttons.unshift(customers);
+  const social=$('#marketingSocialHubTab',view);
+  if(social)buttons.push(social);
+ }
+ return [...new Set(buttons)].filter(button=>allowed(button)&&label(button));
+}
 function groups(app){let left=sources(app);return (specs[app]||[]).map(([name,icon,re])=>{const rows=left.filter(n=>re.test(label(n)));left=left.filter(n=>!rows.includes(n));return{name,icon,rows};}).filter(g=>g.rows.length);}
 let panel,sub,trigger=null,app='',session='',parentRow=null,frame=0,started=false;
 function message(t){window.MoshUI19?.toast?.(t);}
