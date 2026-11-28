@@ -1,0 +1,164 @@
+.mosh-dropdown-search-field {
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  vertical-align: middle;
+}
+
+.mosh-dropdown-search-field > :is(select, input[list]) {
+  min-inline-size: 0 !important;
+  max-inline-size: 100%;
+  box-sizing: border-box;
+}
+
+.mosh-dropdown-search-field[hidden],
+.mosh-dropdown-search-field:has(> :is(select, input):is([hidden], .mosh-auth-hidden, [type="hidden"], [style*="display:none" i], [style*="display: none" i])) {
+  display: none !important;
+}
+
+.mosh-dropdown-search-field:has(> :is(select, input):is(:disabled, [readonly], [aria-disabled="true"])) > .mosh-dropdown-search-trigger,
+.mosh-dropdown-search-field:not(:has(> :is(select, input[list]))) > .mosh-dropdown-search-trigger {
+  display: none !important;
+}
+
+.mosh-dropdown-search-field > .mosh-dropdown-search-trigger {
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  inline-size: 30px;
+  block-size: 30px;
+  min-inline-size: 30px;
+  min-block-size: 30px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--line, #45484e);
+  border-radius: 7px;
+  background: var(--panel, #18191d);
+  color: var(--text, #f5f1e7);
+  cursor: pointer;
+}
+
+.mosh-dropdown-search-field > .mosh-dropdown-search-trigger:hover {
+  border-color: var(--gold, #d6b13e);
+  color: var(--gold, #d6b13e);
+}
+
+.mosh-dropdown-search-trigger:focus-visible,
+#moshDropdownSearchDialog :is(.mosh-dropdown-search-query, .mosh-dropdown-search-option):focus-visible {
+  outline: 2px solid var(--gold, #d6b13e);
+  outline-offset: 2px;
+}
+
+.mosh-dropdown-search-lens {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  inline-size: 11px;
+  block-size: 11px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  transform: translate(-1px, -1px);
+  pointer-events: none;
+}
+
+.mosh-dropdown-search-lens::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  inline-size: 6px;
+  block-size: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.hr-notice-template > .mosh-dropdown-search-field {
+  flex: 1;
+}
+
+html.mosh-plus #appShell .pv-task-inner .r34-deadline > .mosh-dropdown-search-field > select {
+  width: 100% !important;
+  max-width: none !important;
+  height: 42px !important;
+  min-height: 42px !important;
+}
+
+html.mosh-plus #appShell .pv-task-inner .r34-deadline > .mosh-dropdown-search-field:has(+ input[hidden]) {
+  grid-column: 1 / -1;
+}
+
+html.mosh-compact01 #standaloneTaskModal .mosh-dropdown-search-field:has(> #standaloneTaskDeadlineMode) {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+}
+
+@media (max-width: 500px) {
+  html.mosh-compact01 #standaloneTaskModal .mosh-dropdown-search-field:has(> #standaloneTaskDeadlineMode) {
+    grid-column: 1 !important;
+    grid-row: 4 !important;
+  }
+}
+
+#moshDropdownSearchDialog {
+  width: min(440px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+}
+
+#moshDropdownSearchDialog .mosh-dropdown-search-query {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  color: var(--text);
+  background: var(--bg);
+  border-color: var(--line);
+}
+
+.mosh-dropdown-search-results {
+  display: grid;
+  gap: 3px;
+  max-block-size: min(46dvh, 365px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 3px;
+}
+
+.mosh-dropdown-search-results:empty {
+  display: none;
+}
+
+#moshDropdownSearchDialog .mosh-dropdown-search-option {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 10px;
+  text-align: start;
+  overflow-wrap: anywhere;
+  color: var(--text);
+  background: var(--panel2);
+  border: 1px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+#moshDropdownSearchDialog .mosh-dropdown-search-option:is(:hover, [aria-pressed="true"], [aria-current="true"]) {
+  border-color: var(--gold, #d6b13e);
+}
+
+.mosh-dropdown-search-option small,
+.mosh-dropdown-search-empty {
+  color: var(--muted, #aaa398);
+}
+
+.mosh-dropdown-search-empty {
+  margin: 10px 0 0;
+}

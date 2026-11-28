@@ -86,11 +86,28 @@ function profilePane(){const x=HR.data,p=x.employee,c=x.capabilities;
  note('العقد ليس شرطاً لتفعيل الموظف. بيانات العقود ونسخها الموقعة متاحة للموارد البشرية فقط.')+
  `<div class="r29-grid">${field('الاسم','viewName',p.name,'text','disabled')}${field('رقم الموظف','viewEmployeeNo',p.employeeNo||p.id,'text','readonly')}${field('المدير المباشر','viewDirectManager',getStaffDirectManagerName(p)||'غير محدد','text','readonly')}${field('القسم','viewDepartment',pretty(p.department),'text','disabled')}${field('المسمى الوظيفي','viewJob',p.jobTitle,'text','disabled')}${field('تاريخ التعيين الحالي','viewHire',p.hireDate,'text','disabled')}${field('نظام الدوام','viewMode',{fingerprint:'بصمة',flexible:'مرن مع ساعات يومية',daily:'يومي دون ساعات ثابتة'}[p.attendanceMode||(p.zktecoExempt?'daily':'fingerprint')],'text','disabled')}${field('نهاية فترة التجربة','viewProbation',p.probationEndDate||'غير محددة','text','disabled')}</div>${c.edit?`<div class="r29-actions">${B('تعديل البيانات وشروط التفعيل','profile-edit','',true)}${B('فتح الملف الكامل الأصلي','legacy-profile',p.id)}</div>`:''}`;
 }
-function attendancePane(){const x=HR.data,c=x.capabilities,records=[...x.attendance].reverse();let html=note('بدء وإنهاء الدوام يُسجلان بتوقيت الخادم، ولا يشغلان مؤقّت أي مهمة. الجدول خطة دوام، وسجل الحضور مستقل عنه.');
- if(c.clock)html+=`<section class="r29-card"><div class="r29-card-header"><div><strong>${x.openShift?'الدوام مفتوح':'الدوام غير مفتوح'}</strong><p class="r29-muted">${x.openShift?'بدأ: '+E(stamp(x.openShift.startAt)):'ابدأ الدوام عند دخولك الفعلي.'}</p></div>${B(x.openShift?'إنهاء الدوام':'بدء الدوام','clock',x.openShift?'end':'start',true)}</div></section>`;
+function clockMapLink(location,direction){
+ const {latitude,longitude}=location||{};
+ if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||Math.abs(latitude)>90||Math.abs(longitude)>180)return '';
+ const label=direction==='in'?'موقع الدخول':'موقع الخروج';
+ const href='https://www.google.com/maps/search/?api=1&query='+enc(latitude+','+longitude);
+ const captured=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})/.exec(location.capturedAt||'');
+ const time=captured?`<small>وقت البصمة <bdi>${captured[3]}/${captured[2]}/${captured[1]} · ${captured[4]}</bdi></small>`:'';
+ return `<div><a class="r29-btn" href="${E(href)}" data-r29-clock-map="${direction}" aria-label="${label} على الخريطة" target="_blank" rel="noopener noreferrer">${label}</a>${time}</div>`;
+}
+function attendancePane(){const x=HR.data,c=x.capabilities,records=[...x.attendance].reverse();let html=note('يُسجّل وقت الدخول والخروج بتوقيت الخادم.');
+ const showLocations=c.fieldClockLocation||records.some(r=>r.locations?.in||r.locations?.out);
+ const clockLabel=c.fieldClockLocation?(x.openShift?'بصمة خروج ميدانية':'بصمة دخول ميدانية'):(x.openShift?'إنهاء الدوام':'بدء الدوام');
+ const fieldMode=['ميداني','مختلط'].includes(String(x.employee.workMode||'').trim());
+ const attendanceMode=x.employee.attendanceMode||(x.employee.zktecoExempt?'daily':'fingerprint');
+ if(fieldMode&&attendanceMode==='fingerprint')html+=note('لتسجيل البصمة الميدانية من الهاتف، اضبط نظام الدوام على مرن أو يومي في ملف الموظف.');
+ if(c.clock)html+=`<section class="r29-card"><div class="r29-card-header"><div><strong>${x.openShift?'الدوام مفتوح':'الدوام غير مفتوح'}</strong><p class="r29-muted">${x.openShift?'بدأ: '+E(stamp(x.openShift.startAt)):'ابدأ الدوام عند دخولك الفعلي.'}</p></div>${B(clockLabel,'clock',x.openShift?'end':'start',true)}</div>${c.fieldClockLocation?note('اسمح للموقع في المتصفح عند الضغط على زر البصمة الميدانية. تُحفظ نقطة موقعك مع وقت البصمة.'):''}</section>`;
  if(c.edit)html+=B('إضافة جدول أسبوعي أو شهري','schedule','',true);
  html+=`<h3>الجداول المحفوظة</h3>${[...x.schedules].reverse().map(s=>`<details class="r29-card"><summary>${s.type==='weekly'?'جدول أسبوعي':'جدول شهري'} · ${E(s.effectiveFrom)} — ${E(s.effectiveTo||'مفتوح')}</summary><p class="r29-muted">${E(s.reason)} · ${E(s.by)} · ${E(stamp(s.at))}</p>${table(['اليوم','البداية','النهاية'],s.rows.map(r=>`<tr><td>${E(s.type==='weekly'?['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][r.day]:r.date)}</td><td>${E(r.off?'عطلة':r.start)}</td><td>${E(r.off?'—':r.end)}</td></tr>`))}</details>`).join('')||empty('لم يُحدد جدول بعد.')}`;
- return html+`<h3>سجل الحضور</h3>`+table(['التاريخ','الدخول','الخروج','الساعات','المصدر',''],records.map(r=>`<tr><td>${E(r.date||r.startAt?.slice(0,10)||'—')}</td><td>${E(r.inTime||r.checkIn||'—')}</td><td>${E(r.outTime||r.checkOut||'—')}${r.outDate&&r.outDate!==r.date?`<small>${E(r.outDate)}</small>`:''}</td><td>${E(r.hours??'—')}</td><td>${E(r.source==='self_r29'?'تسجيل ذاتي':r.source||'إدخال سابق')}${r.correctionReason?`<small>${E(r.correctionReason)}</small>`:''}</td><td>${c.edit&&r.id?B('تصحيح موثّق','attendance-correct',r.id):''}</td></tr>`));
+ return html+`<h3>سجل الحضور</h3>`+table(['التاريخ','الدخول','الخروج','الساعات','المصدر',...(showLocations?['موقع البصمة']:[]),''],records.map(r=>{
+  const maps=showLocations?[clockMapLink(r.locations?.in,'in'),clockMapLink(r.locations?.out,'out')].filter(Boolean).join(' '):'';
+  return `<tr><td>${E(r.date||r.startAt?.slice(0,10)||'—')}</td><td>${E(r.inTime||r.checkIn||'—')}</td><td>${E(r.outTime||r.checkOut||'—')}${r.outDate&&r.outDate!==r.date?`<small>${E(r.outDate)}</small>`:''}</td><td>${E(r.hours??'—')}</td><td>${E(r.source==='self_r29'?'تسجيل ذاتي':r.source||'إدخال سابق')}${r.correctionReason?`<small>${E(r.correctionReason)}</small>`:''}</td>${showLocations?`<td>${maps||'—'}</td>`:''}<td>${c.edit&&r.id?B('تصحيح موثّق','attendance-correct',r.id):''}</td></tr>`;
+ }));
 }
 function leavePane(){const x=HR.data,l=x.leave,p=x.employee;return `<div class="r29-head"><h3>الإجازة السنوية</h3><label>سنة الرصيد<input type="number" data-r29-year min="1900" max="2199" value="${HR.year}"></label></div>${note('السنة من ١ كانون الثاني إلى ٣١ كانون الأول. لا يُرحّل الرصيد إلى السنة التالية، وتبقى سجلات السنوات السابقة محفوظة.')}<div class="r29-kpis">${[['الاستحقاق',l.entitlement],['المستخدم سابقاً',l.usedBefore],['المستخدم المسجل',l.recordedUsed],['المتاح بعد الطلبات المعلقة',l.available]].map(([t,v])=>`<div class="r29-kpi"><span>${E(t)}</span><strong>${E(v)}</strong></div>`).join('')}</div><p class="r29-muted">طلبات معلقة: ${E(l.pending)} يوم. لا يتضمن هذا العرض الإجازات غير السنوية.</p>${x.capabilities.edit?B('إدخال الاستخدام السابق للنظام','previous-leave','',true):''}${l.legacyOpeningBalanceNotApplied?note('يوجد رصيد افتتاحي قديم لا يُطبّق كترحيل في السنة الميلادية. راجعه مع الاستخدام السابق تفادياً لاحتساب الأيام مرتين.'):''}${table(['السنة','أيام سابقة إضافية','حتى تاريخ','السبب'],Object.entries(p.leaveUsedBeforeSystemByYear||{}).sort(([a],[b])=>b-a).map(([year,r])=>`<tr><td>${E(year)}</td><td>${E(r.days)}</td><td>${E(r.throughDate)}</td><td>${E(r.reason)}</td></tr>`))}${table(['من','إلى','النوع','الأيام','الحالة'],(p.leaveRecords||[]).filter(r=>(r.startDate||'')<=HR.year+'-12-31'&&(r.endDate||r.startDate||'')>=HR.year+'-01-01').map(r=>`<tr><td>${E(r.startDate)}</td><td>${E(r.endDate||r.startDate)}</td><td>${E(r.type)}</td><td>${E(r.days??r.hours??'—')}</td><td>${E(label(r.status))}</td></tr>`))}`;}
 function evaluationPane(){const x=HR.data,c=x.capabilities,t=x.criteria;return `<h3>معايير ${E(x.employee.jobTitle||'المسمى غير محدد')}</h3>${note('خمسة معايير، كل معيار من ١٠٠. النتيجة مجموع العلامات ÷ ٥. يحفظ كل تقييم نسخة معاييره، فلا يتغير التقييم القديم عند تعديل المعايير.')}<div class="r29-card">${t.labels?.length?t.labels.map((a,i)=>`<p>${i+1}. ${E(a)}</p>`).join(''):empty('على الموارد البشرية تحديد معايير هذا المسمى أولاً.')}<div class="r29-actions">${c.edit?B('تحديد المعايير الخمسة','criteria'):''}${c.evaluate&&t.labels?.length===5?B('تقييم جديد','evaluate','',true):''}</div></div><h3>سجل التقييمات</h3>${[...x.evaluations].reverse().map(r=>`<article class="r29-card"><div class="r29-card-header"><strong>${E(r.date||'')} · ${E(r.by||r.evaluator||'')}</strong><span class="r29-pill">${E(r.score??'—')} / 100</span></div>${r.criteria?table(['المعيار المحفوظ وقت التقييم','العلامة'],r.criteria.map((a,i)=>`<tr><td>${E(a)}</td><td>${E(r.scores[i])}</td></tr>`)):'<p class="r29-muted">تقييم سابق بعلامة إجمالية؛ محفوظ دون إعادة احتساب.</p>'}<p>${E(r.note||r.notes||'')}</p></article>`).join('')||empty('لا توجد تقييمات محفوظة.')}`;}
@@ -240,7 +257,43 @@ function extractFiles(obj,seen=new Map(),depth=0){if(!obj||typeof obj!=='object'
 function taskRead(id){const t=taskView?.tasks.find(t=>String(t.id)===String(id));if(!t)return;guard(taskView.who);const files=extractFiles(t),chats=t.workChat||t.comments||t.chat||t.messages||t.conversation||[],history=t.history||t.executionHistory||t.activityLog||t.events||[];
  dialog('r29TaskRead','اطلاع على المهمة · '+(t.title||t.name||''),note('للاطلاع فقط. جميع المعلومات أدناه من سجل المهمة المحفوظ على الخادم.')+`<div class="r29-summary-line"><span>${E(pretty(t.department||''))}</span><span>${E(t.assigneeName||t.employeeName||t.assignee||'')}</span><span>${E(label(t.status))}</span></div>${t.urgentReason?note('سبب الاستعجال: '+t.urgentReason):''}<h3>تفاصيل العمل</h3><p>${E(t.description||t.details||t.notes||'لا يوجد وصف إضافي.')}</p><h3>المحادثة</h3>${window.MoshChat34?window.MoshChat34.readOnlyHtml(chats):Array.isArray(chats)&&chats.length?chats.map(c=>`<article class="r29-card"><div class="r29-muted">${E(c.by||c.author||c.userName||c.sender||'')} · ${E(stamp(c.at||c.time||c.createdAt))}</div><p>${E(c.text||c.message||c.body||c.note||'')}</p></article>`).join(''):empty('لا توجد رسائل محفوظة بهذا الحقل.')}<h3>المرفقات</h3><div class="r29-actions">${files.map(f=>window.MoshChat34?window.MoshChat34.attachmentHtml(f):B(f.name,'file',f.key)).join('')||'لا توجد مرفقات.'}</div><h3>سجل التنفيذ والإجراءات</h3>${history.length?readObject(history):empty('لا يوجد سجل إضافي بهذا الحقل.')}<details><summary>بقية بيانات المهمة المحفوظة</summary>${readObject(t,new Set(['comments','chat','messages','conversation','history','executionHistory','activityLog','events','_version']))}</details>`);
 }
-async function simpleMutation(payload,button){const h=button._r29Holder||={pending:null};const d=button.closest('dialog');busy(d,true);try{await mutate(payload,h);ui().toast('تم الحفظ على الخادم.');return true;}catch(e){fail(d,e);return false;}finally{busy(d,false);}}
+function readClockLocation(){
+ if(!window.isSecureContext)throw new Error('البصمة الميدانية تحتاج فتح النظام عبر اتصال HTTPS للسماح بالموقع.');
+ if(!navigator.geolocation)throw new Error('تحديد الموقع غير متاح في هذا المتصفح.');
+ return new Promise((resolve,reject)=>{
+  navigator.geolocation.getCurrentPosition(({coords})=>{
+   const {latitude,longitude,accuracy}=coords;
+   if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||Math.abs(latitude)>90||Math.abs(longitude)>180){
+    reject(new Error('تعذّر قراءة موقع صالح للبصمة. أعد المحاولة.'));
+    return;
+   }
+   resolve({latitude,longitude,...(Number.isFinite(accuracy)&&accuracy>=0?{accuracy}:{})});
+  },error=>{
+   const message=error.code===1?'اسمح للمتصفح بالوصول إلى موقعك ثم أعد الضغط على زر البصمة.':'تعذّر تحديد موقعك. تأكّد من تشغيل الموقع ثم أعد المحاولة.';
+   reject(new Error(message));
+  },{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+ });
+}
+async function simpleMutation(payload,button){
+ const holder=button._r29Holder||={pending:null};
+ const d=button.closest('dialog'),profile=HR,data=profile?.data;
+ if(d.getAttribute('aria-busy')==='true')return false;
+ busy(d,true);
+ try{
+  if(payload.action==='clock'&&data?.capabilities.fieldClockLocation){
+   guard(profile.who);
+   const location=holder.pending?.body.location??await readClockLocation();
+   if(!d.open||!d.isConnected||HR!==profile||profile.data!==data||owner()!==profile.who)return false;
+   payload={...payload,location};
+  }
+  await mutate(payload,holder);
+  ui().toast('تم الحفظ على الخادم.');
+  return true;
+ }catch(e){
+  if(d.open&&d.isConnected)fail(d,e);
+  return false;
+ }finally{busy(d,false);}
+}
 function legacyProfile(id,documents=false){
  const previous=HR;
  ui().close('r29HR',true);

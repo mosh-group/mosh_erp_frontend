@@ -28,7 +28,7 @@ function addMonths(s,n){const d=D(s);if(!d)return '';const day=d.getUTCDate();d.
 function monthsBetween(s,to){if(!iso(s)||!iso(to)||s>to)return 0;const a=D(s),b=D(to);let m=(b.getUTCFullYear()-a.getUTCFullYear())*12+b.getUTCMonth()-a.getUTCMonth();if(addMonths(s,m)>to)m--;m=Math.max(0,m);const lower=addMonths(s,m),upper=addMonths(s,m+1);return m+Math.max(0,difference(lower,to))/Math.max(1,difference(lower,upper));}
 // Keep ISO storage intact; presentation uses unambiguous DD / MM / YYYY.
 function parseDisplay(s){s=String(s||'').trim().replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c))).replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c)));if(!s)return '';if(iso(s))return s;const m=s.match(/^(\d{1,2})\s*[\/.\-]\s*(\d{1,2})\s*[\/.\-]\s*(\d{4})$/);if(!m)return null;const d=m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');return iso(d)?d:null;}
-function dates(root=document){root.querySelectorAll('input[type=date]:not([data-m14-date-ready])').forEach(o=>{if(o.closest('[data-m14-skip-dates]'))return;o.dataset.m14DateReady='1';const w=document.createElement('span');w.className='m14-date';o.before(w);w.append(o);o.classList.add('m14-native-date');o.tabIndex=-1;const t=document.createElement('input');t.type='text';t.className='m14-date-text';t.placeholder='يوم / شهر / سنة';t.inputMode='numeric';t.dir='ltr';t.autocomplete='off';t.value=o.value?stamp(o.value):'';t.disabled=o.disabled;t.readOnly=o.readOnly;t.setAttribute('aria-label',(o.labels?.[0]?.textContent.trim()||'التاريخ')+' · يوم / شهر / سنة');const b=document.createElement('button');b.type='button';b.className='m14-date-picker';b.setAttribute('aria-label','اختيار التاريخ من التقويم');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18"/></svg>';w.append(t,b);const sync=()=>{t.value=o.value?stamp(o.value):'';t.removeAttribute('aria-invalid');t.setCustomValidity('');w.nextElementSibling?.matches('.m14-date-error')&&w.nextElementSibling.remove();};const commit=()=>{const v=parseDisplay(t.value);if(v===null||v&&((o.min&&v<o.min)||(o.max&&v>o.max))){t.setAttribute('aria-invalid','true');t.setCustomValidity('أدخل تاريخاً صحيحاً: يوم / شهر / سنة');if(!w.nextElementSibling?.matches('.m14-date-error'))w.insertAdjacentHTML('afterend','<small class="m14-date-error">التاريخ غير صحيح. مثال: 24 / 11 / 2026</small>');return false;}t.removeAttribute('aria-invalid');t.setCustomValidity('');o.value=v;if(v)t.value=stamp(v);w.nextElementSibling?.matches('.m14-date-error')&&w.nextElementSibling.remove();o.dispatchEvent(new Event('input',{bubbles:true}));o.dispatchEvent(new Event('change',{bubbles:true}));return true;};t.addEventListener('change',commit);t.addEventListener('blur',commit);o.addEventListener('input',sync);o.addEventListener('change',sync);t.addEventListener('keydown',e=>{if(e.key==='ArrowDown'&&e.altKey){e.preventDefault();b.click();}});b.onclick=()=>{if(o.disabled||o.readOnly)return;try{if(typeof o.showPicker==='function')o.showPicker();else throw Error();}catch(e){o.classList.remove('m14-native-date');o.style.width='100%';t.hidden=true;b.hidden=true;o.focus();}};w._m14={o,t,b,sync,commit};});}
+function dates(root=document){root.querySelectorAll('input[type=date]:not([data-m14-date-ready])').forEach(o=>{if(o.closest('[data-m14-skip-dates]'))return;o.dataset.m14DateReady='1';const w=document.createElement('span');w.className='m14-date';o.before(w);w.append(o);o.classList.add('m14-native-date');o.tabIndex=-1;const t=document.createElement('input');t.type='text';t.className='m14-date-text';t.placeholder='يوم / شهر / سنة';t.inputMode='numeric';t.dir='ltr';t.autocomplete='off';t.value=o.value?stamp(o.value):'';t.disabled=o.disabled;t.readOnly=o.readOnly;t.setAttribute('aria-label',(o.labels?.[0]?.textContent.trim()||'التاريخ')+' · يوم / شهر / سنة');const b=document.createElement('button');b.type='button';b.className='m14-date-picker';b.setAttribute('aria-label','اختيار التاريخ من التقويم');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18"/></svg>';w.append(t,b);const sync=()=>{t.value=o.value?stamp(o.value):'';t.removeAttribute('aria-invalid');t.setCustomValidity('');w.nextElementSibling?.matches('.m14-date-error')&&w.nextElementSibling.remove();};const commit=()=>{const v=parseDisplay(t.value);if(v===null||v&&((o.min&&v<o.min)||(o.max&&v>o.max))){const message=v&&o.hasAttribute('data-hr-leave-date')&&o.min&&v<o.min?'اختر تاريخ إجازة من اليوم فما بعد.':'أدخل تاريخاً صحيحاً بصيغة يوم / شهر / سنة.';t.setAttribute('aria-invalid','true');t.setCustomValidity(message);if(w.nextElementSibling?.matches('.m14-date-error'))w.nextElementSibling.textContent=message;else w.insertAdjacentHTML('afterend','<small class="m14-date-error">'+E(message)+'</small>');return false;}t.removeAttribute('aria-invalid');t.setCustomValidity('');o.value=v;if(v)t.value=stamp(v);w.nextElementSibling?.matches('.m14-date-error')&&w.nextElementSibling.remove();o.dispatchEvent(new Event('input',{bubbles:true}));o.dispatchEvent(new Event('change',{bubbles:true}));return true;};t.addEventListener('change',commit);t.addEventListener('blur',commit);o.addEventListener('input',sync);o.addEventListener('change',sync);t.addEventListener('keydown',e=>{if(e.key==='ArrowDown'&&e.altKey){e.preventDefault();b.click();}});b.onclick=()=>{if(o.disabled||o.readOnly)return;try{if(typeof o.showPicker==='function')o.showPicker();else throw Error();}catch(e){o.classList.remove('m14-native-date');o.style.width='100%';t.hidden=true;b.hidden=true;o.focus();}};w._m14={o,t,b,sync,commit};});}
 function dateValid(root=document){let good=true;root.querySelectorAll('.m14-date').forEach(w=>{if(!w._m14||w._m14.o.disabled)return;if(w._m14.t.getAttribute('aria-invalid')==='true'){if(good)w._m14.t.focus();good=false;}});if(!good)toast('صحّح التاريخ المميز بالأحمر قبل الحفظ.',true);return good;}
 let dateQueued=false;new MutationObserver(()=>{if(!dateQueued){dateQueued=true;requestAnimationFrame(()=>{dateQueued=false;dates();decorate();});}}).observe(document.body,{childList:true,subtree:true});
 setInterval(()=>document.querySelectorAll('.m14-date').forEach(w=>{const x=w._m14;if(!x)return;x.t.disabled=x.b.disabled=x.o.disabled;x.t.readOnly=x.o.readOnly;if(document.activeElement!==x.t&&!x.t.hasAttribute('aria-invalid')&&x.t.value!==(x.o.value?stamp(x.o.value):''))x.sync();}),1200);
@@ -38,16 +38,107 @@ function leaveDays(r){if(r.type==='ساعية'||r.type==='hourly_leave')return r
 function balance(p,type='annual',asOf=today()){if(type==='annual'&&window.MoshR29Model)return MoshR29Model.leave(p,Number(asOf.slice(0,4)),state.hrSettings||{},state.hrProRequests||[]);if(type!=='annual')return oldBalance(p,type);const ent=Math.max(0,num(p?.annualLeaveDays??state.hrSettings?.annualLeaveDays,14)),hire=String(p?.hireDate||''),end=p?.employmentStatus==='resigned'&&iso(p.resignationDate)&&p.resignationDate<asOf?p.resignationDate:asOf;const valid=iso(hire)&&iso(end)&&hire<=end;const mode=p?.leaveAccrualCycle||state.hrSettings?.leaveAccrualCycle||'service';let start=hire;if(valid&&mode==='anniversary')start=addMonths(hire,Math.floor(monthsBetween(hire,end)/12)*12);const months=valid?monthsBetween(start,end):0,accrued=valid?months*ent/12:0;const records=A(p?.leaveRecords).filter(r=>!['cancelled','rejected','deleted'].includes(r.status)&&(!iso(r.startDate)||r.startDate>=start)&&['سنوية','annual_leave','ساعية','hourly_leave'].includes(r.type));const seen=new Set(records.map(r=>String(r.id)));let used=records.filter(r=>r.status==='approved').reduce((n,r)=>n+leaveDays(r),0),pending=records.filter(r=>r.status==='pending').reduce((n,r)=>n+leaveDays(r),0);A(state.hrProRequests).filter(r=>String(r.employeeId)===String(p?.id)&&r.status==='pending'&&r.type==='annual_leave'&&!seen.has(String(r.id))).forEach(r=>{if(iso(r.data?.startDate)&&iso(r.data?.endDate)&&r.data.startDate>=start)pending+=Math.max(0,difference(r.data.startDate,r.data.endDate)+1);});const opening=num(p?.leaveOpeningBalance),available=Math.max(0,accrued+opening-used-pending);return{entitlement:ent,accrued:round(accrued),used:round(used),pending:round(pending),available:round(available),future:round(Math.max(0,ent-(accrued%Math.max(1,ent)))),opening,months,valid,cycle:{start,end:mode==='anniversary'&&valid?di(new Date(D(addMonths(start,12)).getTime()-86400000)):end},mode,monthly:ent/12};}
 window.hrLeaveBalance=balance;
 let S=null;const oldForm=window.hrEmployeeFormHtml,oldSave=window.saveStaffProfile;
-function session(p){const id=String(p?.id||'');if(!S||S.id!==id)S={id,base:clone(p||{}),assets:clone(A(p?.assets).length?p.assets:p?.issuedAssets?[{id:uid('ASSET'),name:p.issuedAssets,type:'أخرى',serial:'',status:'مسلمة',issuedDate:'',notes:'بيانات العهدة السابقة'}]:[]),leave:clone(A(p?.leaveRecords)),attendance:clone(A(p?.attendanceRecords)),annual:p?.annualLeaveDays??state.hrSettings?.annualLeaveDays??14,cycle:p?.leaveAccrualCycle||state.hrSettings?.leaveAccrualCycle||'service',opening:p?.leaveOpeningBalance||0,changed:false,dirtyKinds:new Set(),leaveEdit:'',attEdit:''};return S;}
+function session(p){const id=String(p?.id||'');if(!S||S.id!==id)S={id,base:clone(p||{}),assets:clone(employeeAssets(p).filter(a=>!linkedAsset(a))),documentSection:'documents',leave:clone(A(p?.leaveRecords)),attendance:clone(A(p?.attendanceRecords)),annual:p?.annualLeaveDays??state.hrSettings?.annualLeaveDays??14,cycle:p?.leaveAccrualCycle||state.hrSettings?.leaveAccrualCycle||'service',opening:p?.leaveOpeningBalance||0,changed:false,dirtyKinds:new Set(),leaveEdit:'',attEdit:''};return S;}
 function draft(){if(!S)session(getStaffProfileById(hrStaffEditingId));return Object.assign({},S.base,{id:S.id,name:value('staffName')||S.base.name||'موظف جديد',employeeNo:S.base.employeeNo||nextStaffIdentity().employeeNo,department:value('staffDepartment')||S.base.department||'',hireDate:value('staffHireDate')||S.base.hireDate||'',jobTitle:value('staffJobTitle')||S.base.jobTitle||'',annualLeaveDays:num(S.annual,14),leaveAccrualCycle:S.cycle,leaveOpeningBalance:num(S.opening),assets:S.assets,leaveRecords:S.leave,attendanceRecords:S.attendance});}
 function mark(kind){if(!S)return;S.changed=true;S.dirtyKinds.add(kind);const shell=hr.querySelector('.hr-profile-shell');if(shell&&!Q('m14Pending'))shell.querySelector('.hr-form-savebar')?.insertAdjacentHTML('beforebegin','<div id="m14Pending" class="m14-pending-bar">لديك تغييرات في الملف. اضغط «حفظ وإغلاق» لاعتمادها.</div>');}
 function pane(name,html){const el=hr.querySelector('.hr-profile-pane[data-pane="'+name+'"]');if(el){el.innerHTML=html;dates(el);}}
-function assetHtml(){return '<div class="m14"><div class="m14-head"><strong>العهد المسلّمة للموظف</strong>'+btn('+ إضافة عهدة','asset-add','','primary')+'</div><small>سجّل كل جهاز أو سيارة أو خط بسطر مستقل. الحفظ مع ملف الموظف.</small><div class="m14-assets">'+(S.assets.length?S.assets.map((a,i)=>'<div class="m14-asset"><div class="m14-asset-head"><b>العهدة '+(i+1)+'</b>'+btn('حذف','asset-remove',String(i),'m14-danger')+'</div><div class="m14-grid m14-asset-grid">'+select('النوع','a14type'+i,['لاب توب','موبايل','سيارة','خط','بطاقة دخول','أخرى'],a.type||'أخرى')+input('الاسم / الوصف *','a14name'+i,a.name||'')+input('الرقم / اللوحة / التسلسلي','a14serial'+i,a.serial||'')+input('تاريخ التسليم','a14date'+i,a.issuedDate||'','date')+select('الحالة','a14status'+i,['مسلمة','مستردة','تحتاج صيانة'],a.status||'مسلمة')+input('ملاحظات','a14note'+i,a.notes||'')+'</div></div>').join(''):'<div class="m14-empty">لا توجد عهد. ابدأ بإضافة لاب توب أو موبايل أو سيارة أو خط.</div>')+'</div></div>';}
+const assetTypes=['لابتوب','موبايل','سيارة','خط','بطاقة دخول','أخرى'];
+const assetStatuses=['مسلمة','مستردة','تحتاج صيانة'];
+const linkedAsset=asset=>['warehouse18','it31'].includes(asset.source)||Boolean(asset.movementId);
+const returnedAsset=asset=>['مستردة','معادة'].includes(asset.status);
+const assetSource=asset=>asset.source==='it31'?'تكنولوجيا المعلومات (IT)':asset.source==='warehouse18'||asset.movementId?'المخزن':'الموارد البشرية';
+
+function employeeAssets(profile){
+ const records=A(profile?.assets||profile?.custodies||profile?.custodyItems);
+ if(records.length||!profile?.issuedAssets)return records;
+ return [{id:'ASSET/LEGACY/'+profile.id,name:profile.issuedAssets,type:'أخرى',serial:'',status:'مسلمة',issuedDate:'',notes:'بيانات العهدة السابقة'}];
+}
+function canEditCustody(profile){
+ return Boolean(window.MoshAuth37?.canModule('hr',profile?.id?'edit':'create'));
+}
+function custodyTable(assets){
+ if(!assets.length)return '<div class="m14-empty">لا توجد ذمم مسجّلة لهذا الموظف.</div>';
+ return table(['العهدة','الجهة المسلّمة','الرقم التسلسلي','تاريخ التسليم','الحالة'],assets.map(asset=>{
+  const remaining=asset.quantity!=null&&!returnedAsset(asset)?'<small>الكمية المتبقية '+E(asset.quantity)+'</small>':'';
+  const condition=asset.status||'مسلمة';
+  return '<tr><td><b>'+E(asset.name||asset.title||'عهدة')+'</b><small>'+E(asset.type||'عهدة')+'</small>'+remaining+'</td>'+
+   '<td>'+E(assetSource(asset))+'</td><td><bdi>'+E(asset.serial||asset.number||'—')+'</bdi></td>'+
+   '<td><bdi>'+E(stamp(asset.issuedDate))+'</bdi></td><td>'+tag(condition)+'</td></tr>';
+ }).join(''));
+}
+function custodyActions(profile){
+ const permissions=window.MoshAuth37;
+ const id=profile?.id;
+ if(!id)return '';
+ let actions=canEditCustody(profile)?btn('إدارة ذمم الموارد البشرية','custody-edit',id,'primary'):'';
+ if(isStaffAssignable(profile)&&!profile.archivedAt){
+  if(window.MoshIT31?.openEmployeeIssue&&['view','list','create','assign'].every(action=>permissions?.canModule('it',action))){
+   actions+=btn('تسليم من IT','custody-it',id);
+  }
+  if(window.MoshOps18?.openEmployeeIssue&&permissions?.canModule('warehouses','view')&&window.MoshOps18.canStock()){
+   actions+=btn('تسليم من المخزن','custody-warehouse',id);
+  }
+ }
+ return actions;
+}
+function custodySummary(profile){
+ return '<div class="m14"><div class="m14-head"><strong>ذمم الموظف</strong>'+
+  '<div class="m14-actions">'+custodyActions(profile)+'</div></div>'+custodyTable(employeeAssets(profile))+'</div>';
+}
+
+function assetHtml(profile){
+ const editable=canEditCustody(profile);
+ const managed=employeeAssets(profile).filter(linkedAsset);
+ const actions=editable?btn('تسليم لابتوب','asset-add','لابتوب','primary')+
+  btn('تسليم موبايل','asset-add','موبايل')+btn('إضافة عهدة أخرى','asset-add','أخرى'):'';
+ const header='<div class="m14-head"><strong>ذمم الموظف</strong><div class="m14-actions">'+actions+'</div></div>';
+ if(!editable)return header+custodyTable([...S.assets,...managed]);
+ const cards=S.assets.map((asset,index)=>{
+  const type=asset.type||'أخرى',status=asset.status||'مسلمة';
+  const types=assetTypes.includes(type)?assetTypes:[type,...assetTypes];
+  const statuses=assetStatuses.includes(status)?assetStatuses:[status,...assetStatuses];
+  return '<div class="m14-asset"><div class="m14-asset-head"><b>الموارد البشرية</b>'+
+   btn('حذف','asset-remove',String(index),'m14-danger')+'</div><div class="m14-grid m14-asset-grid">'+
+   select('النوع','a14type'+index,types,type)+input('اسم الجهاز / وصف العهدة *','a14name'+index,asset.name||'')+
+   input('الرقم التسلسلي / اللوحة','a14serial'+index,asset.serial||'')+input('تاريخ التسليم','a14date'+index,asset.issuedDate||'','date')+
+   select('الحالة','a14status'+index,statuses,status)+input('ملاحظات','a14note'+index,asset.notes||'')+'</div></div>';
+ }).join('');
+ return header+(managed.length?custodyTable(managed):'')+
+  (cards?'<p>أدخل بيانات العهدة ثم احفظ ملف الموظف.</p><div class="m14-assets">'+cards+'</div>':'')+
+  (!managed.length&&!cards?custodyTable([]):'');
+}
+function documentSection(section,root=Q('m14EmployeeDocuments')){
+ if(!S||!root)return;
+ S.documentSection=section;
+ for(const button of root.querySelectorAll('[data-m14="documents-section"]')){
+  const selected=button.dataset.arg===section;
+  button.classList.toggle('primary',selected);
+  button.setAttribute('aria-pressed',String(selected));
+ }
+ for(const pane of root.querySelectorAll('[data-hr-file-section]'))pane.hidden=pane.dataset.hrFileSection!==section;
+}
+function editCustody(employeeId){
+ if(!canEditCustody(getStaffProfileById(employeeId)))return;
+ openStaffEmployeeForm(employeeId);
+ if(String(hrStaffEditingId)!==String(employeeId))return;
+ switchHrEmployeeTab('documents');
+ documentSection('custody');
+}
+function renderAssets(){
+ const host=Q('m14Assets');
+ if(!host||!S)return;
+ host.innerHTML=assetHtml(getStaffProfileById(S.id)||S.base);
+ dates(host);
+}
 function collectAssets(){if(!S)return;S.assets.forEach((a,i)=>{if(Q('a14name'+i)){a.type=value('a14type'+i);a.name=value('a14name'+i);a.serial=value('a14serial'+i);a.issuedDate=value('a14date'+i);a.status=value('a14status'+i);a.notes=value('a14note'+i);}});}
 function leaveHtml(p){session(p);const x=Q('staffName')?draft():Object.assign({},p||S.base,{leaveRecords:S.leave,hireDate:p?.hireDate||'',annualLeaveDays:S.annual,leaveAccrualCycle:S.cycle}),b=balance(x);return '<div class="m14" id="m14Leave"><div class="m14-head"><div><strong>إجازات '+E(x.name||'الموظف الجديد')+'</strong><p>'+E(x.employeeNo||'')+' · بدء العمل: <bdi>'+E(stamp(x.hireDate))+'</bdi></p></div>'+btn('+ إجازة / إذن ساعي','leave-form','','primary')+'</div><div class="m14-kpis">'+kpi('المكتسب حتى اليوم',b.accrued,'يوم')+kpi('المستخدم',b.used,'يوم')+kpi('قيد الموافقة',b.pending,'يوم')+kpi('المتاح الآن',b.available,'يوم')+'</div><div class="m14-note info">'+(b.valid?E(b.entitlement+' يوم في السنة ÷ 12 = '+b.monthly.toFixed(4)+' يوم في الشهر. مدة الاستحقاق: '+b.months.toFixed(2)+' شهر.'):'حدد تاريخ بدء العمل في «البيانات الوظيفية» لحساب الرصيد، ولا يُحسب رصيد افتراضي قبل التعيين.')+'<br>'+E(b.mode==='service'?'الحساب تراكمي منذ بدء العمل، مع جزء نسبي للشهر غير المكتمل.':'الحساب ضمن دورة سنوية تبدأ بذكرى التعيين، دون ترحيل تلقائي.')+'</div>'+fold('m14LeavePolicy','إعداد رصيد هذا الموظف','<div class="m14-grid">'+input('الاستحقاق السنوي بالأيام','m14Annual',S.annual,'number','min="0" step="0.01"')+select('دورة الرصيد','m14Cycle',[['service','تراكمي من تاريخ التعيين'],['anniversary','دورة سنوية بذكرى التعيين']],S.cycle)+input('رصيد افتتاحي / تسوية بالأيام','m14Opening',S.opening,'number','step="0.01"')+'</div><small>14 يومًا هو إعداد الشركة المقترح منك، ويمكن تغييره. الإذن الساعي لا يخصم من السنوي إلا عند تحديد ذلك.</small>'+btn('تحديث الحساب','leave-policy'),'اختياري')+'<div id="m14LeaveForm"></div>'+fold('m14LeaveRecords','سجل الإجازات والأذونات',table(['النوع','الفترة','المدة','الحالة','إجراءات'],S.leave.slice().reverse().map(r=>'<tr><td>'+E(r.type)+'</td><td><bdi>'+E(stamp(r.startDate))+'</bdi><small><bdi>'+E(stamp(r.endDate))+'</bdi>'+(r.fromTime?' · '+E(r.fromTime+' → '+r.toTime):'')+'</small></td><td>'+E(r.type==='ساعية'?r.hours+' ساعة':leaveDays(r)+' يوم')+'</td><td>'+tag(r.status)+'</td><td><div class="m14-actions">'+btn('تعديل','leave-edit',r.id)+btn('حذف','leave-remove',r.id,'m14-danger')+'</div></td></tr>').join('')),S.leave.length+' سجل',false)+'</div>';}
-function leaveForm(id=''){if(!S)return;S.leaveEdit=id;const r=S.leave.find(x=>String(x.id)===String(id))||{},type=r.type||'سنوية';const h=Q('m14LeaveForm');h.innerHTML='<details class="m14-fold" open><summary>'+E(id?'تعديل الإجازة':'إضافة إجازة أو إذن بالساعات')+'</summary><div><div class="m14-grid">'+select('نوع الإجازة','m14LType',['سنوية','ساعية','مرضية','بدون راتب','طارئة','أخرى'],type)+input('من تاريخ','m14LStart',r.startDate||today(),'date')+input('إلى تاريخ','m14LEnd',r.endDate||today(),'date')+input('من الساعة (للإذن الساعي)','m14LFrom',r.fromTime||'','time')+input('إلى الساعة (للإذن الساعي)','m14LTo',r.toTime||'','time')+select('الاعتماد','m14LStatus',[['approved','تسجيل إجازة معتمدة من الموارد البشرية'],['pending','إرسال إلى مسار الموافقات']],r.status||'approved')+textArea('السبب / الملاحظة','m14LNote',r.note||r.reason||'')+'</div><label><input type="checkbox" id="m14LDeduct" '+(r.deductAnnual?'checked':'')+'> خصم الإذن الساعي من الرصيد السنوي (حسب ساعات يوم العمل)</label><p>الأيام تُحسب شاملة تاريخ البداية والنهاية. الإجازة التي تتجاوز الرصيد تُرسل للموافقة ولا تعتمد تلقائيًا.</p><div class="m14-actions">'+btn('إضافة إلى ملف الموظف','leave-stage','','primary')+btn('إلغاء','record-cancel','leave')+'</div></div></details>';dates(h);h.scrollIntoView({block:'nearest'});}
+function leaveForm(id=''){if(!S)return;S.leaveEdit=id;const r=S.leave.find(x=>String(x.id)===String(id))||{},type=r.type||'سنوية';const minDate=hrLeaveToday(),limit=id?'':'min="'+E(minDate)+'" data-hr-leave-date';const h=Q('m14LeaveForm');h.innerHTML='<details class="m14-fold" open><summary>'+E(id?'تعديل الإجازة':'إضافة إجازة أو إذن بالساعات')+'</summary><div><div class="m14-grid">'+select('نوع الإجازة','m14LType',['سنوية','ساعية','مرضية','بدون راتب','طارئة','أخرى'],type)+input('من تاريخ','m14LStart',r.startDate||minDate,'date',limit)+input('إلى تاريخ','m14LEnd',r.endDate||minDate,'date',limit)+input('من الساعة (للإذن الساعي)','m14LFrom',r.fromTime||'','time')+input('إلى الساعة (للإذن الساعي)','m14LTo',r.toTime||'','time')+select('الاعتماد','m14LStatus',[['approved','تسجيل إجازة معتمدة من الموارد البشرية'],['pending','إرسال إلى مسار الموافقات']],r.status||'approved')+textArea('السبب / الملاحظة','m14LNote',r.note||r.reason||'')+'</div><label><input type="checkbox" id="m14LDeduct" '+(r.deductAnnual?'checked':'')+'> خصم الإذن الساعي من الرصيد السنوي (حسب ساعات يوم العمل)</label><p>الأيام تُحسب شاملة تاريخ البداية والنهاية. الإجازة التي تتجاوز الرصيد تُرسل للموافقة ولا تعتمد تلقائيًا.</p><div class="m14-actions">'+btn('إضافة إلى ملف الموظف','leave-stage','','primary')+btn('إلغاء','record-cancel','leave')+'</div></div></details>';dates(h);h.scrollIntoView({block:'nearest'});}
 function linked(r){return !!r&&(!!r.approvalId||A(state.hrProRequests).some(q=>String(q.id)===String(r.id)));}
-function stageLeave(){if(!permitted()||!dateValid(Q('m14LeaveForm')))return;const p=draft(),type=value('m14LType'),start=value('m14LStart'),end=type==='ساعية'?start:value('m14LEnd'),old=S.leave.find(r=>r.id===S.leaveEdit);if(!p.name||!iso(p.hireDate)){toast('أدخل اسم الموظف وتاريخ بدء العمل أولاً.',true);return;}if(!iso(start)||!iso(end)||end<start||start<p.hireDate){toast('تحقق من التواريخ. الإجازة لا تسبق تاريخ التعيين.',true);return;}const overlap=S.leave.some(r=>r.id!==S.leaveEdit&&['pending','approved'].includes(r.status)&&iso(r.startDate)&&iso(r.endDate)&&start<=r.endDate&&end>=r.startDate&&(type!=='ساعية'||r.type!=='ساعية'||!(value('m14LTo')<=r.fromTime||value('m14LFrom')>=r.toTime)));if(overlap){toast('الفترة تتداخل مع إجازة محفوظة أو قيد الموافقة. عدّل السجل الموجود بدل تكراره.',true);return;}let hours=0;if(type==='ساعية'){const a=value('m14LFrom'),b=value('m14LTo');if(!a||!b||b<=a){toast('حدد بداية الإذن ونهايته بشكل صحيح.',true);return;}hours=hrCalculateAttendanceHours(a,b,0);}
+function stageLeave(){if(!permitted()||!dateValid(Q('m14LeaveForm')))return;const p=draft(),type=value('m14LType'),start=value('m14LStart'),end=type==='ساعية'?start:value('m14LEnd'),old=S.leave.find(r=>r.id===S.leaveEdit);if(!p.name||!iso(p.hireDate)){toast('أدخل اسم الموظف وتاريخ بدء العمل أولاً.',true);return;}if(!iso(start)||!iso(end)||end<start||start<p.hireDate){toast('تحقق من التواريخ. الإجازة لا تسبق تاريخ التعيين.',true);return;}
+ const from=type==='ساعية'?value('m14LFrom'):'',to=type==='ساعية'?value('m14LTo'):'';
+ const changed=!old||old.type!==type||old.startDate!==start||old.endDate!==end||(old.fromTime||'')!==from||(old.toTime||'')!==to;
+ if(changed){const violation=hrLeaveDateViolation(start,from);if(violation){toast(violation,true);return;}}
+ const overlap=S.leave.some(r=>r.id!==S.leaveEdit&&['pending','approved'].includes(r.status)&&iso(r.startDate)&&iso(r.endDate)&&start<=r.endDate&&end>=r.startDate&&(type!=='ساعية'||r.type!=='ساعية'||!(value('m14LTo')<=r.fromTime||value('m14LFrom')>=r.toTime)));if(overlap){toast('الفترة تتداخل مع إجازة محفوظة أو قيد الموافقة. عدّل السجل الموجود بدل تكراره.',true);return;}let hours=0;if(type==='ساعية'){const a=value('m14LFrom'),b=value('m14LTo');if(!a||!b||b<=a){toast('حدد بداية الإذن ونهايته بشكل صحيح.',true);return;}hours=hrCalculateAttendanceHours(a,b,0);}
  const without=Object.assign({},p,{leaveRecords:S.leave.filter(r=>r.id!==S.leaveEdit)}),available=balance(without).available,workday=Math.max(1,num(p.workdayHours??state.hrProSettings?.workdayHours,8)),deduct=type==='ساعية'&&Q('m14LDeduct').checked,days=type==='ساعية'?hours/workday:difference(start,end)+1;const exceeds=(type==='سنوية'||deduct)&&days>available+1e-7,status=exceeds?'pending':value('m14LStatus');
  const rec=Object.assign({},old||{id:uid('LEAVE'),createdAt:now(),createdBy:name()},{type,startDate:start,endDate:end,days:type==='ساعية'?0:days,hours,fromTime:type==='ساعية'?value('m14LFrom'):'',toTime:type==='ساعية'?value('m14LTo'):'',workdayHours:workday,deductAnnual:deduct,status,note:value('m14LNote'),overrideRequested:exceeds,updatedAt:now(),updatedBy:name()});
  if(old)S.leave[S.leave.indexOf(old)]=rec;else S.leave.push(rec);mark('leave');pane('leave',leaveHtml(S.base));toast(exceeds?'المدة أكبر من المتاح؛ سيُنشأ طلب موافقة عند حفظ ملف الموظف.':'أضيفت الإجازة للقائمة. اضغط «حفظ وإغلاق» لاعتمادها.');}
@@ -59,7 +150,7 @@ const isMine=(t,p)=>t&&p&&(t.assigneeId?String(t.assigneeId)===String(p.id):!!p.
 function performance(p,period='month'){const tasks=A(state.salesTasks).filter(t=>isMine(t,p)),open=tasks.filter(t=>t.status==='in_progress'),from=period==='all'?0:Date.parse(today().slice(0,7)+'-01T00:00:00'),done=tasks.filter(t=>dwrDone(t)&&dwrEnd(t)>=from&&dwrEnd(t)<=Date.now()),timed=done.filter(t=>dwrWork(t)>0),total=timed.reduce((s,t)=>s+dwrWork(t),0),due=done.filter(t=>iso(t.dueDate)&&dwrEnd(t)>0),ontime=due.filter(t=>dwrEnd(t)<=Date.parse(t.dueDate+'T23:59:59')).length,revisions=done.reduce((s,t)=>s+dwrRev(t),0);return{tasks,open,done,total,timed:timed.length,avg:timed.length?total/timed.length:0,due:due.length,ontime,revisions};}
 function perfHtml(p){const x=p||draft(),m=performance(x),rows=m.tasks.slice().sort((a,b)=>num(b.id)-num(a.id)).map(t=>'<tr><td>'+MoshTaskUI.identityHtml(t)+'</td><td>'+E(t.department||t.closedFromDepartment||'')+'</td><td>'+E(t.status==='in_progress'?workflowEmployeeLabel(t):dwrDone(t)?'منجزة':t.status)+'</td><td>'+E(iso(t.dueDate)?stamp(t.dueDate):'غير محدد')+'</td><td>'+E(dwrFmt(dwrWork(t)))+'</td><td>'+btn('فتح','task',String(t.id))+'</td></tr>').join('');return '<div class="m14"><div class="m14-head"><div><strong>مهام وأداء '+E(x.name||'الموظف الجديد')+'</strong><p>ملخص الشهر الحالي من المهام المسندة لهذا الموظف فقط.</p></div></div><div class="m14-kpis">'+kpi('مهام جارية',m.open.length)+kpi('منجزة هذا الشهر',m.done.length)+kpi('طلبات تعديل للمنجزة',m.revisions)+kpi('التزام بالموعد',m.due?Math.round(m.ontime/m.due*100)+'%':'—')+'</div><div class="m14-kpis">'+kpi('إجمالي وقت المهام',dwrFmt(m.total))+kpi('متوسط وقت المهمة',dwrFmt(m.avg))+kpi('بانتظار المراجعة',m.open.filter(t=>t.employeeState==='submitted').length)+kpi('متأخرة حاليًا',m.open.filter(t=>iso(t.dueDate)&&t.dueDate<today()).length)+'</div><p>الوقت من مؤقت المهام وليس من ساعات الحضور. «—» تعني أن البيانات غير متاحة، ولا نمنح تقييم أداء تلقائيًا من بيانات ناقصة.</p>'+fold('m14EmployeeTasks','قائمة مهام الموظف',table(['المهمة / العميل','القسم','الحالة','الموعد','الوقت المسجل',''],rows),m.tasks.length+' مهمة',false)+fold('m14EmployeeEvaluations','التقييمات المسجّلة',table(['التاريخ','النتيجة','ملاحظة','المقيّم',''],A(x.evaluationRecords).slice().reverse().map(r=>'<tr><td>'+E(stamp(r.date))+'</td><td>'+E(r.score??r.rating??'—')+'</td><td>'+E(r.note||r.notes||'')+'</td><td>'+E(r.by||'')+'</td><td>'+btn('تعديل','eval-edit',String(x.id)+'|'+String(r.id))+' '+btn('حذف','eval-remove',String(x.id)+'|'+String(r.id),'m14-danger')+'</td></tr>').join('')),A(x.evaluationRecords).length+' تقييم')+'</div>';}
 const previousOverview14=window.hrOverviewPaneHtml;
-window.hrOverviewPaneHtml=function(p){if(!p)return '<div class="m14-note info">أدخل اسم الموظف وبياناته الوظيفية. يمكنك إضافة الوثائق والعهد والإجازات وسجلات الدوام قبل حفظ وإغلاق الملف.</div>';const m=performance(p),b=balance(p);return '<div class="m14"><div class="m14-kpis">'+kpi('القسم',p.department||'—')+kpi('المدير المباشر',getStaffDirectManagerName(p)||'غير محدد')+kpi('الإجازة المتاحة',b.available+' يوم')+kpi('المهام الجارية',m.open.length)+'</div><div class="m14-kpis">'+kpi('منجزة هذا الشهر',m.done.length)+kpi('الالتزام بالموعد',m.due?Math.round(m.ontime/m.due*100)+'%':'—')+kpi('العهد المسلّمة',A(p.assets).filter(a=>a.status!=='مستردة').length)+kpi('الوثائق',A(p.documents).length)+'</div><p>التفاصيل في التبويب المختص. لا تُعدّ البيانات الناقصة أداءً ضعيفًا أو غيابًا.</p></div>';};
+window.hrOverviewPaneHtml=function(p){if(!p)return '<div class="m14-note info">أدخل اسم الموظف وبياناته الوظيفية. يمكنك إضافة الوثائق والعهد والإجازات وسجلات الدوام قبل حفظ وإغلاق الملف.</div>';const m=performance(p),b=balance(p);return '<div class="m14"><div class="m14-kpis">'+kpi('القسم',p.department||'—')+kpi('المدير المباشر',getStaffDirectManagerName(p)||'غير محدد')+kpi('الإجازة المتاحة',b.available+' يوم')+kpi('المهام الجارية',m.open.length)+'</div><div class="m14-kpis">'+kpi('منجزة هذا الشهر',m.done.length)+kpi('الالتزام بالموعد',m.due?Math.round(m.ontime/m.due*100)+'%':'—')+kpi('العهد المسلّمة',employeeAssets(p).filter(a=>!returnedAsset(a)).length)+kpi('الوثائق',A(p.documents).length)+'</div><p>التفاصيل في التبويب المختص. لا تُعدّ البيانات الناقصة أداءً ضعيفًا أو غيابًا.</p></div>';};
 window.hrLeavePaneHtml=p=>{session(p);return leaveHtml(p);};window.hrAttendancePaneHtml=p=>{session(p);return attendanceHtml(p);};window.hrPerformancePaneHtml=p=>perfHtml(p||S?.base||{});
 function showAccountStatus(pane,account,announcement=''){
  if(!account){
@@ -103,6 +194,196 @@ async function loadAccountStatus(pane,change=null,button=null){
   if(button?.isConnected)button.disabled=false;
  }
 }
+const compensationAmounts=[
+ ['monthlySalary','الراتب الشهري'],
+ ['foodAllowance','بدل الطعام'],
+ ['transportAllowance','بدل المواصلات'],
+ ['phoneAllowance','بدل الهاتف']
+];
+const compensationViews=new WeakMap();
+function canReadCompensation(){
+ const account=window.MoshApi?.user, permissions=window.MoshAuth37;
+ if(!account?.id||account.active===false)return false;
+ return account.isRoot===true||account.roleId==='app_programmer'||
+  (permissions?.departmentApp(account.department)==='hr'&&permissions.canModule('hr','view')&&permissions.canModule('hr','details'));
+}
+function compensationPane(employeeId,inEditor=false){
+ return '<div class="m14'+(inEditor?' hr-profile-pane':'')+'"'+(inEditor?' data-pane="compensation"':'')+
+  ' data-hr-compensation-pane data-compensation-employee="'+E(employeeId||'')+'"></div>';
+}
+function compensationCurrent(pane,view){
+ return pane.isConnected&&compensationViews.get(pane)===view&&window.MoshApi?.user?.id===view.actor&&canReadCompensation();
+}
+function compensationPath(pane){
+ return '/r19/hr/compensation?employeeId='+encodeURIComponent(pane.dataset.compensationEmployee);
+}
+function compensationMessage(element,text,error=false){
+ element.textContent=text;
+ element.hidden=!text;
+ element.classList.toggle('error',error);
+ element.setAttribute('role',error?'alert':'status');
+}
+async function downloadCompensation(pane,view,file,button,message){
+ if(!compensationCurrent(pane,view))return;
+ button.disabled=true;
+ try{
+  const blob=await MoshApi.request('/files/'+encodeURIComponent(file.key)+'/content',{binary:true,cache:'no-store'});
+  if(!compensationCurrent(pane,view))return;
+  const href=URL.createObjectURL(blob), anchor=document.createElement('a');
+  anchor.href=href;
+  anchor.download=file.name||'مرفق التعويضات';
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(()=>URL.revokeObjectURL(href),30000);
+ }catch(error){
+  if(compensationCurrent(pane,view))compensationMessage(message,error.message||'تعذّر تنزيل المرفق.',true);
+ }finally{
+  button.disabled=false;
+ }
+}
+async function uploadCompensation(draft){
+ const {key,file}=draft;
+ if(draft.uploaded)return key;
+ try{
+  await MoshApi.upload({key,kind:'hr-compensation',blob:file,name:file.name});
+ }catch(error){
+  if(error.status!==409)throw error;
+  const existing=await MoshApi.request('/files/'+encodeURIComponent(key),{cache:'no-store'});
+  if(existing?.kind!=='hr-compensation'||existing.name!==file.name||Number(existing.size)!==file.size)throw error;
+ }
+ draft.uploaded=true;
+ return key;
+}
+function compensationAmount(raw){
+ return raw.trim().replace(/[٠-٩]/g,n=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(n)))
+  .replace(/[۰-۹]/g,n=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(n))).replace('٫','.').replace(/^\./,'0.');
+}
+function renderCompensation(pane,view,data,announcement=''){
+ const editable=data.canEdit===true, readonly=editable?'':' disabled';
+ const file=data.attachment?.key?data.attachment:null;
+ const amounts=compensationAmounts.map(([field,label])=>'<label>'+label+'<input name="'+field+'" type="text" inputmode="decimal" autocomplete="off" maxlength="15" value="'+E(data[field]??'')+'"'+readonly+'></label>');
+ pane.innerHTML='<form class="hr-profile-section" data-hr-compensation-form autocomplete="off">'+
+  '<h3>التعويضات والبدلات</h3><div class="m14-grid">'+amounts[0]+
+  '<label>تاريخ الزيادة<input type="date" name="raiseDate" value="'+E(data.raiseDate||'')+'"'+readonly+'></label>'+amounts.slice(1).join('')+
+  (editable?'<label>إرفاق ملف (اختياري)<input type="file" name="attachment"></label>':'')+'</div>'+
+  (file?'<div class="m14-actions"><span>المرفق المحفوظ <b>'+E(file.name||'مرفق التعويضات')+'</b></span>'+
+   '<button type="button" class="btn" data-hr-compensation-download>تنزيل الملف</button></div>':'')+
+  '<div class="m14-note" role="status" data-hr-compensation-message hidden></div>'+
+  (editable?'<div class="m14-actions"><button type="submit" class="btn primary" data-hr-compensation-save>حفظ التعويضات</button>'+
+   '<button type="button" class="btn" data-hr-compensation-reload hidden>تحميل القيم الحالية</button></div>':'')+'</form>';
+ const form=pane.querySelector('[data-hr-compensation-form]');
+ const message=form.querySelector('[data-hr-compensation-message]');
+ compensationMessage(message,announcement);
+ dates(form);
+ const download=form.querySelector('[data-hr-compensation-download]');
+ if(download)download.onclick=()=>downloadCompensation(pane,view,file,download,message);
+ if(!editable)return;
+ const submit=form.querySelector('[data-hr-compensation-save]');
+ const reload=form.querySelector('[data-hr-compensation-reload]');
+ reload.onclick=()=>loadCompensation(pane,true);
+ let busy=false, body=null, draft=null;
+ form.addEventListener('submit',async event=>{
+  event.preventDefault();
+  if(busy||!compensationCurrent(pane,view))return;
+  const values={};
+  if(!body){
+   if(!dateValid(form))return;
+   for(const [field,label] of compensationAmounts){
+    const input=form.elements.namedItem(field), value=compensationAmount(input.value);
+    if(value&&!/^[0-9]{1,12}(?:\.[0-9]{1,2})?$/.test(value)){
+     compensationMessage(message,'أدخل قيمة صحيحة في حقل «'+label+'» بدقّة تصل إلى منزلتين عشريتين.',true);
+     input.focus();
+     return;
+    }
+    values[field]=value||null;
+   }
+   values.raiseDate=form.elements.namedItem('raiseDate').value||null;
+   const selected=form.elements.namedItem('attachment').files[0];
+   if(selected&&draft?.file!==selected)draft={key:uid('HR-COMP-FILE').replace('/','-'),file:selected,uploaded:false};
+   if(!selected)draft=null;
+  }
+  busy=true;
+  form.setAttribute('aria-busy','true');
+  form.querySelectorAll('input,.m14-date-picker').forEach(field=>{field.disabled=true;});
+  submit.disabled=true;
+  reload.hidden=true;
+  compensationMessage(message,draft&&!draft.uploaded?'جارٍ رفع المرفق…':'جارٍ حفظ التعويضات…');
+  try{
+   if(!body){
+    values.attachmentKey=draft?await uploadCompensation(draft):file?.key||null;
+    if(!compensationCurrent(pane,view))return;
+    body={...values,_version:data._version,requestId:uid('HR-COMP-REQ').replace('/','-')};
+   }
+   compensationMessage(message,'جارٍ حفظ التعويضات…');
+   const saved=await MoshApi.request(compensationPath(pane),{method:'PUT',body});
+   if(!compensationCurrent(pane,view))return;
+   if(saved?.employeeId!==pane.dataset.compensationEmployee)throw new Error('تعذّر تأكيد الحفظ.');
+   renderCompensation(pane,view,saved,'تم حفظ التعويضات والبدلات.');
+   pane.querySelector('[data-hr-compensation-save]')?.focus();
+  }catch(error){
+   if(!compensationCurrent(pane,view))return;
+   const uncertain=!!body&&(error.network||!Number.isFinite(error.status)||error.status>=500);
+   const conflict=!!body&&error.status===409;
+   if(!uncertain)body=null;
+   const text=uncertain?'تعذّر تأكيد الحفظ. أعد المحاولة للتحقق من العملية نفسها.':
+    conflict?'عُدّلت التعويضات من جلسة أخرى. حمّل القيم الحالية قبل تعديلها.':error.message||'تعذّر حفظ التعويضات.';
+   compensationMessage(message,text,true);
+   reload.hidden=!conflict;
+   submit.textContent=uncertain?'التحقق وإعادة المحاولة':'حفظ التعويضات';
+  }finally{
+   busy=false;
+   form.removeAttribute('aria-busy');
+   form.querySelectorAll('input,.m14-date-picker').forEach(field=>{field.disabled=!!body;});
+   submit.disabled=!reload.hidden;
+  }
+ });
+}
+async function loadCompensation(pane,reload=false){
+ if(!pane?.isConnected||!canReadCompensation())return;
+ const actor=MoshApi.user.id, existing=compensationViews.get(pane);
+ if(!reload&&existing?.actor===actor)return;
+ const view={actor};
+ compensationViews.set(pane,view);
+ if(!pane.dataset.compensationEmployee){
+  pane.innerHTML='<div class="m14-note info" role="status">احفظ ملف الموظف أولاً، ثم افتحه لإضافة التعويضات والبدلات.</div>';
+  return;
+ }
+ pane.setAttribute('aria-busy','true');
+ pane.innerHTML='<p role="status">جارٍ تحميل التعويضات والبدلات…</p>';
+ try{
+  const data=await MoshApi.request(compensationPath(pane),{cache:'no-store'});
+  if(!compensationCurrent(pane,view))return;
+  if(data?.employeeId!==pane.dataset.compensationEmployee)throw new Error('لم تكتمل بيانات التعويضات.');
+  renderCompensation(pane,view,data);
+ }catch(error){
+  if(!compensationCurrent(pane,view))return;
+  pane.innerHTML='<p class="m14-note error" role="alert">'+E(error.status===403?'عرض التعويضات يحتاج صلاحية الموارد البشرية.':error.message||'تعذّر تحميل التعويضات والبدلات.')+'</p>'+
+   (error.status===403?'':'<button type="button" class="btn" data-hr-compensation-reload>إعادة المحاولة</button>');
+  const retry=pane.querySelector('[data-hr-compensation-reload]');
+  if(retry)retry.onclick=()=>loadCompensation(pane,true);
+ }finally{
+  if(compensationCurrent(pane,view))pane.removeAttribute('aria-busy');
+ }
+}
+function clearCompensation(pane){
+ compensationViews.delete(pane);
+ pane.replaceChildren();
+ pane.removeAttribute('aria-busy');
+}
+for(const type of ['mosh:logout-complete','mosh:session-expired']){
+ document.addEventListener(type,()=>hr.querySelectorAll('[data-hr-compensation-pane]').forEach(clearCompensation));
+}
+document.addEventListener('mosh:permissions-applied',()=>{
+ const actor=window.MoshApi?.user?.id;
+ if(!canReadCompensation())hr.querySelectorAll('[data-hr-compensation-tab]').forEach(button=>button.hidden=true);
+ hr.querySelectorAll('[data-hr-compensation-pane]').forEach(pane=>{
+  const view=compensationViews.get(pane);
+  if(view&&(!canReadCompensation()||view.actor!==actor))clearCompensation(pane);
+ });
+});
+window.MoshHRCompensation={canRead:canReadCompensation,pane:compensationPane,load:loadCompensation};
+
 const previousEmployeeTab=window.switchHrEmployeeTab;
 window.switchHrEmployeeTab=function(tab){
  const result=previousEmployeeTab.apply(this,arguments);
@@ -110,6 +391,7 @@ window.switchHrEmployeeTab=function(tab){
   const pane=hr.querySelector('#staffWorkflowConfig [data-pane="account-status"].active');
   if(pane)void loadAccountStatus(pane);
  }
+ if(tab==='compensation')void loadCompensation(hr.querySelector('#staffWorkflowConfig [data-pane="compensation"].active'));
  return result;
 };
 window.hrEmployeeFormHtml=function(p,identity,status){
@@ -119,15 +401,34 @@ window.hrEmployeeFormHtml=function(p,identity,status){
  const assets=box.querySelector('#staffIssuedAssets');
  if(assets){
   assets.type='hidden';
-  const parent=assets.parentElement;
-  parent.style.gridColumn='1 / -1';
-  parent.querySelector('label')?.remove();
-  const list=document.createElement('div');
-  list.id='m14Assets';
-  list.innerHTML=assetHtml();
-  parent.append(list);
+  assets.parentElement.hidden=true;
+ }
+ const documents=box.querySelector('.hr-profile-pane[data-pane="documents"]');
+ if(documents){
+  const root=document.createElement('div');
+  root.id='m14EmployeeDocuments';
+  root.className='m14';
+  root.innerHTML='<div class="m14-actions" role="group" aria-label="الوثائق والذمم" style="margin-bottom:12px">'+
+   btn('الوثائق','documents-section','documents')+btn('الذمم','documents-section','custody')+'</div>';
+  const documentList=document.createElement('div');
+  documentList.dataset.hrFileSection='documents';
+  documentList.append(...documents.childNodes);
+  const custody=document.createElement('div');
+  custody.id='m14Assets';
+  custody.dataset.hrFileSection='custody';
+  custody.innerHTML=assetHtml(p);
+  root.append(documentList,custody);
+  documents.append(root);
+  documentSection(S.documentSection,root);
+  const tab=box.querySelector('.hr-profile-tab[data-tab="documents"]');
+  if(tab)tab.textContent='الوثائق والذمم';
  }
  const tabs=box.querySelector('.hr-profile-tabs');
+ if(tabs&&canReadCompensation()){
+  tabs.querySelector('[data-tab="employment"]').insertAdjacentHTML('afterend',
+   '<button type="button" class="hr-profile-tab" data-tab="compensation" data-hr-compensation-tab onclick="switchHrEmployeeTab(\'compensation\')">التعويضات والبدلات</button>');
+  box.querySelector('.hr-profile-shell').insertAdjacentHTML('beforeend',compensationPane(p?.id,true));
+ }
  if(tabs&&!tabs.querySelector('[data-m14=contracts]'))tabs.insertAdjacentHTML('beforeend',btn('عقود الموظف','contracts',p?.id||''));
  const access=window.MoshAuth37;
  if(tabs&&p?.id&&access?.canModule('hr','view')&&access.canModule('hr','details')){
@@ -139,7 +440,54 @@ window.hrEmployeeFormHtml=function(p,identity,status){
  return box.innerHTML;
 };
 const project=typeof HR_CONTRACT_TYPES!=='undefined'?HR_CONTRACT_TYPES.indexOf('مشروع'):-1;if(project>=0)HR_CONTRACT_TYPES.splice(project,1,'تجربة');
-window.saveStaffProfile=async function(id=''){if(!dateValid(hr))return false;collectAssets();if(S?.assets.some(a=>!String(a.name||'').trim())){toast('اكتب اسم كل عهدة أو احذف السطر الفارغ.',true);switchHrEmployeeTab('employment');return false;}if(!S||!Q('m14Assets'))return oldSave.apply(this,arguments);const snap=S,who=value('staffName'),originalSave=window.save;window.save=function(){const p=id?getStaffProfileById(id):getStaffProfileByName(who);if(p){p.assets=clone(snap.assets);p.issuedAssets=snap.assets.filter(a=>a.status!=='مستردة').map(a=>a.name).join(' + ');if(snap.dirtyKinds.has('leave')){p.leaveRecords=clone(snap.leave);p.annualLeaveDays=num(snap.annual,14);p.leaveOpeningBalance=num(snap.opening);for(const r of p.leaveRecords){if(r.status==='pending'&&!r.approvalId&&!A(state.hrProRequests).some(q=>String(q.id)===String(r.id))){const a=hrCreateApproval('leave_override',p,r.id,'طلب إجازة '+r.type+' — '+(r.type==='ساعية'?r.hours+' ساعة':leaveDays(r)+' يوم'),{days:leaveDays(r),type:r.type,startDate:r.startDate,endDate:r.endDate,hours:r.hours});r.approvalId=a.id;}}}if(snap.dirtyKinds.has('attendance'))p.attendanceRecords=clone(snap.attendance);if(snap.changed){p.auditTrail=A(p.auditTrail);p.auditTrail.push({time:now(),by:name(),text:'تحديث العهد والإجازات وسجلات الدوام من ملف الموظف.'});}}return originalSave.apply(this,arguments);};try{const result=await oldSave.call(this,id);if(result!==false){S=null;Q('m14Pending')?.remove();}return result;}finally{window.save=originalSave;}};
+window.saveStaffProfile=async function(id=''){
+ if(!dateValid(hr))return false;
+ collectAssets();
+ const snap=S;
+ if(snap?.dirtyKinds.has('assets')&&snap.assets.some(a=>!String(a.name||'').trim())){
+  toast('أدخل اسم الجهاز أو وصف العهدة.',true);
+  switchHrEmployeeTab('documents');
+  documentSection('custody');
+  return false;
+ }
+ if(!snap||!Q('m14Assets'))return oldSave.apply(this,arguments);
+ const who=value('staffName'),originalSave=window.save,account=window.MoshApi?.user?.id;
+ window.save=function(){
+  const p=id?getStaffProfileById(id):getStaffProfileByName(who);
+  if(p){
+   if(snap.dirtyKinds.has('assets')){
+    p.assets=clone([...snap.assets,...A(p.assets).filter(linkedAsset)]);
+    p.issuedAssets=p.assets.filter(a=>!returnedAsset(a)).map(a=>a.name).join(' + ');
+   }
+   if(snap.dirtyKinds.has('leave')){
+    p.leaveRecords=clone(snap.leave);
+    p.annualLeaveDays=num(snap.annual,14);
+    p.leaveOpeningBalance=num(snap.opening);
+    for(const r of p.leaveRecords){
+     if(r.status==='pending'&&!r.approvalId&&!A(state.hrProRequests).some(q=>String(q.id)===String(r.id))){
+      const a=hrCreateApproval('leave_override',p,r.id,'طلب إجازة '+r.type+' — '+(r.type==='ساعية'?r.hours+' ساعة':leaveDays(r)+' يوم'),{days:leaveDays(r),type:r.type,startDate:r.startDate,endDate:r.endDate,hours:r.hours});
+      r.approvalId=a.id;
+     }
+    }
+   }
+   if(snap.dirtyKinds.has('attendance'))p.attendanceRecords=clone(snap.attendance);
+   if(snap.changed){
+    p.auditTrail=A(p.auditTrail);
+    p.auditTrail.push({time:now(),by:name(),text:'تحديث العهد والإجازات وسجلات الدوام من ملف الموظف.'});
+   }
+  }
+  return originalSave.apply(this,arguments);
+ };
+ try{
+  const result=await oldSave.call(this,id);
+  if(result!==false){
+   if(S===snap)S=null;
+   Q('m14Pending')?.remove();
+   if(result===true&&account&&account===window.MoshApi?.user?.id&&!hrStaffFormOpen)setDirtyState(false);
+  }
+  return result;
+ }finally{window.save=originalSave;}
+};
 const oldOpen=window.openStaffEmployeeForm;window.openStaffEmployeeForm=function(){if(!Q('staffDocuments13A')||!S?.changed)S=null;return oldOpen.apply(this,arguments);};
 const oldClose=window.closeStaffEmployeeForm;window.closeStaffEmployeeForm=function(){const result=oldClose.apply(this,arguments);if(result!==false&&!hrStaffFormOpen)S=null;return result;};
 const managerDepartmentsDialog = 'hrManagerDepartments';
@@ -310,8 +658,24 @@ const originalDisciplinary=window.hrDisciplinaryPaneHtml;window.hrDisciplinaryPa
 // Event delegation remains in one place; actions never depend on native confirm dialogs.
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-m14]');if(!b)return;e.preventDefault();const act=b.dataset.m14,arg=b.dataset.arg||'';try{
  if(act==='close')closeModal();
- else if(act==='asset-add'){collectAssets();S.assets.push({id:uid('ASSET'),type:'لاب توب',name:'',serial:'',issuedDate:'',status:'مسلمة',notes:''});mark('assets');Q('m14Assets').innerHTML=assetHtml();dates(Q('m14Assets'));}
- else if(act==='asset-remove'){collectAssets();if(await ask('حذف هذه العهدة من قائمة الموظف؟ يعتمد التغيير عند حفظ الملف.')){S.assets.splice(num(arg),1);mark('assets');Q('m14Assets').innerHTML=assetHtml();}}
+ else if(act==='documents-section')documentSection(arg);
+ else if(act==='custody-edit')editCustody(arg);
+ else if(act==='custody-it')await window.MoshIT31.openEmployeeIssue(arg);
+ else if(act==='custody-warehouse')await window.MoshOps18.openEmployeeIssue(arg);
+ else if(act==='asset-add'){
+  if(!S||!canEditCustody(getStaffProfileById(S.id)||S.base))return;
+  collectAssets();
+  S.assets.push({id:uid('ASSET'),source:'hr',type:assetTypes.includes(arg)?arg:'أخرى',name:'',serial:'',issuedDate:today(),status:'مسلمة',notes:''});
+  mark('assets');renderAssets();Q('a14name'+(S.assets.length-1))?.focus();
+ }
+ else if(act==='asset-remove'){
+  if(!S||!canEditCustody(getStaffProfileById(S.id)||S.base))return;
+  collectAssets();
+  const snapshot=S,index=num(arg),record=S.assets[index];
+  if(record&&await ask('حذف هذه العهدة من قائمة الموظف؟ يعتمد التغيير عند حفظ الملف.')&&S===snapshot&&S.assets[index]===record){
+   S.assets.splice(index,1);mark('assets');renderAssets();
+  }
+ }
  else if(act==='leave-policy'){S.annual=Math.max(0,num(value('m14Annual')));S.cycle=value('m14Cycle');S.opening=num(value('m14Opening'));mark('leave');pane('leave',leaveHtml(S.base));}
  else if(act==='leave-form')leaveForm();
  else if(act==='leave-edit'){const r=S.leave.find(x=>x.id===arg);if(linked(r))toast('التعديل على سجل مرتبط بموافقة يتم من طلبه الأصلي.',true);else leaveForm(arg);}
@@ -348,6 +712,6 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-m14]
 hr.addEventListener('input',e=>{if(!S)return;if(/^a14/.test(e.target.id)){collectAssets();mark('assets');}});
 // Keep drafts current when the employment start date changes, without rebuilding the form.
 hr.addEventListener('change',e=>{if(S&&['staffName','staffHireDate'].includes(e.target.id)){pane('leave',leaveHtml(S.base));}});
-window.MoshHR14={version:'14.0+15',v15Current:()=>C,v15Collect:collectContract,ask,toast,dates,dateValid,parseDisplay,stamp,monthsBetween,balance,contracts,newContract,editContract,previewContract,contractDoc,performance,fileDownload,closeModal,refresh:decorate};
+window.MoshHR14={version:'14.0+15',v15Current:()=>C,v15Collect:collectContract,ask,toast,dates,dateValid,parseDisplay,stamp,monthsBetween,balance,contracts,newContract,editContract,previewContract,contractDoc,performance,fileDownload,closeModal,custodySummary,refresh:decorate};
 dates();decorate();
 })();

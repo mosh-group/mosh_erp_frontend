@@ -18,7 +18,9 @@ function profileForRequest(r){
 function deptManager(dept){try{return typeof getDepartmentManager==='function'?getDepartmentManager(dept):null}catch(e){return null}}
 function requestCfg(type){try{return typeof HR_PRO_REQUESTS==='object'?HR_PRO_REQUESTS[type]:null}catch(e){return null}}
 function repairOne(r){
- if(!r||typeof r!=='object')return false;let changed=false;const p=profileForRequest(r);
+ // The server owns the routing of persisted requests.
+ if(!r||typeof r!=='object'||Number(r._version)>0)return false;
+ let changed=false;const p=profileForRequest(r);
  if(p){
    if(!clean(r.employeeId)&&p.id!=null){r.employeeId=String(p.id);changed=true;}
    if((!clean(r.employeeName)||same(r.employeeName,p.username)||same(r.employeeName,p.email))&&clean(p.name)){r.employeeName=p.name;changed=true;}

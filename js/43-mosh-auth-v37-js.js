@@ -113,7 +113,9 @@ function clearSession(){sessionStorage.removeItem(SESSION)}
 function sessionValid(s,u,d){if(!s||!u||u.active===false)return false;const mins=Math.max(5,Number(d.security.sessionMinutes)||480);return now()-Number(s.lastActivity||s.loginAt||0)<mins*60000}
 function updateIdentity(){
  if(!activeUser)return; const n=String(activeUser.name||activeUser.username||''),role=roleOf()?.name||'';
- const dn=$('#dashboardUserName');if(dn&&dn.textContent!==n)dn.textContent=n;const av=$('#topUserAvatar');if(av){const initial=n.trim().charAt(0)||'م';if(av.textContent!==initial)av.textContent=initial;av.title='حسابي';av.style.cursor='pointer';av.onclick=openMyAccount;}
+ const dn=$('#dashboardUserName');if(dn&&dn.textContent!==n)dn.textContent=n;
+ const av=$('#topUserAvatar');
+ if(av){av.title='حسابي';av.style.cursor='pointer';av.onclick=openMyAccount;}
  const sc=$('#settingsCurrentAccount');const accountLabel=n+' — '+role;if(sc&&sc.textContent!==accountLabel)sc.textContent=accountLabel;
  let bar=$('#auth37UserBar');if(!bar){bar=document.createElement('div');bar.id='auth37UserBar';bar.className='auth37-userbar';const host=$('.top-actions');if(host)host.appendChild(bar)}
  // Rebuild only when the identity changes: its child mutations are observed by applyPermissions.
@@ -168,8 +170,8 @@ function renderAdmin(tab='users'){adminTab=tab;const a=$('#moshAuthAdmin');if(!a
  $$('[data-auth-tab]').forEach(b=>b.onclick=()=>renderAdmin(b.dataset.authTab));$('#auth37AdminClose').onclick=closeAdmin;({users:renderUsers,roles:renderRoles,security:renderSecurity,audit:renderAudit}[tab]||renderUsers)();
 }
 function linkedStaff(u){try{const rows=Array.isArray(state?.staffProfiles)?state.staffProfiles:[];if(u?.employeeId){const p=rows.find(x=>String(x?.id)===String(u.employeeId)||String(x?.employeeNo||'')===String(u.employeeId));if(p)return p;}const n=norm(u?.name||u?.username||'');if(!n)return null;return rows.find(x=>norm(x?.name)===n||norm(x?.username)===n||norm(x?.email)===n)||null}catch(e){return null}}
-function renderUsers(){const d=loadDb(),c=$('#auth37AdminContent');if(!c)return;const root=isRoot();c.innerHTML='<div class="auth37-toolbar"><div><h3>'+d.users.length+' حساب</h3><div class="auth37-help">أنشئ حساباً لكل موظف وحدد ما يظهر له وما يمكنه تعديله أو حذفه.</div></div><button class="auth37-btn primary" id="auth37AddUser">+ إضافة مستخدم</button></div><div class="auth37-cards" style="margin-bottom:14px"><div class="auth37-stat"><small>الحسابات المفعّلة</small><b>'+d.users.filter(x=>x.active!==false).length+'</b></div><div class="auth37-stat"><small>الحسابات الموقوفة</small><b>'+d.users.filter(x=>x.active===false).length+'</b></div><div class="auth37-stat"><small>آخر دخول</small><b style="font-size:13px">'+esc(d.users.map(x=>x.lastLogin).filter(Boolean).sort().slice(-1)[0]||'—')+'</b></div></div><div class="auth37-tablewrap"><table class="auth37-table"><thead><tr><th>المستخدم</th><th>اسم الدخول</th><th>الدور / القسم</th><th>الموظف المرتبط</th><th>الحالة</th><th>آخر دخول</th><th>كلمة السر</th><th>إجراءات</th></tr></thead><tbody>'+d.users.map(u=>{const r=d.roles.find(x=>x.id===u.roleId),lp=linkedStaff(u);return '<tr><td><b>'+esc(u.name||u.username)+'</b>'+(u.isRoot?'<div class="auth37-help">الحساب الأساسي</div>':'')+'</td><td><bdi dir="ltr">'+esc(u.username)+'</bdi></td><td>'+esc(r?.name||u.roleId)+'<div class="auth37-help">'+esc(u.department||'بدون قسم')+'</div></td><td class="auth43-employee-cell">'+(lp?'<span class="auth43-linked">'+esc(lp.name)+'</span>':'<span class="auth43-unlinked">غير مربوط</span>')+'</td><td><span class="auth37-status '+(u.active!==false?'on':'off')+'">'+(u.active!==false?'مفعّل':'موقوف')+'</span></td><td>'+esc(u.lastLogin?new Date(u.lastLogin).toLocaleString('ar-SY'):'—')+'</td><td><div class="auth37-password-cell"><code id="auth37Pw_'+esc(u.id)+'">••••••••</code>'+(root?'<button class="auth37-btn auth37-mini" data-show-pass="'+esc(u.id)+'">إظهار</button>':'')+'</div></td><td><div class="auth37-rowactions"><button class="auth37-btn auth37-mini" data-edit-user="'+esc(u.id)+'">تعديل</button><button class="auth37-btn auth37-mini" data-user-perm="'+esc(u.id)+'">الصلاحيات</button>'+(u.isRoot?'':'<button class="auth37-btn auth37-mini" data-toggle-user="'+esc(u.id)+'">'+(u.active!==false?'إيقاف':'تفعيل')+'</button><button class="auth37-btn danger auth37-mini" data-del-user="'+esc(u.id)+'">حذف</button>')+'</div></td></tr>'}).join('')+'</tbody></table></div>';
- $('#auth37AddUser').onclick=()=>openUserEditor();$$('[data-edit-user]').forEach(b=>b.onclick=()=>openUserEditor(b.dataset.editUser));$$('[data-user-perm]').forEach(b=>b.onclick=()=>openPermissionEditor(b.dataset.userPerm));$$('[data-toggle-user]').forEach(b=>b.onclick=()=>toggleUser(b.dataset.toggleUser));$$('[data-del-user]').forEach(b=>b.onclick=()=>deleteUser(b.dataset.delUser));$$('[data-show-pass]').forEach(b=>b.onclick=()=>revealPassword(b.dataset.showPass,b));
+function renderUsers(){const d=loadDb(),c=$('#auth37AdminContent');if(!c)return;c.innerHTML='<div class="auth37-toolbar"><div><h3>'+d.users.length+' حساب</h3><div class="auth37-help">أنشئ حساباً لكل موظف وحدد ما يظهر له وما يمكنه تعديله أو حذفه.</div></div><button class="auth37-btn primary" id="auth37AddUser">+ إضافة مستخدم</button></div><div class="auth37-cards" style="margin-bottom:14px"><div class="auth37-stat"><small>الحسابات المفعّلة</small><b>'+d.users.filter(x=>x.active!==false).length+'</b></div><div class="auth37-stat"><small>الحسابات الموقوفة</small><b>'+d.users.filter(x=>x.active===false).length+'</b></div><div class="auth37-stat"><small>آخر دخول</small><b style="font-size:13px">'+esc(d.users.map(x=>x.lastLogin).filter(Boolean).sort().slice(-1)[0]||'—')+'</b></div></div><div class="auth37-tablewrap"><table class="auth37-table"><thead><tr><th>المستخدم</th><th>اسم الدخول</th><th>الدور / القسم</th><th>الموظف المرتبط</th><th>الحالة</th><th>آخر دخول</th><th>إجراءات</th></tr></thead><tbody>'+d.users.map(u=>{const r=d.roles.find(x=>x.id===u.roleId),lp=linkedStaff(u);return '<tr><td><b>'+esc(u.name||u.username)+'</b>'+(u.isRoot?'<div class="auth37-help">الحساب الأساسي</div>':'')+'</td><td><bdi dir="ltr">'+esc(u.username)+'</bdi></td><td>'+esc(r?.name||u.roleId)+'<div class="auth37-help">'+esc(u.department||'بدون قسم')+'</div></td><td class="auth43-employee-cell">'+(lp?'<span class="auth43-linked">'+esc(lp.name)+'</span>':'<span class="auth43-unlinked">غير مربوط</span>')+'</td><td><span class="auth37-status '+(u.active!==false?'on':'off')+'">'+(u.active!==false?'مفعّل':'موقوف')+'</span></td><td>'+esc(u.lastLogin?new Date(u.lastLogin).toLocaleString('ar-SY'):'—')+'</td><td><div class="auth37-rowactions"><button class="auth37-btn auth37-mini" data-edit-user="'+esc(u.id)+'">تعديل</button><button class="auth37-btn auth37-mini" data-user-perm="'+esc(u.id)+'">الصلاحيات</button>'+(u.isRoot?'':'<button class="auth37-btn auth37-mini" data-toggle-user="'+esc(u.id)+'">'+(u.active!==false?'إيقاف':'تفعيل')+'</button><button class="auth37-btn danger auth37-mini" data-del-user="'+esc(u.id)+'">حذف</button>')+'</div></td></tr>'}).join('')+'</tbody></table></div>';
+ $('#auth37AddUser').onclick=()=>openUserEditor();$$('[data-edit-user]').forEach(b=>b.onclick=()=>openUserEditor(b.dataset.editUser));$$('[data-user-perm]').forEach(b=>b.onclick=()=>openPermissionEditor(b.dataset.userPerm));$$('[data-toggle-user]').forEach(b=>b.onclick=()=>toggleUser(b.dataset.toggleUser));$$('[data-del-user]').forEach(b=>b.onclick=()=>deleteUser(b.dataset.delUser));
 }
 function staffOptions(selected=''){let rows=[];try{rows=Array.isArray(state?.staffProfiles)?state.staffProfiles.slice():[]}catch(e){}rows=rows.filter(x=>x&&x.name).sort((a,b)=>String(a.name).localeCompare(String(b.name),'ar'));return '<option value="">— اختر الموظف المرتبط —</option>'+rows.map(p=>'<option value="'+esc(p.id)+'" '+(String(selected)===String(p.id)?'selected':'')+'>'+esc(p.name)+' — '+esc(p.department||'بدون قسم')+'</option>').join('')}
 function roleOptions(selected=''){return loadDb().roles.filter(r=>r.id===selected||![ROOT_ROLE,'role_admin'].includes(r.id)).map(r=>'<option value="'+esc(r.id)+'" '+(r.id===selected?'selected':'')+'>'+esc(r.name)+'</option>').join('')}
@@ -180,7 +182,95 @@ function openUserEditor(id=''){const d=loadDb(),u=d.users.find(x=>x.id===id),isN
 async function saveUser(id){try{const d=loadDb(),old=d.users.find(x=>x.id===id),isNew=!old,msg=$('#auth37UserMsg');const bad=(t,fields=[])=>{msg.hidden=false;msg.textContent=t;window.MoshValidation09?.report(fields.map(id=>[document.getElementById(id),t]))};const name=clean($('#auth37UName').value),username=clean($('#auth37UUsername').value),pass=$('#auth37UPass').value,roleId=old?.isRoot?ROOT_ROLE:$('#auth37URole').value,taskScope=old?.isRoot?'all':$('#auth37UTaskScope').value,landing=old?.isRoot?'dashboard':$('#auth37ULanding').value,staffId=$('#auth37UStaff').value,selectedRole=d.roles.find(r=>r.id===roleId),mustLink=!old?.isRoot&&(taskScope==='mine'||roleId==='role_employee'||selectedRole?.scope==='department_limited');if(!name||!username)return bad('هذا الحقل مطلوب.',[...(!name?['auth37UName']:[]),...(!username?['auth37UUsername']:[])]);if(d.users.some(x=>x.id!==id&&norm(x.username)===norm(username)))return bad('اسم المستخدم مستخدم مسبقاً.',['auth37UUsername']);if((isNew||pass)&&pass.length<d.security.minLength)return bad('كلمة السر يجب ألا تقل عن '+d.security.minLength+' أحرف.',['auth37UPass']);if(mustLink&&!staffId)return bad('اختر الموظف المرتبط بالحساب.',['auth37UStaff']);let u=old||{id:uid('USR'),createdAt:iso(),globalOverrides:{},moduleOverrides:{},failed:0,lockUntil:0,lastLogin:''};u.name=name;u.username=username;u.employeeId=staffId;u.department=$('#auth37UDept').value;u.roleId=roleId;u.taskScope=taskScope;u.landing=landing;u.active=(old?.isRoot||old?.id===activeUser?.id)?true:$('#auth37UActive').value==='1';u.mustChange=old?.isRoot?false:$('#auth37UMust').value==='1';if(pass)u.password=seal(pass);if(isNew)d.users.push(u);await saveDb(d);audit(isNew?'إضافة مستخدم':'تعديل مستخدم',(isNew?'تم إنشاء ':'تم تعديل ')+name);closeEditor();renderUsers();}catch(error){safeToast(error.message,true);}}
 async function toggleUser(id){try{const d=loadDb(),u=d.users.find(x=>x.id===id);if(!u||u.isRoot)return;u.active=!u.active;if(!u.active&&activeUser?.id===u.id)return;await saveDb(d);audit(u.active?'تفعيل مستخدم':'إيقاف مستخدم',u.name||u.username);renderUsers()}catch(error){safeToast(error.message,true);}}
 async function deleteUser(id){try{const d=loadDb(),u=d.users.find(x=>x.id===id);if(!u||u.isRoot)return;if(activeUser?.id===id)return safeToast('لا يمكن حذف الحساب المستخدم حالياً.',true);if(!confirm('حذف حساب '+(u.name||u.username)+'؟'))return;d.users=d.users.filter(x=>x.id!==id);await saveDb(d);audit('حذف مستخدم',u.name||u.username);renderUsers()}catch(error){safeToast(error.message,true);}}
-function revealPassword(id,btn){if(!isRoot())return;safeToast('كلمات السر محفوظة بتجزئة آمنة ولا يمكن عرضها. استخدم تعديل الحساب لتعيين كلمة سر جديدة.');}
+function openPasswordReset(){
+ const user=window.MoshApi?.user;
+ if(user?.isRoot!==true||user.active===false||activeUser?.id!==user.id)return;
+ const actorId=user.id;
+ const db=loadDb();
+ const accounts=db.users.filter(account=>account.id!==actorId&&!isRoot(account));
+ if(!accounts.length)return safeToast('لا توجد حسابات موظفين لإعادة تعيين كلمة سرها.',true);
+ const choices=accounts.map(account=>{
+  const name=account.name||account.username;
+  const label=name===account.username?name:name+' · '+account.username;
+  return '<option value="'+esc(account.id)+'">'+esc(label)+'</option>';
+ }).join('');
+ const reset={type:'password-reset'};
+ const minLength=Math.max(6,Number(db.security.minLength)||6);
+ editorState=reset;
+ showEditor('<div class="auth37-editorhead"><b>إعادة تعيين كلمة السر</b>'+
+  '<button type="button" class="auth37-btn" id="auth37ResetClose">إغلاق</button></div>'+
+  '<div class="auth37-editorbody"><form id="auth37ResetPasswordForm">'+
+  '<p class="auth37-help">سيستخدم الموظف الكلمة المؤقتة عند الدخول ثم يختار كلمة جديدة. تنتهي جلساته المفتوحة بعد الحفظ.</p>'+
+  '<div class="auth37-field"><label for="auth37ResetEmployee">حساب الموظف</label>'+
+  '<select id="auth37ResetEmployee" name="employee_account" required><option value="">اختَر الموظف</option>'+choices+'</select></div>'+
+  '<div class="auth37-grid">'+
+  '<div class="auth37-field"><label for="auth37TemporaryPassword">كلمة السر المؤقتة</label>'+
+  '<input id="auth37TemporaryPassword" name="password" type="password" autocomplete="new-password" required minlength="'+minLength+'" maxlength="128"></div>'+
+  '<div class="auth37-field"><label for="auth37ConfirmTemporaryPassword">تأكيد كلمة السر المؤقتة</label>'+
+  '<input id="auth37ConfirmTemporaryPassword" name="password_confirmation" type="password" autocomplete="new-password" required minlength="'+minLength+'" maxlength="128"></div></div>'+
+  '<div class="auth37-msg" role="alert" hidden></div><div class="auth37-actions">'+
+  '<button type="submit" class="auth37-btn primary">تعيين كلمة مؤقتة</button>'+
+  '<button type="button" class="auth37-btn" id="auth37ResetCancel">إلغاء</button></div></form></div>');
+ const host=$('#moshAuthEditor'),form=$('#auth37ResetPasswordForm');
+ const message=form.querySelector('[role="alert"]'),submit=form.querySelector('button[type="submit"]');
+ const close=$('#auth37ResetClose'),cancel=$('#auth37ResetCancel');
+ const selection=form.elements.namedItem('employee_account');
+ const password=form.elements.namedItem('password'),confirmation=form.elements.namedItem('password_confirmation');
+ const current=()=>editorState===reset&&!host.hidden&&activeUser?.id===actorId&&MoshApi.user?.id===actorId&&MoshApi.user.isRoot===true;
+ const dismiss=()=>{form.reset();closeEditor();host.replaceChildren();};
+ close.onclick=dismiss;
+ cancel.onclick=dismiss;
+ selection.onchange=()=>{
+  password.value=confirmation.value='';
+  message.hidden=true;
+ };
+ selection.focus();
+ form.onsubmit=async event=>{
+  event.preventDefault();
+  if(submit.disabled||!current())return;
+  message.hidden=true;
+  const id=selection.value,account=loadDb().users.find(row=>row.id===id);
+  if(!account||isRoot(account)||id===actorId){
+   message.textContent='اختَر حساب الموظف.';
+   message.hidden=false;
+   selection.focus();
+   return;
+  }
+  if(password.value!==confirmation.value){
+   message.textContent='كلمتا السر غير متطابقتين.';
+   message.hidden=false;
+   confirmation.focus();
+   return;
+  }
+  const body={password:password.value,password_confirmation:confirmation.value,_version:account._version};
+  for(const control of [submit,close,cancel,selection,password,confirmation])control.disabled=true;
+  form.setAttribute('aria-busy','true');
+  try{
+   const updated=await MoshApi.request('/users/'+encodeURIComponent(id)+'/password',{method:'POST',body});
+   if(!current())return;
+   const latest=loadDb();
+   latest.users=latest.users.map(row=>row.id===id?updated:row);
+   MoshApi.auth=latest;
+   dismiss();
+   safeToast('تم تعيين كلمة السر المؤقتة. سيُطلب من الموظف تغييرها عند أول دخول.');
+  }catch(error){
+   if(!current())return;
+   message.textContent=error.status===409?'تغيّر الحساب. حدّث الصفحة ثم أعد المحاولة.':error.message;
+   message.hidden=false;
+  }finally{
+   for(const control of [submit,close,cancel,selection,password,confirmation])control.disabled=false;
+   form.removeAttribute('aria-busy');
+  }
+ }
+}
+for(const event of ['mosh:session-expired','mosh:logout-complete']){
+ document.addEventListener(event,()=>{
+  if(editorState?.type!=='password-reset')return;
+  closeEditor();
+  $('#moshAuthEditor')?.replaceChildren();
+ });
+}
+
 function auth39Toggle(label,app,action,on,desc=''){
  return '<div class="auth39-permrow" data-auth39-search="'+esc(label+' '+desc)+'"><div class="auth39-permtext"><b>'+esc(label)+'</b>'+(desc?'<small>'+esc(desc)+'</small>':'')+'</div><button type="button" class="auth39-toggle '+(on?'allow':'deny')+'" data-auth39-toggle="1" '+(app?'data-mod="'+esc(app)+'" data-act="'+esc(action)+'"':'data-global="'+esc(action)+'"')+' data-state="'+(on?'1':'0')+'" aria-pressed="'+(on?'true':'false')+'"><span class="auth39-icon">'+(on?'✓':'✕')+'</span><span class="auth39-word">'+(on?'مسموح':'ممنوع')+'</span></button></div>';
 }
@@ -277,7 +367,7 @@ function wrapNavigation(){try{const old=window.goApp;if(typeof old==='function'&
 function autoLinkEmployeeAccounts(){return false;}
 function init(){buildGate();wrapNavigation();document.documentElement.classList.remove('mosh-auth-pending');if(MoshApi.bootError){renderLogin(MoshApi.bootError.message);return;}if(MoshApi.status?.setupRequired){renderSetup();return;}if(MoshApi.user){activeUser=MoshApi.user;setSession(activeUser);activate(activeUser,false);}else{clearSession();renderLogin();}}
 function publicUser(u){if(!u)return null;const x=clone(u);delete x.password;delete x.failed;delete x.lockUntil;return x}
-window.MoshAuth37={openAdmin,openMyAccount,logout,can:globalPerm,canModule:modulePerm,current:()=>publicUser(activeUser),taskScope:()=>{const scope=taskScopeOf(activeUser);return scope==='mine'&&Object.values(window.MoshApi?.departmentManagerCoverage?.acting||{}).some(id=>String(id)===String(activeUser?.employeeId))?'department':scope;},landing:()=>landingOf(activeUser),departmentApp:(department=activeUser?.department||'')=>deptApp(department),db:()=>{const d=clone(loadDb());if(!isRoot())d.users=d.users.map(publicUser);return d}};
+window.MoshAuth37={openAdmin,openMyAccount,openPasswordReset,logout,can:globalPerm,canModule:modulePerm,current:()=>publicUser(activeUser),taskScope:()=>{const scope=taskScopeOf(activeUser);return scope==='mine'&&Object.values(window.MoshApi?.departmentManagerCoverage?.acting||{}).some(id=>String(id)===String(activeUser?.employeeId))?'department':scope;},landing:()=>landingOf(activeUser),departmentApp:(department=activeUser?.department||'')=>deptApp(department),db:()=>{const d=clone(loadDb());if(!isRoot())d.users=d.users.map(publicUser);return d}};
 document.addEventListener('mosh:refreshed',refreshPermissions);
 document.addEventListener('mosh:page-mounted',()=>queueMicrotask(applyPermissions));
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();

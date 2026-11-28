@@ -436,6 +436,12 @@
     const disabled=!allowed(t,'view')||!allowed(t,'details');
     return '<div class="mr49-task-row'+(returned?' mr49-returned':'')+'"><div class="mr49-task-copy">'+(returned?'<span class="mr49-return-badge">↩ مُعادة من المدير</span>':'')+'<b>'+esc(t.title||'مهمة بلا عنوان')+'</b><small class="wd53-task-client">'+esc(t.customer||'لم يُحدَّد عميل')+'</small>'+(t.dueDate?'<small class="wd53-task-due">الموعد: '+esc(t.dueDate)+'</small>':'')+''+(returned&&model.reason(t)?'<p>'+esc(model.reason(t))+'</p>':'')+'</div><div class="mr49-task-actions"><button type="button" data-mr49-open="'+esc(t.id)+'" '+(disabled?'disabled title="لا توجد صلاحية فتح التفاصيل"':'aria-label="فتح '+esc(t.title||'المهمة')+'"')+'>فتح ←</button>'+(model.category(t)!=='review'?'<button type="button" data-wd50-select="'+esc(t.id)+'" '+(disabled?'disabled':'')+'>لوحة عملي</button>':'')+'</div></div>';
   }
+  function approvalRow(row){
+    const ref=esc(row.resource+'|'+row.id);
+    const person=[row.employeeName,row.department].filter(Boolean).map(esc).join(' · ');
+    return '<article class="wd51-home-task" data-wd51-approval-id="'+esc(row.id)+'"><div><button type="button" class="wd51-task-title" data-r34="hr-review" data-id="'+ref+'">'+esc(row.title)+'</button>'+(person?'<small class="wd53-task-client">'+person+'</small>':'')+'</div><div class="wd06-row-footer"><span class="wd51-task-tag">طلب اعتماد</span><button type="button" class="wd51-task-pick" data-r34="hr-review" data-id="'+ref+'">مراجعة الطلب ←</button></div></article>';
+  }
+
   function renderHome(){
     const account=user();
     if(!account){receiptNoticeOwner='';return;}
@@ -458,23 +464,37 @@
       card.innerHTML='<div id="mr49Inbox" dir="rtl"><div class="es11-card-head"><h3>مهامي</h3><span id="wd07TaskCount" class="wd07-inbox-count"></span></div><div id="wd51HomeTabs" class="wd51-home-tabs" role="group" aria-label="تصنيف مهامي"></div><label class="wd51-home-search"><span class="wd51-sr-only">البحث في مهامي</span><input id="wd51HomeSearch" type="search" autocomplete="off" placeholder="ابحث باسم المهمة أو العميل…"></label><div id="wd51HomeRows" class="wd51-home-rows"></div><div class="mr49-home-footer"><button type="button" id="wd51HomeAll" class="mr49-all" data-mr49-list="all">عرض جميع مهامي ←</button></div><p id="wd51HomeError" class="mr49-error" role="status" hidden></p></div>';
       $('wd51HomeSearch').addEventListener('input',e=>{homeQuery=e.target.value;renderHome();});
     }
+    const approvals=(window.MoshGovernance34?.pendingHrApprovals?.()||[]).map(row=>({
+      ...row,title:row.title||(row.resource==='hr-requests'?window.hrProTypeLabel?.(row.type):'')||'طلب موظف'
+    }));
     const all=[...g.new,...g.active,...g.review],selectedId=window.MoshWorkdesk50?.selectedTaskId?.()||'';
-    const sig=JSON.stringify([uid,homeTab,homeQuery,selectedId,all.map(t=>[t.id,t._version,t.title,t.customer,t.taskNo,t.employeeState,t.returnedForRevision,model.reason(t),allowed(t,'details')]),refreshError]);
+    const sig=JSON.stringify([uid,homeTab,homeQuery,selectedId,all.map(t=>[t.id,t._version,t.title,t.customer,t.taskNo,t.employeeState,t.returnedForRevision,model.reason(t),allowed(t,'details')]),approvals,refreshError]);
     if(sig===cardSignature)return;cardSignature=sig;
-    $('wd51HomeTabs').innerHTML=[['new','جديدة',g.new.length,'mr49NewCount'],['active','جارية',g.active.length,'mr49ActiveCount'],['review','بانتظار المراجعة',g.review.length,'wd51ReviewCount']].map(([k,label,n,id])=>'<button type="button" data-wd51-home-tab="'+k+'" aria-pressed="'+(homeTab===k)+'" class="'+(homeTab===k?'active ':'')+(k==='new'&&n?'has-new':'')+'"><span>'+label+'</span><b id="'+id+'">'+n+'</b></button>').join('');
+    $('wd51HomeTabs').innerHTML=[['new','جديدة',g.new.length,'mr49NewCount'],['active','جارية',g.active.length,'mr49ActiveCount'],['review','بانتظار المراجعة',g.review.length+approvals.length,'wd51ReviewCount']].map(([k,label,n,id])=>'<button type="button" data-wd51-home-tab="'+k+'" aria-pressed="'+(homeTab===k)+'" class="'+(homeTab===k?'active ':'')+(k==='new'&&n?'has-new':'')+'"><span>'+label+'</span><b id="'+id+'">'+n+'</b></button>').join('');
     const q=text(homeQuery).toLocaleLowerCase('ar');
     const rows=g[homeTab].filter(t=>!q||[t.title,t.customer,t.taskNo,t.number].some(v=>text(v).toLocaleLowerCase('ar').includes(q)));
-    $('wd51HomeRows').innerHTML=rows.slice(0,1).map(t=>{
+    const taskPreview=rows.slice(0,1).map(t=>{
       const disabled=!allowed(t,'view')||!allowed(t,'details'),returned=t.returnedForRevision&&model.category(t)==='new';
       const isSelected=homeTab!=='review'&&String(t.id)===selectedId;
       return '<article class="wd51-home-task" data-task-id="'+esc(t.id)+'" data-selected="'+isSelected+'"><div><button type="button" class="wd51-task-title" data-mr49-open="'+esc(t.id)+'" '+(disabled?'disabled':'')+'>'+esc(t.title||'مهمة بلا عنوان')+'</button><small class="wd53-task-client">'+esc(t.customer||'لم يُحدَّد عميل')+'</small></div><div class="wd06-row-footer"><span class="wd51-task-tag '+(returned?'returned':'')+'">'+esc(returned?'↩ مُعادة من المدير':model.label(t))+'</span><button type="button" class="wd51-task-pick" '+(homeTab==='review'?'data-mr49-open':'data-wd50-select')+'="'+esc(t.id)+'" '+(homeTab==='review'?'':'aria-pressed="'+isSelected+'" ')+(disabled?'disabled':'')+'>'+(homeTab==='review'?'التفاصيل ←':isSelected?'محدّدة حالياً':'اختيار المهمة ←')+'</button></div></article>';
-    }).join('')||'<div class="wd51-home-empty">'+(q?'لا توجد مهام مطابقة للبحث.':homeTab==='new'?'لا توجد مهام جديدة بانتظار الاستلام.':homeTab==='active'?'لا توجد مهام جارية حالياً.':'لا توجد مهام بانتظار المراجعة.')+'</div>';
+    }).join('');
+    const reviewRows=homeTab==='review'?approvals.filter(row=>!q||[row.title,row.employeeName,row.department].some(value=>text(value).toLocaleLowerCase('ar').includes(q))):[];
+    const approvalsPreview=reviewRows.slice(0,3).map(approvalRow).join('');
+    const noRows=q?'لا توجد نتائج مطابقة للبحث.':homeTab==='new'?'لا توجد مهام جديدة بانتظار الاستلام.':homeTab==='active'?'لا توجد مهام جارية حالياً.':'لا توجد عناصر بانتظار المراجعة.';
+    const moreApprovals=reviewRows.length>3?'<button type="button" class="mr49-more" data-r34="inbox-hr">عرض طلبات الاعتماد ('+reviewRows.length+') ←</button>':'';
+    $('wd51HomeRows').innerHTML=(approvalsPreview+taskPreview+moreApprovals)||'<div class="wd51-home-empty">'+noRows+'</div>';
     if(rows.length>4)$('wd51HomeRows').insertAdjacentHTML('beforeend','<button type="button" class="mr49-more" data-mr49-list="'+homeTab+'">عرض '+(rows.length-4)+' مهام أخرى ←</button>');
     $('wd51HomeAll').textContent='عرض جميع مهامي ('+all.length+') ←';
-    $('wd07TaskCount').textContent=all.length===1?'مهمة واحدة':'المجموع: '+all.length;
+    $('wd07TaskCount').textContent=approvals.length?all.length+' مهمة · '+approvals.length+' طلب اعتماد':all.length===1?'مهمة واحدة':'المجموع: '+all.length;
+    $('wd51HomeSearch').placeholder=homeTab==='review'?'ابحث بالمهمة أو العميل أو الموظف…':'ابحث باسم المهمة أو العميل…';
     $('wd51HomeError').hidden=!refreshError;$('wd51HomeError').textContent=refreshError;
   }
-  window.addEventListener('click',e=>{const b=e.target.closest?.('[data-wd51-home-tab]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();homeTab=b.dataset.wd51HomeTab;renderHome();},true);
+  window.addEventListener('click',e=>{
+    const b=e.target.closest?.('[data-wd51-home-tab]');if(!b)return;
+    e.preventDefault();e.stopImmediatePropagation();homeTab=b.dataset.wd51HomeTab;renderHome();
+    if(homeTab==='review')void window.MoshGovernance34?.poll?.().catch(()=>{});
+  },true);
+  document.addEventListener('mosh:approvals-refreshed',renderHome);
   function ensureList(){
     let d=$('mr49ListDialog');if(d)return d;
     d=document.createElement('dialog');d.id='mr49ListDialog';d.className='mr49-dialog mr49-list-dialog';d.dir='rtl';

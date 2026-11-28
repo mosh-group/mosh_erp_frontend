@@ -127,6 +127,16 @@
       const action = match && requestActions[match[2]];
       if (action) { if (!button.id) button.id = action[1]; if (button.type !== 'button') button.type = 'button'; move(button,record.folds[action[0]].actions); styleAction(button,action[2]); }
     }
+    const annualLeave = $('r202AnnualLeave'), leaveActions = record.folds.leave.actions;
+    if (annualLeave?.parentElement===leaveActions && !leaveActions.querySelector('#r202SingleDayLeave')) {
+      const day = document.createElement('button');
+      day.id='r202SingleDayLeave';
+      day.type='button';
+      day.innerHTML='<b>إجازة يوم واحد</b>';
+      day.addEventListener('click',()=>window.hrProOpenRequestForm('annual_leave','self',{singleDay:true}));
+      annualLeave.insertAdjacentElement('afterend',day);
+      styleAction(day,'calendar');
+    }
     move($('r19MyAttendance'),attendance.actions);
     styleAction($('r19MyAttendance'),'history');
     // Remove the decisions shortcut from this view; retain the original node so

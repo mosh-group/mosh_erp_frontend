@@ -531,6 +531,175 @@
     catch (error) { message(error.message || 'تعذر تنزيل المرفق.'); }
   }
 
+  const PRESENCE_AWAY = ['left','waiting','off'];
+  const PRESENCE_FILTERS = [
+    ['all','كل الموظفين'], ['present','مداومون'], ['away','غير موجودين'],
+    ['absent','غائبون'], ['late','متأخرون'], ['leave','في إجازة']
+  ];
+  const PRESENCE_STATUSES = {
+    present:['مداوم','approved'], left:['غادر الدوام',''], waiting:['بانتظار الحضور','pending_hr'],
+    absent:['غائب','rejected'], leave:['إجازة معتمدة','approved'], off:['يوم راحة',''],
+    unscheduled:['جدول الدوام غير محدد',''], review:['بحاجة للمراجعة','pending_hr']
+  };
+  const PRESENCE_REFRESH_MS = 60000;
+  let dailyPresence, presenceRefreshPending = false, presenceOwner = '', presenceFilter = 'all';
+
+  function presenceHost() {
+    const content = document.querySelector('#hrApp.active #hrProContent');
+    return content?.getClientRects().length ? content.querySelector('[data-hr-daily-presence]') : null;
+  }
+
+  function closePresence() {
+    if (!dailyPresence) return;
+    dailyPresence.controller?.abort();
+    clearTimeout(dailyPresence.timer);
+    dailyPresence.host.replaceChildren();
+    dailyPresence = null;
+  }
+
+  function currentPresence(view) {
+    return dailyPresence === view && view.identity === str(window.MoshApi?.user?.id) && presenceHost() === view.host;
+  }
+
+  function presenceTime(value, formatter) {
+    if (!value) return '—';
+    if (/^\d{2}:\d{2}(?::\d{2})?$/.test(value)) return value.slice(0,5);
+    const date = new Date(value);
+    return Number.isFinite(date.getTime()) ? formatter.format(date) : '—';
+  }
+
+  function presenceTable(rows, formatter, day) {
+    if (!rows.length) return empty('لا يوجد موظفون ضمن هذه الحالة.');
+    const timeCell = (value,date) => '<td><bdi>'+e(presenceTime(value,formatter))+'</bdi>'+
+      (validDate(date) && date !== day ? '<small><bdi>'+e(date)+'</bdi></small>' : '')+'</td>';
+    const columns = ['الموظف','القسم','الحالة','بداية الدوام','الدخول','الخروج','التأخير'];
+    const list = rows.map(row => {
+      const [label,color] = Object.hasOwn(PRESENCE_STATUSES,row.status) ? PRESENCE_STATUSES[row.status] : PRESENCE_STATUSES.review;
+      const delay = row.delayMinutes;
+      const delayText = Number.isFinite(delay) ? '<span'+(delay > 0 ? ' class="r19-hr-gold"' : '')+'>'+delay.toLocaleString('ar-SY')+' د</span>' : '—';
+      const detail = ['waiting','absent','review'].includes(row.status) && row.reason ? '<small>'+e(row.reason)+'</small>' : '';
+      return '<tr data-hr-presence-row="'+e(row.employeeId)+'" data-status="'+e(row.status)+'"><td><b>'+e(row.name)+'</b></td><td>'+e(row.department || '—')+'</td><td><span class="r19-hr-tag '+color+'">'+label+'</span>'+detail+'</td>'+
+        timeCell(row.scheduledStart)+timeCell(row.inTime,row.inDate)+timeCell(row.outTime,row.outDate)+'<td>'+delayText+'</td></tr>';
+    });
+    return '<div class="h13-table-wrap"><table class="h13-table" aria-label="حالات دوام الموظفين"><thead><tr>'+
+      columns.map(label => '<th scope="col">'+label+'</th>').join('')+'</tr></thead><tbody>'+list.join('')+'</tbody></table></div>';
+  }
+
+  function showPresenceRows(view) {
+    const data = view.data;
+    if (!data) return;
+    const counts = data.counts;
+    const count = key => Number(counts[key]) || 0;
+    const all = arr(data.rows);
+    const hasAttendance = all.some(row => row.inTime || row.outTime);
+    const list = all.filter(row => presenceFilter === 'all' ||
+      (presenceFilter === 'late' ? Number(row.delayMinutes) > 0 :
+        presenceFilter === 'away' ? PRESENCE_AWAY.includes(row.status) : row.status === presenceFilter));
+    const filters = view.host.querySelector('[data-hr-presence-filters]');
+    filters.hidden = !all.length;
+    filters.querySelectorAll('button').forEach(button => {
+      const key = button.dataset.hrPresenceFilter;
+      button.setAttribute('aria-pressed',String(key === presenceFilter));
+      button.classList.toggle('active',key === presenceFilter);
+      const total = key === 'all' ? count('total') : key === 'away' ? PRESENCE_AWAY.reduce((sum,status) => sum + count(status),0) : count(key);
+      button.querySelector('[data-hr-presence-count]').textContent = total.toLocaleString('ar-SY');
+    });
+    const notices = [];
+    if (all.length && !hasAttendance) notices.push('لم تُسجّل حركات حضور مؤكدة لليوم حتى الآن.');
+    if (count('unscheduled')) notices.push('احتساب الغياب والتأخير يتطلّب جدول دوام محدداً للموظف.');
+    view.host.querySelector('[data-hr-presence-notes]').innerHTML = notices.length ? note(notices.join(' ')) : '';
+    view.host.querySelector('[data-hr-presence-results]').innerHTML = all.length ? presenceTable(list,view.clock,data.date) : empty('لا يوجد موظفون ضمن لوحة الحضور.');
+  }
+
+  async function loadDailyPresence(view) {
+    if (!view.disclosure.open || !currentPresence(view) || view.controller) return;
+    clearTimeout(view.timer);
+    const results = view.host.querySelector('[data-hr-presence-results]');
+    const refresh = view.host.querySelector('[data-hr-presence-refresh]');
+    const stamp = view.host.querySelector('[data-hr-presence-updated]');
+    const controller = new AbortController();
+    view.controller = controller;
+    refresh.disabled = true;
+    results.setAttribute('aria-busy','true');
+    if (!view.data) results.innerHTML = loading();
+    try {
+      const data = await apiRequest('/r19/hr/presence',{cache:'no-store',signal:controller.signal});
+      if (!currentPresence(view)) return;
+      if (!Array.isArray(data?.rows) || !data.counts || !validDate(data.date)) throw new Error('لم تكتمل بيانات الحضور.');
+      view.data = data;
+      view.loadedAt = Date.now();
+      const zone = data.timeZone || timeZone();
+      const formatterOptions = {hour:'2-digit',minute:'2-digit',hourCycle:'h23'};
+      view.clock = new Intl.DateTimeFormat('ar-SY',{...formatterOptions,timeZone:zone});
+      const calendar = new Intl.DateTimeFormat('ar-SY',{timeZone:'UTC',day:'numeric',month:'long',year:'numeric'});
+      const day = calendar.format(new Date(data.date+'T12:00:00Z'));
+      stamp.textContent = day + (data.asOf ? ' · آخر تحديث '+presenceTime(data.asOf,view.clock) : '');
+      view.host.hidden = false;
+      showPresenceRows(view);
+      if (view.disclosure.open) {
+        view.timer = setTimeout(() => {
+          if (document.visibilityState === 'visible') void loadDailyPresence(view);
+        },PRESENCE_REFRESH_MS);
+      }
+    } catch (error) {
+      if (!currentPresence(view)) return;
+      view.data = null;
+      view.host.querySelector('[data-hr-presence-filters]').hidden = true;
+      view.host.querySelector('[data-hr-presence-notes]').replaceChildren();
+      stamp.textContent = '';
+      if (error.status === 403) {
+        view.host.hidden = true;
+        results.replaceChildren();
+        return;
+      }
+      results.innerHTML = '<div role="alert" class="r19-hr-error">تعذّر تحميل حالة الدوام. اضغط على زر التحديث لإعادة المحاولة.</div>';
+    } finally {
+      view.controller = null;
+      if (currentPresence(view)) {
+        refresh.disabled = false;
+        results.removeAttribute('aria-busy');
+      }
+    }
+  }
+
+  function mountDailyPresence(force = false) {
+    const host = presenceHost();
+    const identity = str(window.MoshApi?.user?.id);
+    if (!host || !identity) { closePresence(); return; }
+    if (dailyPresence?.host === host && dailyPresence.identity === identity) {
+      if (force) void loadDailyPresence(dailyPresence);
+      return;
+    }
+    const expanded = dailyPresence?.identity === identity && dailyPresence.disclosure.open;
+    closePresence();
+    if (presenceOwner !== identity) { presenceOwner = identity; presenceFilter = 'all'; }
+    const filters = PRESENCE_FILTERS.map(([key,label]) =>
+      '<button type="button" class="btn r19-hr-button" data-hr-presence-filter="'+key+'" aria-pressed="false">'+label+' <b data-hr-presence-count></b></button>'
+    ).join('');
+    host.innerHTML = '<details data-hr-presence-disclosure><summary style="cursor:pointer"><strong>حالة دوام الموظفين اليوم</strong></summary>'+
+      '<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-block:12px">'+
+      '<small class="r19-hr-muted" data-hr-presence-updated></small>'+
+      '<button type="button" class="h13-btn" aria-label="تحديث حالة الدوام" title="تحديث حالة الدوام" data-hr-presence-refresh><span aria-hidden="true">↻</span></button></header>'+
+      '<div data-hr-presence-notes></div><div class="r19-hr-report-tabs" aria-label="حالات الدوام" role="group" data-hr-presence-filters hidden>'+filters+'</div>'+
+      '<div data-hr-presence-results></div></details>';
+    const disclosure = host.querySelector('[data-hr-presence-disclosure]');
+    const view = {host,identity,disclosure,data:null,controller:null,timer:null,loadedAt:0};
+    dailyPresence = view;
+    host.hidden = false;
+    disclosure.addEventListener('toggle',() => {
+      if (disclosure.open) void loadDailyPresence(view);
+      else clearTimeout(view.timer);
+    });
+    host.querySelector('[data-hr-presence-refresh]').onclick = () => loadDailyPresence(view);
+    host.querySelector('[data-hr-presence-filters]').onclick = event => {
+      const button = event.target.closest('[data-hr-presence-filter]');
+      if (!button || !currentPresence(view)) return;
+      presenceFilter = button.dataset.hrPresenceFilter;
+      showPresenceRows(view);
+    };
+    if (expanded) disclosure.open = true;
+  }
+
   function navButton(parent,id,label,action,requestDepartment,show,rail) {
     if (!parent) return;
     let container = document.getElementById(id), button;
@@ -546,6 +715,8 @@
     if (container.style.display !== display) container.style.display = display;
   }
   function mount() {
+    mountDailyPresence(presenceRefreshPending);
+    presenceRefreshPending = false;
     if (!P()?.dialog) return;
     resetForIdentity();
     const identity = userId();
@@ -608,7 +779,16 @@
   document.addEventListener('mosh:page-mounted',mount);
   window.addEventListener('mosh:r19-change',scheduleMount);
   document.addEventListener('mosh:r19-change',scheduleMount);
-  document.addEventListener('mosh:refreshed',() => { initialAttemptIdentity = ''; generation++; reads.clear(); scheduleMount(); });
+  document.addEventListener('mosh:section-enter',scheduleMount);
+  document.addEventListener('mosh:permissions-applied',scheduleMount);
+  document.addEventListener('visibilitychange',() => {
+    const view = dailyPresence;
+    if (view?.data && document.visibilityState === 'visible' && Date.now()-view.loadedAt >= PRESENCE_REFRESH_MS) void loadDailyPresence(view);
+  });
+  for (const type of ['mosh:session-expired','mosh:logout-complete']) {
+    document.addEventListener(type,() => { closePresence(); presenceOwner = ''; presenceFilter = 'all'; });
+  }
+  document.addEventListener('mosh:refreshed',() => { presenceRefreshPending = true; initialAttemptIdentity = ''; generation++; reads.clear(); scheduleMount(); });
   document.addEventListener('mosh:session-expired',() => { generation++; reads.clear(); cache = initialData(); initialAttemptIdentity = userId(); IDS.forEach(id => { if (document.getElementById(id)?.open) P()?.close?.(id,true); }); scheduleMount(); });
   window.addEventListener('focus',() => { if (userId() && Date.now()-lastLoadedAt > 60000) readSnapshot().catch(() => {}); });
   const observer = new MutationObserver(records => { if (records.some(record => record.addedNodes.length || record.removedNodes.length)) scheduleMount(); });

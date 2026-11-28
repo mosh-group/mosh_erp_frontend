@@ -1,9 +1,9 @@
 /* R34 governed approvals. All roles, routing and decisions are revalidated by the server. */
 (function(){'use strict';
-const U=window.Mosh34,{E,B,$,$$}=U;let cfg=null,who='',inbox=null,loading=null,view='cancel',codeTimer=null;
+const U=window.Mosh34,{E,B,$,$$}=U;let cfg=null,who='',approvalOwner='',inbox=null,loading=null,view='cancel',codeTimer=null;
 const names={pending:'بانتظار المصادقة',approved:'معتمد',rejected:'مرفوض',expired:'منتهي الصلاحية',locked:'أُبطل بعد محاولات خاطئة',invalidated:'يحتاج طلباً جديداً',executed:'نُفّذ الإتلاف',cancelled:'ملغى'};
 const status=x=>names[x]||x||'—';
-function reset(){cfg=null;inbox=null;loading=null;who='';if(codeTimer)clearTimeout(codeTimer);codeTimer=null;$('#r34ApprovalsTop')?.remove();}
+function reset(){cfg=null;inbox=null;loading=null;who='';approvalOwner='';if(codeTimer)clearTimeout(codeTimer);codeTimer=null;$('#r34ApprovalsTop')?.remove();document.dispatchEvent(new Event('mosh:approvals-refreshed'));}
 async function hierarchy(force=false){const s=U.snapshot();if(cfg&&who===s.owner&&!force)return cfg;const data=await U.request('/r34/hierarchy',{},s);cfg=data;who=s.owner;window.MoshApi.setReportingHierarchy?.(data);return data;}
 function noticeError(e){window.MoshUI19?.toast(e.message||String(e),true);}
 async function openHierarchy(){
@@ -38,13 +38,25 @@ async function openHierarchy(){
  if(!h.canConfigure){$$('input,select,textarea,button[type=submit]',d).forEach(x=>x.disabled=true);U.error(d,new Error('للاطلاع فقط؛ تعديل التبعيات يحتاج صلاحية إدارة الموارد البشرية.'));}
 }
 async function poll(){if(!U.owner()||document.hidden)return;const s=U.snapshot();if(loading&&who===s.owner)return loading;who=s.owner;
- const job=Promise.all([U.request('/r34/cancellations',{},s),U.request('/r34/approvals',{},s)]).then(([cancel,approval])=>{U.guard(s);inbox={cancel,approval};const count=(cancel.pendingCount||0)+(approval.pendingCount||0);const b=$('#r34ApprovalsTop');if(b){b.textContent='اعتماداتي'+(count?' ('+count+')':'');b.title=count?'طلبات جديدة تحتاج إجراءً':'طلبات إلغاء المهام واعتمادات المسؤول الأعلى';b.dataset.count=String(count);}return inbox;}).finally(()=>{if(loading===job)loading=null;});loading=job;return job;
+ const job=Promise.all([U.request('/r34/cancellations',{},s),U.request('/r34/approvals',{},s)]).then(([cancel,approval])=>{U.guard(s);inbox={cancel,approval};approvalOwner=s.owner;const count=(cancel.pendingCount||0)+(approval.pendingCount||0);const b=$('#r34ApprovalsTop');if(b){b.textContent='اعتماداتي'+(count?' ('+count+')':'');b.title=count?'طلبات جديدة تحتاج إجراءً':'طلبات الاعتماد';b.dataset.count=String(count);}document.dispatchEvent(new Event('mosh:approvals-refreshed'));return inbox;}).finally(()=>{if(loading===job)loading=null;});loading=job;return job;
 }
-async function openInbox(next=view){view=next;const d=U.dialog('r34Inbox','اعتماداتي — الطلبات المحفوظة',U.empty('جارٍ تحميل الطلبات…'));try{await poll();if(d.isConnected&&d.open)renderInbox(d);}catch(e){U.error(d,e);}}
+async function openInbox(next=view){
+ const d=U.dialog('r34Inbox','اعتماداتي — الطلبات المحفوظة',U.empty('جارٍ تحميل الطلبات…'));
+ try{
+  await poll();
+  if(!d.isConnected||!d.open)return;
+  if(next==='pending'){
+   if(inbox?.approval?.hr?.some(row=>row.canDecide))view='hr';
+   else if(inbox?.cancel?.pendingCount)view='cancel';
+   else if(inbox?.approval?.damage?.some(row=>row.canDecide||row.canExecute))view='damage';
+  }else view=next;
+  renderInbox(d);
+ }catch(e){U.error(d,e);}
+}
 function card(title,body,actions=''){return `<article class="r34-card"><h4>${E(title)}</h4>${body}<div class="r34-actions">${actions}</div></article>`;}
 function renderInbox(d){if(!inbox)return;const a=inbox.approval;const nav=`<nav>${B('مصادقات إلغاء المهام','inbox-cancel')}${B('إجازات وطلبات الموظفين','inbox-hr')}${B('طلبات إتلاف المخزن','inbox-damage')}${B('طلبات واعتمادات الشراء','purchases')}${B('تحديث','inbox-refresh')}</nav>`;let html='';
  if(view==='cancel')html=(inbox.cancel.items||[]).map(r=>card(r.taskTitle,`<div>${E(r.department)} · ${E(r.customer)} · <b>${E(status(r.status))}</b></div><p>طالب الإلغاء: ${E(r.requestedBy)} — ${E(r.reason)}</p><small>ينتهي: ${E(U.stamp(r.expiresAt))} · المحاولات المتبقية: ${r.attemptsRemaining}</small>`,`${B('تفاصيل المهمة','cancel-details',r.id)}${r.canReadCode?B('عرض رمز المصادقة','cancel-code',r.id,true)+B('رفض الطلب','cancel-reject',r.id):''}${r.canConfirm?B('إدخال الرمز وتأكيد الإلغاء','cancel-confirm',r.id,true):''}`)).join('')||U.empty('لا توجد طلبات إلغاء مرتبطة بحسابك.');
- if(view==='hr')html=(a.hr||[]).map(r=>card(r.title||r.type||'طلب موظف',`<p>${E(r.employeeName||r.employeeId)} · ${E(status(r.status))}</p><p>${E(r.reason||r.note||r.description||'')}</p><small>المرحلة: ${E((r.route||r.levels||[])[r.stageIndex??r.currentLevel??0]||'—')}</small>`,`${B('عرض التفاصيل','hr-details',r.resource+'|'+r.id)}${r.canDecide?B('موافقة','hr-approve',r.resource+'|'+r.id,true)+B('رفض','hr-reject',r.resource+'|'+r.id):''}`)).join('')||U.empty('لا توجد طلبات جديدة بمسار تبعية محفوظ لحسابك. الطلبات القديمة تبقى في قوائمها المعتادة.');
+ if(view==='hr')html=(a.hr||[]).map(r=>card(hrRequestHeading(r),`<p>${E(r.employeeName||r.employeeId)} · ${E(status(r.status))}</p><p>${E(r.reason||r.note||r.description||'')}</p><small>المرحلة: ${E((r.route||r.levels||[])[r.stageIndex??r.currentLevel??0]||'—')}</small>`,`${B('عرض التفاصيل','hr-details',r.resource+'|'+r.id)}${r.canDecide?B('موافقة','hr-approve',r.resource+'|'+r.id,true)+B('رفض','hr-reject',r.resource+'|'+r.id):''}`)).join('')||U.empty('لا توجد طلبات موظفين لحسابك حالياً.');
  if(view==='damage')html=(a.canRequestDamage?B('طلب إتلاف مواد','damage-new','',true):'')+(a.damage||[]).map(r=>card(r.itemName,`<p>${E(r.warehouseName)} · الكمية: ${E(r.qty)} · <b>${E(status(r.status))}</b></p><p>${E(r.reason)}</p><small>الطالب: ${E(r.requestedBy)} · المسؤول الحالي: ${E(r.approvers?.[r.position]?.name||'—')}</small>`,`${B('سجل الطلب','damage-details',r.id)}${r.canDecide?B('موافقة','damage-approve',r.id,true)+B('رفض','damage-reject',r.id):''}${r.canExecute?B('تنفيذ سند الإتلاف','damage-execute',r.id,true):''}`)).join('');
  $('.r34',d).innerHTML=nav+(html||U.empty('لا توجد طلبات إتلاف.'))+U.note('القبول الإداري لا ينقص مخزوناً. تنفيذ سند الإتلاف مرحلة مستقلة بعد اكتمال الموافقات. لا اعتماد ذاتياً لأي طلب.')+`<div data-r34-error class="r34-error"></div>`;
 }
@@ -56,8 +68,9 @@ function confirmCancel(id){const r=inbox?.cancel.items.find(r=>r.id===id);if(!r?
  U.form('r34CancelConfirm','تأكيد إلغاء المهمة',U.note(r.taskTitle+' — '+r.reason)+U.field('رمز التنفيذي — ٥ أرقام','code','','text','required inputmode="numeric" pattern="[0-9]{5}" minlength="5" maxlength="5" autocomplete="off"')+U.note('عند التأكيد تتوقف ساعة المهمة وتنتقل إلى «مهمات ملغية»، مع حفظ الوقت والمحادثة والمرفقات.'),async(fd,f,h,s)=>{const out=await U.commit(h,'/r34/cancellations/'+encodeURIComponent(id)+'/confirm',{code:fd.get('code')},'POST',s);U.accept('tasks',out.task,s);return out;},()=>openInbox('cancel'),'تأكيد الإلغاء');
 }
 function rejectCancel(id){const r=inbox?.cancel.items.find(r=>r.id===id);if(!r?.canReadCode)return;U.form('r34CancelReject','رفض طلب الإلغاء',U.note(r.taskTitle)+U.area('سبب الرفض','reason','','required minlength="3" maxlength="3000"'),(fd,f,h,s)=>U.commit(h,'/r34/cancellations/'+encodeURIComponent(id)+'/reject',{reason:fd.get('reason')},'POST',s),()=>openInbox('cancel'),'رفض وإبطال الرمز');}
-function hrDecision(ref,action){const at=ref.indexOf('|'),resource=ref.slice(0,at),id=ref.slice(at+1),r=inbox?.approval.hr.find(x=>x.id===id&&x.resource===resource);if(!r?.canDecide)return;
- U.form('r34HrDecision',action==='approve'?'موافقة المسؤول الأعلى':'رفض الطلب',U.note((r.title||r.type||'طلب')+' — '+(r.employeeName||r.employeeId))+U.area(action==='reject'?'سبب الرفض':'ملاحظة','reason','',action==='reject'?'required maxlength="3000"':'maxlength="3000"'),async(fd,f,h,s)=>{const doc=await U.commit(h,'/r34/approvals/hr',{resource,id,_version:r._version,action,reason:fd.get('reason')},'POST',s);U.accept(resource,doc,s);return doc;},()=>openInbox('hr'),action==='approve'?'اعتماد المرحلة':'رفض الطلب');
+function hrDecision(ref,action){const at=ref.indexOf('|'),resource=ref.slice(0,at),id=ref.slice(at+1),r=hrRequest(ref);if(!r?.canDecide){noticeError(new Error('تغيّرت حالة الطلب. حدّث قائمة الاعتمادات.'));return;}
+ const stage=(r.route||r.levels||[])[r.stageIndex??r.currentLevel??0];
+ U.form('r34HrDecision',action==='approve'?(stage==='الموارد البشرية'?'اعتماد الموارد البشرية':'موافقة المسؤول الأعلى'):'رفض الطلب',U.note(hrRequestHeading(r)+' — '+(r.employeeName||'الموظف'))+U.area(action==='reject'?'سبب الرفض':'ملاحظة','reason','',action==='reject'?'required maxlength="3000"':'maxlength="3000"'),async(fd,f,h,s)=>{const doc=await U.commit(h,'/r34/approvals/hr',{resource,id,_version:r._version,action,reason:fd.get('reason')},'POST',s);U.accept(resource,doc,s);return doc;},()=>{U.close('r34HrDetails');return openInbox('hr');},action==='approve'?'اعتماد المرحلة':'رفض الطلب');
 }
 async function damageForm(initial={}){const a=await U.request('/r34/approvals');if(!a.canRequestDamage)throw new Error('يلزم إعداد تبعية المدراء وصلاحية المستودع.');
  const data=a.stockOptions||{};U.form('r34DamageNew','طلب إتلاف مواد مخزن',U.note('يُرسل للمسؤولين حسب التبعية. لا ينقص الرصيد عند إنشاء الطلب أو الموافقة؛ ينقص فقط عند تنفيذ السند بعد الاعتماد.')+`<div class="r34-grid">${U.select('المستودع المصدر','from',[['','اختر المستودع'],...(data.warehouses||[]).map(w=>[w.id,w.name])],initial.from||'','required')}${U.select('الصنف','itemId',[['','اختر الصنف'],...(data.items||[]).map(i=>[i.id,i.name])],initial.itemId||'','required')}${U.field('الكمية','qty',initial.qty||1,'number','required min="0.000001" step="any"')}</div>`+U.area('سبب الإتلاف','reason',initial.reason||'','required minlength="3" maxlength="3000"'),(fd,f,h,s)=>U.commit(h,'/r34/damage',{from:fd.get('from'),itemId:fd.get('itemId'),qty:Number(fd.get('qty')),reason:fd.get('reason')},'POST',s),()=>openInbox('damage'),'إرسال للاعتماد');
@@ -65,17 +78,108 @@ async function damageForm(initial={}){const a=await U.request('/r34/approvals');
 function damageDecision(id,action){const r=inbox?.approval.damage.find(x=>x.id===id);if(!r)return;const execute=action==='execute';if(execute?!r.canExecute:!r.canDecide)return;
  U.form('r34DamageDecision',execute?'تنفيذ سند الإتلاف':action==='approve'?'موافقة على الإتلاف':'رفض الإتلاف',U.note(r.itemName+' · '+r.warehouseName+' · '+r.qty+' — '+r.reason)+(execute?U.note('سيخصم النظام الكمية من الرصيد الحالي مرة واحدة ويسجل سند حركة.'):U.area(action==='reject'?'سبب الرفض':'ملاحظة','reason','',action==='reject'?'required maxlength="3000"':'maxlength="3000"')),(fd,f,h,s)=>U.commit(h,'/r34/damage/'+encodeURIComponent(id)+(execute?'/execute':'/decision'),{_version:r._version,...(execute?{}:{action,reason:fd.get('reason')})},'POST',s),async()=>{if(execute)await window.MoshApi.refreshFromServer?.();await openInbox('damage');},execute?'تنفيذ السند':action==='approve'?'موافقة':'رفض');
 }
+function pendingHrApprovals(){
+ if(!approvalOwner||approvalOwner!==U.owner())return [];
+ return (inbox?.approval?.hr||[])
+  .filter(row=>row.status==='pending'&&row.canDecide===true)
+  .map(row=>({
+   id:row.id,resource:row.resource,type:row.type,title:hrRequestHeading(row),
+   employeeName:row.employeeName,department:row.department
+  }));
+}
+function hrRequest(ref){
+ return approvalOwner===U.owner() ? inbox?.approval?.hr?.find(row=>row.resource+'|'+row.id===ref) : null;
+}
+async function openHrReview(ref){
+ const session=U.snapshot();
+ await poll();
+ U.guard(session);
+ const request=hrRequest(ref);
+ if(!request?.canDecide||request.status!=='pending')throw new Error('تغيّرت حالة الطلب. حدّثت قائمة الاعتمادات.');
+ hrRequestDetails(ref,request);
+}
+
+function hrRequestTitle(request){
+ const legacyLabels={leave_override:'تعديل إجازة',reward:'مكافأة',disciplinary:'إجراء تأديبي'};
+ const label=window.hrProTypeLabel?.(request.type);
+ return request.title||legacyLabels[request.type]||(label!==request.type?label:'')||'طلب موظف';
+}
+function isOneDayAnnualLeave(request){
+ const startDate=request.data?.startDate;
+ return request.type==='annual_leave'&&!!startDate&&request.data?.endDate===startDate;
+}
+function hrRequestHeading(request){
+ return isOneDayAnnualLeave(request)?'إجازة يوم واحد':hrRequestTitle(request);
+}
+function hrRequestDetails(ref,r){
+ if(!r)return;
+ const plain=value=>typeof value==='string'||typeof value==='number'?String(value).trim():'';
+ const date=value=>{
+  const raw=plain(value),match=/^(\d{4})-(\d{2})-(\d{2})(?:$|[T ])/u.exec(raw);
+  return match?match[3]+'/'+match[2]+'/'+match[1]:raw;
+ };
+ const data=r.data||{},title=hrRequestTitle(r);
+ const stage=(r.route||r.levels||[])[r.stageIndex??r.currentLevel??0];
+ const currentStage=plain(stage)||plain(stage?.label)||plain(stage?.name)||plain(stage?.department);
+ const statusLabel={pending:'بانتظار الاعتماد',approved:'معتمد',rejected:'مرفوض',cancelled:'ملغى'}[r.status]||'—';
+ const start=date(data.startDate??r.startDate),end=date(data.endDate??r.endDate);
+ const fields=[
+  ['الموظف',r.employeeName||'—'],
+  ['القسم',r.department],
+  ['نوع الطلب',title],
+  ['المدة',isOneDayAnnualLeave(r)?'يوم واحد':''],
+  ['الحالة',statusLabel],
+  ['المرحلة',currentStage],
+  ['تاريخ التقديم',date(r.createdAt||r.createdDate)]
+ ];
+ if(start&&start===end)fields.push(['التاريخ',start]);
+ else fields.push(['من تاريخ',start],['إلى تاريخ',end]);
+ fields.push(
+  ['التاريخ',date(data.date??r.date)],
+  ['من الساعة',data.fromTime??r.fromTime],
+  ['إلى الساعة',data.toTime??r.toTime],
+  ['عدد الساعات',data.hours??data.durationHours??r.hours],
+  ['عدد الأيام',data.days??r.days],
+  ['المبلغ',data.amount],
+  ['العملة',data.currency],
+  ['الجهة',data.target],
+  ['اللغة',data.language],
+  ['نوع الوثيقة',data.docType],
+  ['المسمى الوظيفي',data.jobTitle],
+  ['العدد',data.headcount]
+ );
+ const renderFields=entries=>'<dl class="r34-grid">'+entries
+  .filter(([,value])=>plain(value)!=='')
+  .map(([label,value])=>'<div><dt>'+E(label)+'</dt><dd style="margin:0 0 10px"><strong>'+E(plain(value))+'</strong></dd></div>').join('')+'</dl>';
+ const why=plain(r.reason)||plain(r.note)||plain(r.description);
+ const managerDecision={approve:'موافق',approved:'موافق',reject:'مرفوض',rejected:'مرفوض'}[r.managerDecision];
+ const managerFields=[
+  ['النتيجة',managerDecision],
+  ['المدير',r.managerDecisionBy],
+  ['تاريخ القرار',date(r.managerDecisionAt)]
+ ];
+ const decision=managerFields.some(([,value])=>plain(value)!=='')||plain(r.managerNote)
+  ? '<section class="r34-card"><h4>قرار المدير المباشر</h4>'+renderFields(managerFields)
+   +(plain(r.managerNote)?'<p style="white-space:pre-wrap">'+E(plain(r.managerNote))+'</p>':'')+'</section>'
+  : '';
+ const actions=(r.canDecide===true&&r.status==='pending'
+  ?B('موافقة','hr-approve',ref,true)+B('رفض','hr-reject',ref):'')+B('إغلاق','close','r34HrDetails');
+ return U.dialog('r34HrDetails',isOneDayAnnualLeave(r)?'تفاصيل إجازة يوم واحد':'تفاصيل طلب الموظف',
+  '<section class="r34-card">'+renderFields(fields)+'</section>'
+  +(why?'<section class="r34-card"><h4>سبب الطلب</h4><p style="white-space:pre-wrap">'+E(why)+'</p></section>':'')
+  +decision+'<footer class="r34-actions">'+actions+'</footer>');
+}
 function details(title,obj){const rows=Object.entries(obj).filter(([k])=>!k.startsWith('_')&&!['codeHash','encryptedCode'].includes(k));U.dialog('r34RecordDetails',title,`<dl>${rows.map(([k,v])=>`<dt>${E(({title:'العنوان',type:'النوع',status:'الحالة',reason:'السبب',employeeName:'الموظف',history:'سجل الإجراءات',approvers:'المعتمدون',createdAt:'تاريخ الإنشاء'})[k]||k)}</dt><dd style="white-space:pre-wrap;overflow-wrap:anywhere">${E(typeof v==='object'?JSON.stringify(v,null,2):v)}</dd>`).join('')}</dl>`);}
 async function cancelled(){const s=U.snapshot(),d=U.dialog('r34Cancelled','الأرشيف — مهمات ملغية',U.empty('جارٍ التحميل…'));try{const out=await U.request('/r34/cancelled-tasks',{},s);if(!d.isConnected||!d.open)return;d._r34Tasks=out.items||[];$('.r34',d).innerHTML=U.note('الأصل محفوظ. لا تعديل ولا إعادة إنشاء. المهام الملغاة لا تُحسب منجزة.')+(out.items||[]).map(t=>card(t.title,`<p>${E(t.department)} · ${E(t.customer)} · ${E(t.cancellation?.reason||'')}</p><small>ألغى: ${E(t.cancellation?.executedBy||t.archivedBy||'—')} · ${E(U.stamp(t.cancellation?.at||t.archivedAt))}</small>`,B('السجل والمحادثة والمرفقات','cancelled-details',t.id))).join('');}catch(e){U.error(d,e);}}
 async function cancelledDetail(id){const d=$('#r34Cancelled'),t=d?._r34Tasks?.find(t=>String(t.id)===id);if(!t)return;U.dialog('r34CancelledDetail',t.title,U.note(t.cancellation?.reason||'مهمة ملغاة')+window.MoshChat34.readOnlyHtml(t.workChat||[])+`<h4>سجل المهمة</h4>${(t.history||[]).map(h=>`<div class="r34-card">${E(h.text||h.action||'')}<small>${E(h.by||h.actorName||'')} · ${E(U.stamp(h.at||h.time||h.createdAt))}</small></div>`).join('')}`);}
-function mount(){if(!U.owner())return;const top=$('.topbar .top-actions');if(top&&!$('#r34ApprovalsTop')){const b=document.createElement('button');b.type='button';b.id='r34ApprovalsTop';b.className='btn ghost';b.dataset.r34='inbox-cancel';b.textContent='اعتماداتي';top.insertBefore(b,top.querySelector('#topUserAvatar'));}
+function mount(){if(!U.owner())return;const top=$('.topbar .top-actions');if(top&&!$('#r34ApprovalsTop')){const b=document.createElement('button');b.type='button';b.id='r34ApprovalsTop';b.className='btn ghost';b.dataset.r34='inbox-pending';b.textContent='اعتماداتي';top.insertBefore(b,top.querySelector('#topUserAvatar'));}
  for(const panel of $$('.hr-manager-panel'))if(!panel.parentElement.querySelector('.r34-hierarchy-entry')){const entry=document.createElement('section');entry.className='r34-hierarchy-entry r34';entry.innerHTML='<h3>الإدارة — تبعية مدراء الأقسام</h3><p>مدير القسم ← المسؤول الأعلى ← المدير العام</p>'+B('تحديد تبعية المدراء والتـنفيذي','hierarchy');panel.insertAdjacentElement('afterend',entry);}
  const archive=$('#archiveTabTasks')?.parentElement;if(archive&&!$('#r34CancelledTab')){const b=document.createElement('button');b.id='r34CancelledTab';b.type='button';b.dataset.r34='cancelled';b.textContent='مهمات ملغية';archive.appendChild(b);}
 }
 let mountQueued=false;new MutationObserver(()=>{if(!mountQueued){mountQueued=true;requestAnimationFrame(()=>{mountQueued=false;mount();});}}).observe(document.body,{childList:true,subtree:true});
 document.addEventListener('click',e=>{const b=e.target.closest?.('[data-r34]');if(!b||b.dataset.r34==='close')return;const a=b.dataset.r34,id=b.dataset.id||'';let job;
  try{if(a==='hierarchy')job=openHierarchy();else if(a.startsWith('inbox-'))job=openInbox(a==='inbox-refresh'?view:a.slice(6));else if(a==='purchases'){window.MoshPurchasing24?.openQueue?.();return;}else if(a==='cancel-code')job=code(id);else if(a==='cancel-confirm')confirmCancel(id);else if(a==='cancel-reject')rejectCancel(id);else if(a==='cancelled')job=cancelled();else if(a==='cancelled-details')job=cancelledDetail(id);else if(a==='cancel-details'){const r=inbox?.cancel.items.find(r=>r.id===id);if(r)job=U.request('/r34/chat?taskId='+encodeURIComponent(r.taskId)).then(out=>U.dialog('r34CancelTaskDetails',out.task.title,U.note(r.reason)+window.MoshChat34.readOnlyHtml(out.task.workChat||[])));}
- else if(a==='hr-approve'||a==='hr-reject')hrDecision(id,a.slice(3));else if(a==='hr-details'){const r=inbox?.approval.hr.find(r=>r.resource+'|'+r.id===id);if(r)details('تفاصيل طلب الموظف',r);}else if(a==='damage-new')job=damageForm();else if(a==='damage-details'){const r=inbox?.approval.damage.find(r=>r.id===id);if(r)details('طلب الإتلاف',r);}else if(a.startsWith('damage-'))damageDecision(id,a.slice(7));else return;
+ else if(a==='hr-approve'||a==='hr-reject')hrDecision(id,a.slice(3));else if(a==='hr-review')job=openHrReview(id);else if(a==='hr-details'){const r=hrRequest(id);if(r)hrRequestDetails(id,r);}else if(a==='damage-new')job=damageForm();else if(a==='damage-details'){const r=inbox?.approval.damage.find(r=>r.id===id);if(r)details('طلب الإتلاف',r);}else if(a.startsWith('damage-'))damageDecision(id,a.slice(7));else return;
  e.preventDefault();if(job?.catch)job.catch(noticeError);
  }catch(err){noticeError(err);}
 });
@@ -86,10 +190,13 @@ document.addEventListener('click',e=>{const b=e.target.closest?.('[data-o18="mov
 },true);
 for(const event of ['mosh:logout-complete','mosh:session-expired'])document.addEventListener(event,reset);
 for(const event of ['mosh:ui-ready','mosh:section-enter'])document.addEventListener(event,()=>{mount();});
+document.addEventListener('mosh:saved',event=>{
+ if(event.detail?.changes?.some(change=>change.resource==='hr-requests'||change.resource==='hr-approvals'))void poll().catch(()=>{});
+});
 setInterval(()=>{if(U.owner())void poll().catch(()=>{});},60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&U.owner())void poll().catch(()=>{});});
 
 for(const name of ['deleteMainTask','deleteSubTask'])window[name]=id=>requestCancel(String(id)).catch(noticeError);
 window.confirmTaskDelete=()=>{try{window.closeDeleteTaskConfirm?.();}catch(_){}window.MoshUI19.toast('إلغاء المهمة يتطلب طلب مصادقة المدير التنفيذي من داخل المهمة.');};
 
-window.MoshGovernance34={openHierarchy,openInbox,requestCancel,cancelled,damageForm,poll,inspect:()=>({tab:view,configured:!!cfg?.enabled,hasInbox:!!inbox})};mount();if(U.owner())void poll().catch(()=>{});
+window.MoshGovernance34={openHierarchy,openInbox,requestCancel,cancelled,damageForm,poll,pendingHrApprovals,inspect:()=>({tab:view,configured:!!cfg?.enabled,hasInbox:!!inbox})};mount();if(U.owner())void poll().catch(()=>{});
 })();

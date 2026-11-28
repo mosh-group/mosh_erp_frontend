@@ -163,18 +163,77 @@ window.r14PickStaffPhoto=async function(input) {
 };
 
 const avatarLoads=new Map();
+function downloadAvatar(key,accountId){
+ const cacheKey=accountId+':'+key;
+ if(!avatarLoads.has(cacheKey)){
+  const request=MoshApi.request('/files/'+encodeURIComponent(key)+'/content',{binary:true});
+  avatarLoads.set(cacheKey,request.finally(()=>avatarLoads.delete(cacheKey)));
+ }
+ return avatarLoads.get(cacheKey);
+}
+
+const accountAvatarTargets='#topUserAvatar,#employeeSpaceV11 .es11-avatar,#employeePortalProfile .employee-portal-avatar';
+const defaultAccountAvatar='data:image/svg+xml,'+encodeURIComponent(
+ '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="#c9a853">'+
+ '<circle cx="16" cy="11" r="5"/><path d="M6 26v-3c0-7 20-7 20 0v3z"/></svg>'
+);
+let accountPortrait=null;
+function showAccountPortrait(src){
+ for(const target of qa(accountAvatarTargets)){
+  if(target.childNodes.length===1&&target.firstElementChild?.getAttribute('src')===src)continue;
+  const image=document.createElement('img');
+  image.className='r14-avatar-img';
+  image.alt='';
+  image.src=src;
+  target.replaceChildren(image);
+ }
+}
+function clearAccountPortrait(){
+ if(accountPortrait?.url)URL.revokeObjectURL(accountPortrait.url);
+ accountPortrait=null;
+ showAccountPortrait(defaultAccountAvatar);
+}
+async function loadAccountPortrait(portrait){
+ let url;
+ try{
+  const blob=await downloadAvatar(portrait.key,portrait.owner);
+  if(!blob?.size||accountPortrait!==portrait)return;
+  url=URL.createObjectURL(blob);
+  const image=new Image();
+  image.src=url;
+  await image.decode();
+  if(accountPortrait!==portrait||String(window.MoshApi?.user?.id||'')!==portrait.owner)return;
+  portrait.url=url;
+  url='';
+  showAccountPortrait(portrait.url);
+ }catch(error){
+  if(accountPortrait===portrait&&error.status!==404)console.warn('MOSH account photo:',error);
+ }finally{
+  if(url)URL.revokeObjectURL(url);
+ }
+}
+function syncAccountPortrait(profiles){
+ const user=window.MoshApi?.user,owner=String(user?.id||''),employeeId=String(user?.employeeId||'');
+ const profile=owner&&employeeId?profiles.find(row=>String(row.id)===employeeId):null;
+ const key=String(profile?.photoKey||'');
+ if(!accountPortrait||accountPortrait.owner!==owner||accountPortrait.key!==key){
+  clearAccountPortrait();
+  accountPortrait={owner,key,url:''};
+  if(key)void loadAccountPortrait(accountPortrait);
+ }else{
+  showAccountPortrait(accountPortrait.url||defaultAccountAvatar);
+ }
+}
+for(const event of ['mosh:logout-complete','mosh:session-expired'])document.addEventListener(event,clearAccountPortrait);
+
 async function hydrateOneAvatar(el,key) {
  const accountId=window.MoshApi?.user?.id;
  if(!el||!key||!accountId||el.dataset.r14PhotoHydrated===key)return;
  el.dataset.r14PhotoHydrated=key;
- const cacheKey=accountId+':'+key;
- if(!avatarLoads.has(cacheKey)){
-  const download=MoshApi.request('/files/'+encodeURIComponent(key)+'/content',{binary:true});
-  avatarLoads.set(cacheKey,download.finally(()=>avatarLoads.delete(cacheKey)));
- }
+
  const current=()=>el.isConnected&&el.dataset.r14PhotoHydrated===key&&window.MoshApi?.user?.id===accountId;
  try {
-  const blob=await avatarLoads.get(cacheKey);
+  const blob=await downloadAvatar(key,accountId);
   if(!blob?.size||!current())return;
   const url=URL.createObjectURL(blob), image=document.createElement('img');
   image.className='r14-avatar-img';
@@ -186,8 +245,8 @@ async function hydrateOneAvatar(el,key) {
 }
 window.r14HydrateStaffPhotos=async function(){
  const profiles=Array.isArray(state?.staffProfiles)?state.staffProfiles:[];
+ syncAccountPortrait(profiles);
  for(const p of profiles){if(!p?.photoKey)continue;qa('[data-r14-staff-id="'+CSS.escape(String(p.id))+'"],[data-r14-staff-name="'+CSS.escape(String(p.name||''))+'"]').forEach(el=>hydrateOneAvatar(el,p.photoKey));}
- const currentId=String(window.MoshApi?.user?.employeeId||'');const cp=profiles.find(p=>String(p.id)===currentId)||profiles.find(p=>String(p.name||'')===String(typeof currentUserDisplayName==='function'?currentUserDisplayName():''));if(cp?.photoKey){const top=q('#topUserAvatar');if(top)hydrateOneAvatar(top,cp.photoKey);qa('.es11-avatar').forEach(x=>hydrateOneAvatar(x,cp.photoKey));}
 };
 if(typeof window.hrEmployeeFormHtml==='function'){
  const oldForm=window.hrEmployeeFormHtml;

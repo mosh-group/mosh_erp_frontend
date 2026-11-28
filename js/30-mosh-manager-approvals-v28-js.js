@@ -40,7 +40,21 @@ function managerForDepartment(dept){
  if(id){const p=arr(state.staffProfiles).find(x=>String(x.id)===String(id));if(p)return p;}
  return window.MoshApi?null:arr(state.staffProfiles).find(p=>p&&p.isManager&&p.active!==false&&same(p.department,dept))||null;
 }
+function namedApprover(r){
+ const assigned=r?.r34Approval?.byStage?.[Number(r.stageIndex)||0];
+ if(!assigned)return null;
+ const dept=clean(r.department), backup=clean(window.MoshApi?.departmentManagerCoverage?.acting?.[dept]);
+ if(backup&&backup!==clean(r.employeeId)&&clean(assigned.employeeId)===clean(state.departmentManagers?.[dept])){
+   const profile=arr(state.staffProfiles).find(p=>clean(p.id)===backup);
+   return {employeeId:backup,name:profile?.name||'',department:profile?.department||dept};
+ }
+ const profile=arr(state.staffProfiles).find(p=>clean(p.id)===clean(assigned.employeeId));
+ return {...assigned,department:profile?.department||dept};
+}
+
 function expectedManager(req,stage){
+ const assigned=namedApprover(req);
+ if(assigned&&stage===requestStage(req))return assigned;
  if(stage==='مدير القسم الجديد')return managerForDepartment(req?.data?.target||'');
  if(stage==='مدير القسم الحالي')return managerForDepartment(req?.department||'');
  if(stage==='المدير المباشر'){
@@ -58,18 +72,27 @@ function targetDeptForRequest(r){
  return clean(r?.department||'');
 }
 function canManagerAct(r){
+ const user=window.MoshApi?.user;
+ if(user&&clean(r.employeeId)===clean(user.employeeId))return false;
+ const assigned=namedApprover(r);
+ if(assigned)return !!(user&&clean(assigned.employeeId)===clean(user.employeeId)&&(!assigned.userId||clean(assigned.userId)===clean(user.id)));
  if(systemOwner())return true;
- const stage=requestStage(r),m=expectedManager(r,stage),me=currentName();
- return !!(m&&same(m.name,me));
+ const stage=requestStage(r),m=expectedManager(r,stage);
+ return !!(m&&(user?clean(m.id)===clean(user.employeeId):same(m.name,currentName())));
 }
 function isHrActor(){const p=currentProfile();return systemOwner()||same(p?.department,'الموارد البشرية');}
 function saveSafe(){try{save();return true}catch(e){console.error('Manager approvals save failed',e);alert('تعذر حفظ القرار. تحقق من التخزين ثم أعد المحاولة.');return false}}
+function decisionTone(r){
+ if(['approve','approved'].includes(r?.managerDecision))return 'ok';
+ if(['reject','rejected'].includes(r?.managerDecision))return 'bad';
+ return 'wait';
+}
 function managerDecisionLabel(r){
- if(r?.managerDecision==='approved')return 'موافقة المدير المباشر';
- if(r?.managerDecision==='rejected')return 'عدم موافقة المدير المباشر';
+ const tone=decisionTone(r);
+ if(tone==='ok')return 'موافقة المدير المباشر';
+ if(tone==='bad')return 'عدم موافقة المدير المباشر';
  return 'بانتظار قرار المدير المباشر';
 }
-function decisionTone(r){return r?.managerDecision==='approved'?'ok':r?.managerDecision==='rejected'?'bad':'wait'}
 function dateText(v){if(!v)return '—';try{return new Intl.DateTimeFormat('ar-SY',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v))}catch(e){return clean(v)}}
 
 // All leave requests, including sick leave, pass direct manager before HR.
@@ -101,36 +124,57 @@ if(typeof originalSubmit==='function'){
  };
 }
 
-function directManagerDecision(id,decision,note=''){
+const decisionsInFlight=new Set();
+async function directManagerDecision(id,decision,note=''){
  const r=arr(state.hrProRequests).find(x=>String(x.id)===String(id));
- if(!r||r.status!=='pending')return false;
- const stage=requestStage(r);
- if(stage!=='المدير المباشر')return false;
+ if(!r||r.status!=='pending'||requestStage(r)!=='المدير المباشر'||decisionsInFlight.has(r.id))return false;
  if(!canManagerAct(r)){alert('هذا الطلب بانتظار قرار المدير المباشر المحدد للموظف.');return false;}
- r.history=arr(r.history);
- r.managerDecision=decision==='approved'?'approved':'rejected';
- r.managerDecisionBy=currentName();
- r.managerDecisionAt=now();
- r.managerNote=clean(note);
- r.history.push({action:decision==='approved'?'manager_approved':'manager_not_approved',stage:'المدير المباشر',by:currentName(),time:r.managerDecisionAt,note:r.managerNote});
- if((Number(r.stageIndex)||0)<arr(r.route).length-1)r.stageIndex=(Number(r.stageIndex)||0)+1;
- else {r.status=decision==='approved'?'approved':'rejected';r.completedAt=now();if(decision==='approved'&&typeof hrProApplyRequest==='function')hrProApplyRequest(r);}
- if(!saveSafe())return false;
- try{hrProUpdateEmployeeServiceStatus()}catch(e){}
- refreshBadges();
- return true;
+ const api=window.MoshApi, ownerId=String(api?.user?.id||'');
+ if(!ownerId||!Number.isInteger(Number(r._version))){alert('حدّث الطلب قبل حفظ قرارك.');return false;}
+
+ const managerDecision=decision==='approved'?'approved':'rejected';
+ const stageIndex=Number(r.stageIndex)||0, last=stageIndex>=arr(r.route).length-1;
+ const managerDecisionAt=now(), managerNote=clean(note), managerDecisionBy=currentName();
+ const history=[...arr(r.history),{
+   action:managerDecision==='approved'?'manager_approved':'manager_not_approved',
+   stage:'المدير المباشر',by:managerDecisionBy,time:managerDecisionAt,note:managerNote
+ }];
+ const body={_version:r._version,managerDecision,managerDecisionBy,managerDecisionAt,managerNote,history,
+   ...(last?{status:managerDecision}:{stageIndex:stageIndex+1})
+ };
+ const request={method:'PATCH',headers:{'Idempotency-Key':crypto.randomUUID()},body};
+ const path='/hr-requests/'+encodeURIComponent(r.id);
+ decisionsInFlight.add(r.id);
+ try{
+   let saved;
+   try{saved=await api.request(path,request);}
+   catch(error){
+     if(!error.network||String(api.user?.id||'')!==ownerId)throw error;
+     saved=await api.request(path,request);
+   }
+   if(saved!==null&&(saved?.id!==r.id||!Number.isInteger(Number(saved._version))))throw new Error('تعذّر تأكيد القرار. افتح القائمة مجدداً للتحقق.');
+   api.acceptServerChanges([{resource:'hr-requests',id:String(r.id),data:saved}],ownerId);
+   hrProUpdateEmployeeServiceStatus();
+   refreshBadges();
+   return true;
+ }catch(error){
+   if(String(api.user?.id||'')===ownerId)alert(error.message||'تعذّر حفظ قرار المدير.');
+   return false;
+ }finally{
+   decisionsInFlight.delete(r.id);
+ }
 }
 
 const originalApprove=window.hrProApproveRequest;
 const originalReject=window.hrProRejectRequest;
 if(typeof originalApprove==='function'){
- window.hrProApproveRequest=function(id){
+ window.hrProApproveRequest=async function(id){
    const r=arr(state.hrProRequests).find(x=>String(x.id)===String(id));
    if(!r||r.status!=='pending')return;
    const stage=requestStage(r);
    if(stage==='المدير المباشر'){
      const note=document.getElementById('mgr28DecisionNote')?.value||'';
-     if(directManagerDecision(id,'approved',note)){try{hrProCloseModal()}catch(e){};refreshOpenManagerModal();try{if(document.getElementById('hrApp')?.classList.contains('active'))openHRPro('requests')}catch(e){}}
+     if(await directManagerDecision(id,'approved',note)){try{hrProCloseModal()}catch(e){};refreshOpenManagerModal();try{if(document.getElementById('hrApp')?.classList.contains('active'))openHRPro('requests')}catch(e){}}
      return;
    }
    if(stage==='الموارد البشرية'){
@@ -141,14 +185,14 @@ if(typeof originalApprove==='function'){
  };
 }
 if(typeof originalReject==='function'){
- window.hrProRejectRequest=function(id){
+ window.hrProRejectRequest=async function(id){
    const r=arr(state.hrProRequests).find(x=>String(x.id)===String(id));
    if(!r||r.status!=='pending')return;
    const stage=requestStage(r);
    if(stage==='المدير المباشر'){
      let note=document.getElementById('mgr28DecisionNote')?.value||'';
      if(!clean(note)){note=prompt('ملاحظة المدير / سبب عدم الموافقة:','')||'';if(!clean(note))return;}
-     if(directManagerDecision(id,'rejected',note)){try{hrProCloseModal()}catch(e){};refreshOpenManagerModal();try{if(document.getElementById('hrApp')?.classList.contains('active'))openHRPro('requests')}catch(e){}}
+     if(await directManagerDecision(id,'rejected',note)){try{hrProCloseModal()}catch(e){};refreshOpenManagerModal();try{if(document.getElementById('hrApp')?.classList.contains('active'))openHRPro('requests')}catch(e){}}
      return;
    }
    if(stage==='الموارد البشرية'){
@@ -295,25 +339,38 @@ function taskReviewActions(key,t){
  }
  return '<div class="mgr28-item-actions mgr28-task-review-actions" role="group" aria-label="إجراءات مراجعة المهمة">'+html+'</div>';
 }
-function open(key){
+async function open(key){
+ if(!deptByKey(key))return;
+ const api=window.MoshApi, owner=String(api?.user?.id||'');
+ if(!owner)return renderQueue(key);
+ renderQueue(key,'loading');
+ const modal=document.getElementById('mgr28Modal');
+ try{
+   await api.refresh({section:key});
+   if(modal?.isConnected&&String(api.user?.id||'')===owner)renderQueue(key);
+ }catch(error){
+   if(modal?.isConnected&&String(api.user?.id||'')===owner)renderQueue(key,'error');
+ }
+}
+function renderQueue(key,loadState=''){
  close();const d=deptByKey(key);if(!d)return;const hrs=viewerHrManagerItems(d.label),deptMgr=managerForDepartment(d.label),isDeptMgr=!!(deptMgr&&same(deptMgr.name,currentName())),tasks=(systemOwner()||isDeptMgr)?taskManagerItems(d.label):[],mgr=deptMgr||(hrs[0]?expectedManager(hrs[0],requestStage(hrs[0])):null),canView=systemOwner()||isDeptMgr||hrs.length>0;
  const rows=canView?hrs.map(r=>{
    const stage=requestStage(r),can=canManagerAct(r),m=expectedManager(r,stage);
    return `<div class="mgr28-item"><div class="mgr28-item-main"><span class="mgr28-kind">طلب موظف</span><b>${esc28(hrProTypeLabel(r.type))}</b><p>${esc28(r.employeeName)} · ${esc28(r.reason||'بدون ملاحظة')}</p><small>${esc28(r.createdDate||'')} · المدير: ${esc28(m?.name||r.manager||'غير محدد')}</small></div><div class="mgr28-item-actions"><button class="btn" onclick="hrProOpenRequestDetails('${esc28(r.id)}')">فتح التفاصيل</button>${can&&stage==='المدير المباشر'?`<button class="btn" onclick="MoshManagerApprovals28.quick('${esc28(r.id)}','rejected')">عدم الموافقة</button><button class="btn primary" onclick="MoshManagerApprovals28.quick('${esc28(r.id)}','approved')">موافقة</button>`:''}</div></div>`;
  }).join(''):'';
  const taskRows=canView?tasks.map(t=>`<div class="mgr28-item mgr28-task-review-item">${taskReviewActions(key,t)}<div class="mgr28-item-main"><span class="mgr28-kind task">مهمة للمراجعة</span><b class="mt54-task-name">${esc28(MoshTaskUI.title(t))}</b><span class="mt54-client-name">${esc28(t.customer||'بدون عميل')}</span><p>${esc28(t.assignee||'بدون منفذ')}</p><small>المهمة بانتظار مراجعة المدير</small></div></div>`).join(''):'';
- const modal=document.createElement('div');modal.id='mgr28Modal';modal.className='mgr28-backdrop';
- modal.innerHTML=`<div class="mgr28-modal" dir="rtl"><header><div><span>قسم ${esc28(d.label)}</span><h2>اعتماد مدير القسم</h2><p>كل ما يحتاج قرار المدير قبل انتقاله للمرحلة التالية.</p></div><button class="btn" onclick="MoshManagerApprovals28.close()">إغلاق</button></header><div class="mgr28-summary"><div><strong>${hrs.length}</strong><span>طلبات موظفين</span></div><div><strong>${tasks.length}</strong><span>مهام للمراجعة</span></div><div><strong>${esc28(mgr?.name||'—')}</strong><span>مدير القسم</span></div></div>${!canView?`<div class="mgr28-note-box">هذه القائمة مخصصة لمدير القسم. لن تظهر تفاصيل الطلبات إلا للمدير المحدد أو مسؤول النظام.</div>`:''}<main>${rows}${taskRows||''}${canView&&!rows&&!taskRows?'<div class="mgr28-empty">لا يوجد شيء بحاجة لاعتماد مدير القسم حالياً.</div>':''}</main></div>`;
+ const modal=document.createElement('div');modal.id='mgr28Modal';modal.className='mgr28-backdrop';modal.dataset.department=key;
+ modal.innerHTML=`<div class="mgr28-modal" dir="rtl"><header><div><span>قسم ${esc28(d.label)}</span><h2>اعتماد مدير القسم</h2><p>كل ما يحتاج قرار المدير قبل انتقاله للمرحلة التالية.</p></div><button class="btn" onclick="MoshManagerApprovals28.close()">إغلاق</button></header><div class="mgr28-summary"><div><strong>${loadState?'—':hrs.length}</strong><span>طلبات موظفين</span></div><div><strong>${loadState?'—':tasks.length}</strong><span>مهام للمراجعة</span></div><div><strong>${esc28(mgr?.name||'—')}</strong><span>مدير القسم</span></div></div>${!canView?`<div class="mgr28-note-box">هذه القائمة مخصصة لمدير القسم. لن تظهر تفاصيل الطلبات إلا للمدير المحدد أو مسؤول النظام.</div>`:''}<main>${loadState==='loading'?'<div class="mgr28-empty" role="status">جارٍ تحديث طلبات الاعتماد…</div>':loadState==='error'?'<div class="mgr28-empty" role="alert">تعذّر تحديث طلبات الاعتماد. <button type="button" class="btn" onclick="MoshManagerApprovals28.open(this.closest(\'#mgr28Modal\').dataset.department)">إعادة المحاولة</button></div>':rows+(taskRows||'')+(canView&&!rows&&!taskRows?'<div class="mgr28-empty">لا يوجد شيء بحاجة لاعتماد مدير القسم حالياً.</div>':'')}</main></div>`;
  modal.addEventListener('click',e=>{if(e.target===modal)close()});document.body.appendChild(modal);document.getElementById(`mgr28Tab_${key}`)?.classList.add('active');
 }
-function quick(id,decision){
+async function quick(id,decision){
  const r=arr(state.hrProRequests).find(x=>String(x.id)===String(id));if(!r)return;
  let note='';if(decision==='rejected'){note=prompt('سبب عدم الموافقة / ملاحظة المدير:','')||'';if(!clean(note))return;}
  else note=prompt('ملاحظة المدير (اختياري):','')||'';
- if(requestStage(r)==='المدير المباشر'&&directManagerDecision(id,decision,note)){refreshOpenManagerModal();try{if(document.getElementById('hrApp')?.classList.contains('active'))openHRPro('requests')}catch(e){}}
+ if(requestStage(r)==='المدير المباشر'&&await directManagerDecision(id,decision,note)){refreshOpenManagerModal();try{if(document.getElementById('hrApp')?.classList.contains('active'))openHRPro('requests')}catch(e){}}
  else if(requestStage(r)!=='المدير المباشر')hrProOpenRequestDetails(id);
 }
-function refreshOpenManagerModal(){const active=document.querySelector('.mgr28-tab.active');if(!active)return;const key=active.id.replace('mgr28Tab_','');open(key);}
+function refreshOpenManagerModal(){const key=document.getElementById('mgr28Modal')?.dataset.department;if(key)renderQueue(key);}
 
 window.MoshManagerApprovals28={open,close,quick,refresh:refreshBadges,openTasks:openTaskQueue,reviewTask,countFor,version:'28.0'};
 document.addEventListener('mosh:page-mounted',installTabs);

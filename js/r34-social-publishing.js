@@ -42,13 +42,13 @@
         const showAccount = checked && method.value === 'meta';
         account.disabled = !showAccount;
         account.required = showAccount;
-        account.parentElement.hidden = !showAccount;
+        account.closest('label').hidden = !showAccount;
       }
       hasMeta ||= checked && method.value === 'meta';
     }
     const mode = $('[name="mode"]',form), when = $('[name="scheduledAt"]',form);
     mode.disabled = !hasMeta;
-    mode.parentElement.hidden = !hasMeta;
+    mode.closest('label').hidden = !hasMeta;
     const schedule = hasMeta && mode.value === 'schedule';
     when.disabled = !schedule;
     when.required = schedule;

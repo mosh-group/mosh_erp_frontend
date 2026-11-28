@@ -94,7 +94,7 @@ textarea{line-height:1.7!important}
 /* Employee / HR avatars */
 .r14-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
 .r14-avatar{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;overflow:hidden;background:#252a31;border:1px solid #454b53;vertical-align:middle;flex:0 0 34px}
-.hr-pro-person{gap:9px!important}.hr-pro-avatar,.hr-profile-avatar,.hr-employee-avatar-sm,.es11-avatar,#topUserAvatar{overflow:hidden!important}
+.hr-pro-person{gap:9px!important}.hr-pro-avatar,.hr-profile-avatar,.hr-employee-avatar-sm,.es11-avatar,.employee-portal-avatar,#topUserAvatar{overflow:hidden!important}
 
 /* Wisdom brand should follow MOSH gold, never blue */
 #wisdomCard .brand,.wisdom-brand,.v26-wisdom-brand,.daily-wisdom-brand,[data-wisdom-brand]{color:var(--gold)!important}
